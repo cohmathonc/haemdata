@@ -11,7 +11,7 @@ vignette: >
 Multiple references are used throughout the project, be sure to know which one you are using:
 
 * GRCm38_HLT ([GRCm38](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.20/), Ensembl annotation version 81, July 2015)
-* GENCODEm28_HLT ([GRCm39](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.27), Gencode annotation release 28, Dec 2022) 
+* GENCODEm28_HLT ([GRCm39](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.27), Gencode annotation release 28, Dec 2021) 
 
 ### GRCm38_HLT
 
