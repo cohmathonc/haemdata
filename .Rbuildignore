@@ -1,0 +1,15 @@
+^haemdata\.Rproj$
+^\.Rproj\.user$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+
+_targets
+_targets.R
+clustermq.tmpl
+data-raw
+future.tmpl
+nohup.out
+run.R
+run.Rout
+run.sh

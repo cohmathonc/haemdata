@@ -1,0 +1,10 @@
+.Rproj.user
+docs
+inst/doc
+.RData
+_targets
+data
+inst/extdata
+nohup.out
+run.Rout
+.DS_Store

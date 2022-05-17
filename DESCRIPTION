@@ -1,0 +1,34 @@
+Package: haemdata
+Title: Mouse RNAseq data (bulk mRNA and microRNA) from AML and CML projects
+Version: 0.0.0.9000
+Authors@R: 
+    person("Denis", "O'Meally", , "domeally@coh.org", role = c("aut", "cre"),
+        comment = c(ORCID = "0000-0001-7749-9506"))
+Description: Harmonised data from mouse RNAseq projects processed with [nf-core](https://nf-co.re) pipelines and published in the `haemdata` package on GitHub.
+License: file LICENSE
+Encoding: UTF-8
+Language: en-AU
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Depends: 
+    R (>= 3.5)
+LazyData: true
+LazyDataCompression: xz
+Suggests: 
+    knitr,
+    rmarkdown,
+    S4Vectors,
+    dplyr,
+    hexSticker,
+    magick,
+    stringr,
+    usethis,
+    ggplot2,
+    ggsci,
+    tibble,
+    tidyr
+VignetteBuilder: knitr
+Imports: 
+    SummarizedExperiment,
+    Microsoft365R
+URL: http://cgt.coh.org/haemdata

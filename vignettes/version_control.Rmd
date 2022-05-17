@@ -1,0 +1,16 @@
+---
+title: "Version control"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Version control}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This package uses git tags to "stamp" different releases, useful for tracking both the 
+nf-core pipeline version and the genome reference used for a build. A release is made
+whenever new data are added, or when the pipeline or genome reference is updated.
+
+Currently the "latest" release points to a patchwork of nf-core/rnaseq pipeline versions 
+3.5 or 3.6 and the GRCm38_HLT reference. An upcoming release of the package uses 
+pipeline version 3.7 and the GENCODEm28_HLT reference - stay tuned.

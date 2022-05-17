@@ -1,0 +1,36 @@
+---
+title: "CML datasets"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{CML datasets}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+```{r transgenes}
+library(haemdata)
+data(cml_mrna_GRCm38_HLT)
+
+SummarizedExperiment::assay(cml_mrna_GRCm38_HLT, "abundance") |>
+    tibble::rownames_to_column("gene_id") |>
+    dplyr::filter(gene_id %in% c("HSA_ABL1_gene", "HSA_BCR_ABL1_gene")) |>
+    tidyr::pivot_longer(!gene_id, names_to = "sampleID") |>
+    tidyr::separate("sampleID", into = c("mouseID", "time")) |>
+    dplyr::mutate(time = as.numeric(time)) |>
+    ggplot2::ggplot(ggplot2::aes(y = log2(value + 0.1), x = time, col = mouseID)) +
+    ggplot2::geom_line() +
+    ggplot2::facet_wrap("gene_id") +
+    ggplot2::ggtitle("Abundance of human transgenes") +
+    ggplot2::ylab("log2(TPM)") +
+    ggplot2::xlab("time point") +
+    ggsci::scale_color_d3("category20") +
+    ggplot2::theme_minimal()
+```

@@ -1,0 +1,38 @@
+---
+title: "Reference genomes"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Reference genomes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+Multiple references are used throughout the project, be sure to know which one you are using:
+
+* GRCm38_HLT ([GRCm38](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.20/), Ensembl annotation version 81, July 2015)
+* GENCODEm28_HLT ([GRCm39](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.27), Gencode annotation release 28, Dec 2022) 
+
+### GRCm38_HLT
+
+This is the veneralble `mm10` reference genome, used for the [*Cancer Research*](https://doi.org/10.1158/0008-5472.CAN-20-0354) and [*Science Advances*](https://doi.org/10.1126/sciadv.abj1664) papers. 
+It was originally released in January 2012 and is no longer updated. The version used here was downloaded from Illumina's [iGenomes](https://support.illumina.com/sequencing/sequencing_software/igenome.html) in 2017.
+
+### GENCODEm28_HLT
+
+This June 2020 genome build (GRCm39) is paired with GENCODE annotation M28, released Dec 2021. Both were downloaded from https://www.gencodegenes.org/mouse/release_M28.html in Jan 2022.
+
+### Additional human leukemic transgenes ("HLT")
+
+Additional human leukemic transgenes are concatenated to genome fasta files and included in the indexes used by *STAR* and *Salmon*.
+
+|chr name| accession| description|
+|---|---|------------------------------------------------------------|
+|HSA_MYH11 | [NM_002474.3](https://www.ncbi.nlm.nih.gov/search/all/?term=NM_002474.3) | Homo sapiens myosin heavy chain 11 (MYH11), transcript variant SM1A, mRNA|
+|HSA_BCR_ABL1 | [EF158045.1](https://www.ncbi.nlm.nih.gov/search/all/?term=EF158045.1) | Homo sapiens BCR/ABL p210 fusion protein (BCR/ABL fusion) mRNA, partial cds|
+|HSA_BCR | [NM_004327.4](https://www.ncbi.nlm.nih.gov/search/all/?term=NM_004327.4) | Homo sapiens BCR activator of RhoGEF and GTPase (BCR), transcript variant 1, mRNA|
+|HSA_ABL1 | [NM_005157.6](https://www.ncbi.nlm.nih.gov/search/all/?term=NM_005157.6) | Homo sapiens ABL proto-oncogene 1, non-receptor tyrosine kinase (ABL1), transcript variant a, mRNA|
+
+### Availibility
+
+Genome reference files (`fasta`, `gtf`, `star`, `salmon`) are located on the Isilon store, and can be accessed via the HPC at `/ref_genome/igenomes/Mus_musculus/Ensembl/GRCm38_human_leukemic_transgenes` and `/ref_genome/igenomes/Mus_musculus/GENCODE/ReleaseM28_HLT`.
