@@ -9,7 +9,7 @@ write_tpm_matrix(summarised_experiment, drop = NULL, tpm = 1, samples = 5)
 \arguments{
 \item{summarised_experiment}{a \code{SummarisedExperiment} object}
 
-\item{drop}{samples (columns) to drop}
+\item{drop}{samples (columns) to remove}
 
 \item{tpm}{minimum TPM for a gene to be kept, Default: 1}
 

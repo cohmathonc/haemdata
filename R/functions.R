@@ -1,7 +1,7 @@
 #' @title write_tpm_matrix
 #' @description Write an expression matrix to a CSV file in `extdata`
 #' @param summarised_experiment a `SummarisedExperiment` object
-#' @param drop samples (columns) to drop
+#' @param drop samples (columns) to remove
 #' @param tpm minimum TPM for a gene to be kept, Default: 1
 #' @param samples minimum number of samples a gene must be present in to be kept, Default: 5
 #' @return path to the CSV file
