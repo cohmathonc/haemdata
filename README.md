@@ -24,7 +24,7 @@ You can install the default version of haemdata from [GitHub](https://github.com
 devtools::install_github("drejom/haemdata")
 ```
 
-The latest release provides `SummarizedExperiments` produced with version 3.5 of the nf-core/rnaseq pipeline using the GRCm38_HLT reference. 
+The latest release provides `SummarizedExperiments` produced with version 3.5 of the nf-core/rnaseq pipeline using the [GRCm38_HLT](articles/genomes.html) reference. 
 
 ## Publications
 
