@@ -1,5 +1,5 @@
 Package: haemdata
-Title: Mouse RNAseq data (bulk mRNA and microRNA) from AML and CML projects
+Title: Mouse RNAseq Data (Bulk mRNA and microRNA) from AML and CML Projects
 Version: 0.0.0.9000
 Authors@R: 
     person("Denis", "O'Meally", , "domeally@coh.org", role = c("aut", "cre"),
