@@ -31,4 +31,5 @@ VignetteBuilder: knitr
 Imports: 
     SummarizedExperiment,
     Microsoft365R
-URL: http://cgt.coh.org/haemdata
+URL: https://github.com/drejom/haemdata
+BugReports: https://github.com/drejom/haemdata/issues
