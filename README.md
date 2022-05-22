@@ -13,7 +13,7 @@ This package provides harmonised expression matrices and limited metadata for mi
 
 ## Documentation
 
-See the [package website](http://cgt.coh.org/haemdata) for usage with examples, including exporting CSV tables for matlab for instance. 
+See the [package website](http://cgt.coh.org/haemdata) for usage with examples, including exporting CSV tables for matlab, for instance. 
 
 ## Installation
 
