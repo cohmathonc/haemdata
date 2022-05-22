@@ -25,24 +25,51 @@ future::plan(future.batchtools::batchtools_slurm, template = "future.tmpl")
 for (file in list.files("R", full.names = TRUE)) source(file)
 
 # Global variables:
+pipeline_version <- "3.7"
 
-rnaseq_version <- "3.5"
-
-# Replace the target list below with your own:
 list(
     # make the package logo
-    tar_target(
-        logo,
-        make_logo("https://www.maxpixel.net/static/photo/2x/Blood-Group-0-Blood-Rh-factor-Positive-2781421.jpg")
+    tar_target(logo, make_logo()
     ),
     # get raw data
     #CML
     tar_target(cml_mrna_2021_m38, get_rnaseq_se("/net/isi-dcnl/ifs/user_data/rrockne/MHO/CML.mRNA.2021/results/rnaseq3.5.GRCm38.HLT")),
     tar_target(cml_mrna_2022_m38, get_rnaseq_se("/net/isi-dcnl/ifs/user_data/rrockne/MHO/CML.mRNA.2022/results/rnaseq-v3.5_GRCm38.HLT")),
-    tar_target(cml_mrna_m38, merge_mrna(cml_mrna_2021_m38, cml_mrna_2022_m38, drop = c("F545.7", "X490.17")))
+    tar_target(cml_mrna_m38, merge_mrna(cml_mrna_2021_m38, cml_mrna_2022_m38, drop = c("F545.7", "X490.17"))),
 
+    # Build sample sheets
+    tar_target(sample_sheet_2016_1, make_sample_sheet("AML.mRNA.2016")),
+    tar_target(sample_sheet_2018_1, make_sample_sheet("AML.mRNA.2018.all_samples")),
+    tar_target(sample_sheet_2020_1, make_sample_sheet("AML.mRNA.2020")),
+    tar_target(sample_sheet_2021_1, make_sample_sheet("AML.mRNA.2021.RxGroup1")),
+    tar_target(sample_sheet_2021_2, make_sample_sheet("AML.mRNA.2021.RxGroup2")),
+    tar_target(sample_sheet_2021_3, make_sample_sheet("AML.mRNA.2021.RxGroup2_pt2")),
+    tar_target(sample_sheet_2021_4, make_sample_sheet("AML.mRNA.2022.RxGroup3")),
+    tar_target(sample_sheet_2017_1, make_sample_sheet("AML.validation.2017")),
+    tar_target(sample_sheet_2020_2, make_sample_sheet("AML.mRNA.novaseq_validation.2020")),
+    tar_target(sample_sheet_CML_1, make_sample_sheet("CML.mRNA.2021")),
+    tar_target(sample_sheet_CML_2, make_sample_sheet("CML.mRNA.2022")),
+    tar_target(sample_sheet_2022_1, make_sample_sheet("AML.scRNAseq.2022")),
+    tar_target(sample_sheet_2022_2, make_sample_sheet("AML.mRNA.HSA_FLT3.2022")),
 
-    #AML
-    #tar_target(aml_mrna_2016_m38, run_rnaseq_salmon(project, sample_sheet, reference_genome, pipeline_version, )),
+    # combine sample sheets for running
+
+    tar_target(sample_sheet_2016_2018, rbind(sample_sheet_2016_1, sample_sheet_2018_1)),
+    tar_target(sample_sheet_CML, rbind(sample_sheet_CML_1, sample_sheet_CML_2)),
+    tar_target(sample_sheet_all, rbind(sample_sheet_2016_1,
+                                        sample_sheet_2018_1,
+                                        sample_sheet_2020_1,
+                                        sample_sheet_2021_1,
+                                        sample_sheet_2021_2,
+                                        sample_sheet_2021_3,
+                                        sample_sheet_2021_4,
+                                        sample_sheet_2017_1,
+                                        sample_sheet_2020_2,
+                                        sample_sheet_CML_1,
+                                        sample_sheet_CML_2,
+                                        sample_sheet_2022_1))
+
+    
+    tar_target(aml_mrna_2016_m38, run_rnaseq(run_folder = "all", sample_sheet = sample_sheet_2022_2, reference_genome = "GENCODEr33")),
 
 )
