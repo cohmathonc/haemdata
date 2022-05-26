@@ -4,12 +4,15 @@
 ^docs$
 ^pkgdown$
 
+data-raw/
 _targets
 _targets.R
 clustermq.tmpl
-data-raw
 future.tmpl
 nohup.out
 run.R
 run.Rout
 run.sh
+nextflow/
+slurm-*.{err,out}
+

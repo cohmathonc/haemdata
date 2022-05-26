@@ -7,3 +7,10 @@ inst/extdata
 nohup.out
 run.Rout
 .DS_Store
+.nextflow*
+nextflow.pid
+nfcore-rnaseq-*
+slurm-*.err
+slurm-*.out
+
+
