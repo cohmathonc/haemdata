@@ -365,7 +365,7 @@ parse_metadata_AML.scRNAseq.2022 <- function() {
 }
 # CML.mRNA.2021 ├-----------------------------------------------------------
 parse_metadata_CML.mRNA.2021 <- function() {
-    project <- "CML.mRNA.2021"
+    cohort <- "CML.mRNA.2021"
     fastqs <- data.frame(
         fastq_1 = system(
             paste0("find /net/isi-dcnl/ifs/user_data/rrockne/Seq/210910_TGen /net/isi-dcnl/ifs/user_data/rrockne/Seq/210907_TGen -name '*.gz'"),
@@ -380,7 +380,7 @@ parse_metadata_CML.mRNA.2021 <- function() {
     xls <- "/net/isi-dcnl/ifs/user_data/rrockne/MHO/CML.mRNA.2021/config/Lianjun_IGC-LZ-19411.xlsx"
     sample_sheet <- readxl::read_excel(xls) |>
         dplyr::mutate(
-            project = project,
+            project = cohort,
             library_id = TGen_Sample_Name,
             mouse_id = gsub("-.*", "", Sample_ID),
             timepoint = gsub(".*-", "", Sample_ID),
