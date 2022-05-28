@@ -389,10 +389,10 @@ parse_metadata_CML.mRNA.2021 <- function() {
             sex = NA_character_,
             dob = NA_character_,
             treatment = dplyr::case_when(
-                stringr::str_detect(mouse_id, regex("473|474|475|476|485|482|483|545")) ~ "A",
-                stringr::str_detect(mouse_id, regex("479|478|480|481|484|477|487|540|547|541|542")) ~ "B",
-                stringr::str_detect(mouse_id, regex("490|491|492|493|494|488|489|546")) ~ "C",
-                stringr::str_detect(mouse_id, regex("502|511|512|513|507|508|505|510|514")) ~ "D",
+                stringr::str_detect(mouse_id, regex("473|474|475|476|485|482|483|545")) ~ "TET_OFF_ON_A",
+                stringr::str_detect(mouse_id, regex("479|478|480|481|484|477|487|540|547|541|542")) ~ "TET_ON_B",
+                stringr::str_detect(mouse_id, regex("490|491|492|493|494|488|489|546")) ~ "TET_OFF_C",
+                stringr::str_detect(mouse_id, regex("502|511|512|513|507|508|505|510|514")) ~ "TET_OFF_NIL_ON_D",
                 TRUE ~ "Ctrl"
             ),
             genotype = NA_character_,
