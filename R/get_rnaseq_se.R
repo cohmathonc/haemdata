@@ -3,13 +3,12 @@
 #' Pulls in a `SummarisedExperiment` from the nf-core/rnaseq Salmon folder, and annotates
 #' experiment metadata derived from the path provided.
 #'
-#' @title get_rnaseq_se
+#' @name get_rnaseq_se
 #' @param isilon_path a path on the COH Isilon store for raw data. Should begin with `/net`.
 #' @return a `SummarisedExperiment` object
 #' @author Denis O'Meally
 #' @export
 get_rnaseq_se <- function(isilon_path) {
-
     summarised_experiment <- readRDS(paste0(isilon_path, "/salmon/salmon.merged.gene_counts_length_scaled.rds"))
 
     project <- isilon_path |>
@@ -17,11 +16,12 @@ get_rnaseq_se <- function(isilon_path) {
         stringr::str_replace_all("[.]", "_")
 
     reference_genome <- ifelse(grepl("HLT", isilon_path),
-            dplyr::case_when(
-                grepl("GRCm38", isilon_path) ~ "GRCm38_HLT",
-                grepl("GENCODEv33", isilon_path) ~ "GENCODEv33_HLT"),
-            stop("Reference genome doesn't include human leukemic transgenes (HLT)")
-        )
+        dplyr::case_when(
+            grepl("GRCm38", isilon_path) ~ "GRCm38_HLT",
+            grepl("GENCODEv33", isilon_path) ~ "GENCODEv33_HLT"
+        ),
+        stop("Reference genome doesn't include human leukemic transgenes (HLT)")
+    )
 
     pipeline <- isilon_path |>
         stringr::str_extract("(?<=\\/results\\/)(.*?)(?=[\\._]G)")

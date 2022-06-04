@@ -1,16 +1,16 @@
 #' Merge a pair of `SummarisedExperiments`
 #'
-#' Takes a pair of `SummarisedExperiments` produced by \code{\link{get_rnaseq_se()}},
+#' Takes a pair of `SummarisedExperiments` produced by [get_rnaseq_se()],
 #' and merges them into a single `SummarisedExperiment`
 #'
-#' @title merge_mrna
+#' @name merge_mrna
 #' @param summarised_experiment1, name of a `SummarisedExperiment` object to merge
 #' @param summarised_experiment2, name of the other `SummarisedExperiment` object to merge
 #' @param drop a vector of sample names to remove from the merged `SummarisedExperiment`
 #' @return a `SummarisedExperiment` object
 #' @author Denis O'Meally
 #' @export
-merge_mrna <- function(summarised_experiment1, summarised_experiment2, drop=NULL) {
+merge_mrna <- function(summarised_experiment1, summarised_experiment2, drop = NULL) {
 
     # metadata1 <- S4Vectors::metadata(cml_mrna_2021_m38)
     # metadata2 <- S4Vectors::metadata(cml_mrna_2022_m38)
@@ -27,7 +27,7 @@ merge_mrna <- function(summarised_experiment1, summarised_experiment2, drop=NULL
     reference_genome <- metadata1$reference_genome
 
     # Check the pipeline version matches
-#    identical(metadata1$pipeline, metadata2$pipeline)
+    #    identical(metadata1$pipeline, metadata2$pipeline)
     pipeline <- metadata1$pipeline
 
     # Check the project name matches
@@ -65,7 +65,8 @@ merge_mrna <- function(summarised_experiment1, summarised_experiment2, drop=NULL
     team <- Microsoft365R::get_team("PSON AML State-Transition")
     channel <- team$get_channel("haemdata")
     channel$send_message(paste0("New dataset available for ", out_name, ": ", basename(tpm_matrix_csv)),
-        attachments = tpm_matrix_csv)
+        attachments = tpm_matrix_csv
+    )
 
     # PINS https://pins.rstudio.com/reference/board_ms365.html
     # # A board in a SharePoint Online document library
@@ -74,5 +75,4 @@ merge_mrna <- function(summarised_experiment1, summarised_experiment2, drop=NULL
     # board <- pins::board_ms365(chan_folder, "haemdata")
 
     return(summarised_experiment)
-
 }

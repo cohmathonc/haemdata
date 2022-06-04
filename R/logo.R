@@ -1,6 +1,4 @@
-## make_logo 
-
-#' make_logo
+#' Make the package logo
 #'
 #' makes a hex sticker given a url
 #' @param url a URL to a picture

@@ -1,4 +1,12 @@
-
+utils::globalVariables(c(
+    "basepairs", "batch", "Batch", "dob", "fastq_1", "fastq_2",
+    "Filename", "gene_id", "gene_name", "gene_type", "genotype",
+    "Genotype", "ID", "library_id", "Mouse", "mouse_id", "newname",
+    "Newname", "project", "Sample", "sample_id", "Sample_ID", "sample_name",
+    "Sample_Name", "sex", "Sex", "strandedness", "TGen_Sample_Name",
+    "timepoint", "TimePoint", "tissue", "treatment", "Treatment",
+    "V1", "V2"
+))
 # AML.mRNA.2016 ├-----------------------------------------------------------
 parse_metadata_AML.mRNA.2016 <- function() {
     # sample = library_id, fastq_1, fastq_2, strandedness, mouse_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project
@@ -10,7 +18,7 @@ parse_metadata_AML.mRNA.2016 <- function() {
             library_id = paste0("COHP_", ID),
             tissue = "PBMC",
             fastq_2 = "",
-            dob = NA_character_,
+            dob = NA,
             Batch = paste0("2016_", Batch),
             strandedness = dplyr::case_when(
                 stringr::str_detect(ID, "11548") ~ "reverse",
@@ -33,7 +41,7 @@ parse_metadata_AML.mRNA.2018.all_samples <- function() {
             tissue = "PBMC",
             fastq_2 = "",
             strandedness = "reverse",
-            dob = NA_character_
+            dob = NA
         ) |>
         tidyr::separate(Newname, sep = "_", into = c("timepoint", "mouse_id", NA, "treatment", "genotype", "sex", "batch", NA)) |>
         dplyr::select(sample = library_id, fastq_1, fastq_2, strandedness, mouse_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project) |>
@@ -61,7 +69,7 @@ parse_metadata_AML.mRNA.2020 <- function() {
             library_id = V1,
             tissue = "PBMC",
             strandedness = "reverse",
-            dob = NA_character_,
+            dob = NA,
             sex = NA_character_,
             genotype = NA_character_,
             batch = "2020_A",
@@ -96,7 +104,6 @@ parse_metadata_AML.mRNA.2021.RxGroup1 <- function() {
             intern = TRUE
         ) %>% grep("_R2_", ., value = TRUE)
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
-
     xls <- "/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.mRNA.2021.RxGroup1/config/run_summary_IGC-LZ-18757.xlsx"
     sample_sheet <- readxl::read_excel(xls) |>
         dplyr::mutate(
@@ -107,9 +114,6 @@ parse_metadata_AML.mRNA.2021.RxGroup1 <- function() {
             timepoint = gsub("^.*_", "", name),
             batch = "2021_A",
             strandedness = "reverse",
-            sex = NA_character_,
-            dob = NA_character_,
-            treatment = NA_character_,
             genotype = NA_character_,
             tissue = dplyr::case_when(
                 timepoint == "BM" ~ "BM",
@@ -117,10 +121,20 @@ parse_metadata_AML.mRNA.2021.RxGroup1 <- function() {
             ),
             timepoint = sub("BM", NA_character_, timepoint)
         ) |>
-        dplyr::left_join(fastqs) |>
+        dplyr::left_join(fastqs)
+    xls_cm <- "/home/domeally/workspaces/haemdata/data-raw/CM mice chemo Rx survival.xlsx"
+    sample_sheet <- dplyr::left_join(sample_sheet, readxl::read_excel(xls_cm) |>
+        dplyr::select(
+            mouse_id = ID,
+            treatment = Mice,
+            sex = Gender,
+            dob = DOB
+        ) |>
+        dplyr::mutate(mouse_id = as.character(mouse_id))) |>
         dplyr::select(sample = library_id, fastq_1, fastq_2, strandedness, mouse_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project)
     return(sample_sheet)
 }
+
 # AML.mRNA.2021.RxGroup2 ├-----------------------------------------------------------
 parse_metadata_AML.mRNA.2021.RxGroup2 <- function() {
     project <- "AML.mRNA.2021.RxGroup2"
@@ -134,7 +148,6 @@ parse_metadata_AML.mRNA.2021.RxGroup2 <- function() {
             intern = TRUE
         ) %>% grep("_R2_", ., value = TRUE)
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
-
     xls <- "/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.mRNA.2021.RxGroup2/config/sequencing summary_IGC-LZ-18862.xlsx"
     sample_sheet <- readxl::read_excel(xls) |>
         dplyr::mutate(
@@ -147,9 +160,6 @@ parse_metadata_AML.mRNA.2021.RxGroup2 <- function() {
             timepoint = gsub(".*_\\d{4}", "", Sample_ID),
             batch = "2021_B",
             strandedness = "reverse",
-            sex = NA_character_,
-            dob = NA_character_,
-            treatment = NA_character_,
             genotype = NA_character_,
             tissue = dplyr::case_when(
                 timepoint == "BM" ~ "BM",
@@ -157,7 +167,16 @@ parse_metadata_AML.mRNA.2021.RxGroup2 <- function() {
             ),
             timepoint = sub("BM", NA_character_, timepoint)
         ) |>
-        dplyr::left_join(fastqs) |>
+        dplyr::left_join(fastqs)
+    xls_cm <- "/home/domeally/workspaces/haemdata/data-raw/CM mice chemo Rx survival.xlsx"
+    sample_sheet <- dplyr::left_join(sample_sheet, readxl::read_excel(xls_cm) |>
+        dplyr::select(
+            mouse_id = ID,
+            treatment = Mice,
+            sex = Gender,
+            dob = DOB
+        ) |>
+        dplyr::mutate(mouse_id = as.character(mouse_id))) |>
         dplyr::select(sample = library_id, fastq_1, fastq_2, strandedness, mouse_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project)
     return(sample_sheet)
 }
@@ -174,7 +193,6 @@ parse_metadata_AML.mRNA.2021.RxGroup2_pt2 <- function() {
             intern = TRUE
         ) %>% grep("_R2_", ., value = TRUE)
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
-
     sample_sheet <- read.csv("/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.mRNA.2021.RxGroup2_pt2/config/rename_fastqs.tsv", sep = "\t", header = FALSE) |>
         dplyr::filter(stringr::str_detect(V2, "_R1\\.")) |>
         dplyr::mutate(
@@ -186,9 +204,6 @@ parse_metadata_AML.mRNA.2021.RxGroup2_pt2 <- function() {
             timepoint = gsub(".*-", "", Sample_ID),
             batch = "2021_C",
             strandedness = "reverse",
-            sex = NA_character_,
-            dob = NA_character_,
-            treatment = NA_character_,
             genotype = NA_character_,
             tissue = dplyr::case_when(
                 timepoint == "BM" ~ "BM",
@@ -197,7 +212,16 @@ parse_metadata_AML.mRNA.2021.RxGroup2_pt2 <- function() {
             timepoint = sub("BM", NA_character_, timepoint)
         ) |>
         dplyr::select(-V1) |>
-        dplyr::left_join(fastqs) |>
+        dplyr::left_join(fastqs)
+    xls_cm <- "/home/domeally/workspaces/haemdata/data-raw/CM mice chemo Rx survival.xlsx"
+    sample_sheet <- dplyr::left_join(sample_sheet, readxl::read_excel(xls_cm) |>
+        dplyr::select(
+            mouse_id = ID,
+            treatment = Mice,
+            sex = Gender,
+            dob = DOB
+        ) |>
+        dplyr::mutate(mouse_id = as.character(mouse_id))) |>
         dplyr::select(sample = library_id, fastq_1, fastq_2, strandedness, mouse_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project)
     return(sample_sheet)
 }
@@ -225,10 +249,7 @@ parse_metadata_AML.mRNA.2022.RxGroup3 <- function() {
             project = project,
             strandedness = "reverse",
             tissue = "PBMC",
-            treatment = NA,
             genotype = NA,
-            sex = NA,
-            dob = NA,
             batch = "2021_D",
             sample_name = gsub("-", "_", sample_name),
             sample_name = dplyr::case_when(
@@ -248,7 +269,16 @@ parse_metadata_AML.mRNA.2022.RxGroup3 <- function() {
             ),
             timepoint = gsub("BM", NA, timepoint)
         ) |>
-        dplyr::left_join(fastqs) |>
+        dplyr::left_join(fastqs)
+    xls_cm <- "/home/domeally/workspaces/haemdata/data-raw/CM mice chemo Rx survival.xlsx"
+    sample_sheet <- dplyr::left_join(sample_sheet, readxl::read_excel(xls_cm) |>
+        dplyr::select(
+            mouse_id = ID,
+            treatment = Mice,
+            sex = Gender,
+            dob = DOB
+        ) |>
+        dplyr::mutate(mouse_id = as.character(mouse_id))) |>
         dplyr::select(sample = library_id, fastq_1, fastq_2, strandedness, mouse_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project)
     return(sample_sheet)
 }
@@ -288,7 +318,7 @@ parse_metadata_AML.mRNA.novaseq_validation.2020 <- function() {
             batch = "2020_B",
             strandedness = "reverse",
             sex = NA_character_,
-            dob = NA_character_,
+            dob = NA,
             treatment = NA_character_,
             genotype = NA_character_
         ) |>
@@ -316,7 +346,7 @@ parse_metadata_AML.validation.2017 <- function() {
             batch = "2017_A",
             strandedness = "reverse",
             sex = Sex,
-            dob = NA_character_,
+            dob = NA,
             fastq_2 = "",
             treatment = Treatment,
             genotype = Genotype
@@ -346,10 +376,10 @@ parse_metadata_AML.scRNAseq.2022 <- function() {
             library_id = paste0("COHP_", gsub("_.*", "", Sample_Name)),
             mouse_id = gsub(".*_", "", Sample_Name) |> substr(1, 4),
             timepoint = NA_character_,
-            batch = "2022_SC",
+            batch = "2022_B",
             strandedness = "reverse",
             sex = NA_character_,
-            dob = NA_character_,
+            dob = NA,
             treatment = NA_character_,
             genotype = NA_character_,
             tissue = gsub(".*_\\d{4}", "", Sample_Name),
@@ -384,15 +414,15 @@ parse_metadata_CML.mRNA.2021 <- function() {
             library_id = TGen_Sample_Name,
             mouse_id = gsub("-.*", "", Sample_ID),
             timepoint = gsub(".*-", "", Sample_ID),
-            batch = "2021_CML",
+            batch = "2021_E",
             strandedness = "reverse",
             sex = NA_character_,
-            dob = NA_character_,
+            dob = NA,
             treatment = dplyr::case_when(
-                stringr::str_detect(mouse_id, regex("473|474|475|476|485|482|483|545")) ~ "TET_OFF_ON_A",
-                stringr::str_detect(mouse_id, regex("479|478|480|481|484|477|487|540|547|541|542")) ~ "TET_ON_B",
-                stringr::str_detect(mouse_id, regex("490|491|492|493|494|488|489|546")) ~ "TET_OFF_C",
-                stringr::str_detect(mouse_id, regex("502|511|512|513|507|508|505|510|514")) ~ "TET_OFF_NIL_ON_D",
+                stringr::str_detect(mouse_id, regex("^473$|^474$|^475$|^476$|^485$|^482$|^483$|^545$")) ~ "TET_OFF_ON_A",
+                stringr::str_detect(mouse_id, regex("^479$|^478$|^480$|^481$|^484$|^477$|^487$|^540$|^547$|^541$|^542$")) ~ "TET_ON_B",
+                stringr::str_detect(mouse_id, regex("^490$|^491$|^492$|^493$|^494$|^488$|^489$|^546$")) ~ "TET_OFF_C",
+                stringr::str_detect(mouse_id, regex("^502$|^511$|^512$|^513$|^507$|^508$|^505$|^510$|^514$")) ~ "TET_OFF_NIL_ON_D",
                 TRUE ~ "Ctrl"
             ),
             genotype = NA_character_,
@@ -422,15 +452,15 @@ parse_metadata_CML.mRNA.2022 <- function() {
             library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"),
             mouse_id = gsub("^.(\\d*)-.*", "\\1", sample),
             timepoint = gsub(".*-", "", sample),
-            batch = "2022_CML",
+            batch = "2022_A",
             strandedness = "reverse",
             sex = substr(sample, 1, 1),
-            dob = NA_character_,
+            dob = NA,
             treatment = dplyr::case_when(
-                stringr::str_detect(mouse_id, regex("473|474|475|476|485|482|483|545")) ~ "TET_OFF_ON_A",
-                stringr::str_detect(mouse_id, regex("479|478|480|481|484|477|487|540|547|541|542")) ~ "TET_ON_B",
-                stringr::str_detect(mouse_id, regex("490|491|492|493|494|488|489|546")) ~ "TET_OFF_C",
-                stringr::str_detect(mouse_id, regex("502|511|512|513|507|508|505|510|514")) ~ "TET_OFF_NIL_ON_D",
+                stringr::str_detect(mouse_id, regex("^473$|^474$|^475$|^476$|^485$|^482$|^483$|^545$")) ~ "TET_OFF_ON_A",
+                stringr::str_detect(mouse_id, regex("^479$|^478$|^480$|^481$|^484$|^477$|^487$|^540$|^547$|^541$|^542$")) ~ "TET_ON_B",
+                stringr::str_detect(mouse_id, regex("^490$|^491$|^492$|^493$|^494$|^488$|^489$|^546$")) ~ "TET_OFF_C",
+                stringr::str_detect(mouse_id, regex("^502$|^511$|^512$|^513$|^507$|^508$|^505$|^510$|^514$")) ~ "TET_OFF_NIL_ON_D",
                 TRUE ~ "Ctrl"
             ),
             genotype = NA_character_,
@@ -459,17 +489,17 @@ parse_metadata_AML.mRNA.HSA_FLT3.2022 <- function() {
         dplyr::mutate(
             project = project,
             library_id = TGen_Sample_Name,
-            patient_id = gsub(".*_", "", Sample_ID),
+            sample_id = gsub(".*_", "", Sample_ID),
             timepoint = NA_character_,
-            batch = "2022_HSA_FLT3",
+            batch = "2022_C",
             strandedness = "reverse",
             sex = NA_character_,
-            dob = NA_character_,
+            dob = NA,
             treatment = NA_character_,
             genotype = NA_character_,
             tissue = "PBMC"
         ) |>
         dplyr::left_join(fastqs) |>
-        dplyr::select(sample = library_id, fastq_1, fastq_2, strandedness, patient_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project)
+        dplyr::select(sample = library_id, fastq_1, fastq_2, strandedness, sample_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project)
     return(sample_sheet)
 }
