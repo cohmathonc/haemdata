@@ -7,15 +7,19 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
-Multiple references are used throughout the project, be sure to know which one you are using:
+Various references are used throughout the project:
 
 * GRCm38_HLT ([GRCm38](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.20/), Ensembl annotation version 81, July 2015)
-* GENCODEm28_HLT ([GRCm39](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.27), Gencode annotation release 28, Dec 2021) 
+* GENCODEm28_HLT ([GRCm39](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/635/GCA_000001635.9_GRCm39/GCA_000001635.9_GRCm39_assembly_report.txt), Gencode annotation release 28, Dec 2021) 
+* GENCODEr40 ([GRCh38.p13](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.28_GRCh38.p13/GCA_000001405.28_GRCh38.p13_assembly_report.txt), Gencode annotation release 40, Apr 2022)
+
+### GENCODEr40
+
+This February 2019 genome build (GRCh39.p13) is paired with GENCODE annotation Release 40, published April 2022. Both were downloaded from https://www.gencodegenes.org/human/release_40.html in May 2022.
 
 ### GRCm38_HLT
 
-This is the veneralble `mm10` reference genome, used for the [*Cancer Research*](https://doi.org/10.1158/0008-5472.CAN-20-0354) and [*Science Advances*](https://doi.org/10.1126/sciadv.abj1664) papers. 
+This is the venerable `mm10` reference genome, used for the [*Cancer Research*](https://doi.org/10.1158/0008-5472.CAN-20-0354) and [*Science Advances*](https://doi.org/10.1126/sciadv.abj1664) papers. 
 It was originally released in January 2012 and is no longer updated. The version used here was downloaded from Illumina's [iGenomes](https://support.illumina.com/sequencing/sequencing_software/igenome.html) in 2017.
 
 ### GENCODEm28_HLT
@@ -35,4 +39,8 @@ Additional human leukemic transgenes are concatenated to genome fasta files and 
 
 ### Availibility
 
-Genome reference files (`fasta`, `gtf`, `star`, `salmon`) are located on the Isilon store, and can be accessed via the HPC at `/ref_genome/igenomes/Mus_musculus/Ensembl/GRCm38_human_leukemic_transgenes` and `/ref_genome/igenomes/Mus_musculus/GENCODE/ReleaseM28_HLT`.
+Genome reference files (`fasta`, `gtf`, `star`, `salmon`) are located on the Isilon store, and can be accessed via the HPC at 
+
+- `/ref_genome/igenomes/Homo_sapiens/GENCODE/Release40`
+- `/ref_genome/igenomes/Mus_musculus/Ensembl/GRCm38_human_leukemic_transgenes`
+- `/ref_genome/igenomes/Mus_musculus/GENCODE/ReleaseM28_HLT`

@@ -1,0 +1,61 @@
+---
+title: "Minimal metadata for all mouse samples"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Minimal metadata for all mouse samples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r  message=FALSE, warning=FALSE}
+    require(haemdata)
+    data(minimal_metadata_mmu)
+```
+
+```{r echo=FALSE, include=FALSE}
+# sample metatdata summary
+sample_summary <- minimal_metadata_mmu |>
+        dplyr::ungroup() |>
+        dplyr::select(strandedness, tissue, treatment) |>
+        gtsummary::tbl_summary(missing_text = "(Missing)")
+
+missing_mouse_id <-minimal_metadata_mmu |>
+    dplyr::filter(is.na(mouse_id)) |>
+    dplyr::pull(sample)
+
+n_mice <- dplyr::n_distinct(minimal_metadata_mmu$mouse_id, na.rm = TRUE)
+# sex by treatment
+sex_by_treatment<-minimal_metadata_mmu |>
+    gtsummary::tbl_cross(
+        row = sex,
+        col = treatment,
+        percent = "none"
+    )
+
+sex_by_genotype <- minimal_metadata_mmu |>
+    gtsummary::tbl_cross(
+        row = sex,
+        col = genotype,
+        percent = "none"
+    )
+```
+
+## Missingness
+```{r echo=FALSE, img.width=8, message=FALSE}
+naniar::gg_miss_fct(minimal_metadata_mmu, project)
+```
+
+The available metadata have been parsed from many sources, in various formats and undoubtedly require close inspection and correction. Please [report any
+issues](https://github.com/drejom/haemdata/issues).
+
+- Samples from the `AML.mRNA.novaseq_validation.2020` cohort don't have a `mouse_id`:
+    `r missing_mouse_id`
+
+- `timepoint` records timepoint labels inconsistently between experiments. `weeks` records time in weeks from the start of an experiment, and has been transcribed manually. We could derive this programmatically if we have **sample dates** available.
+
+- Sex by treatment 'cross table'
+    `r sex_by_treatment`
+
+- Sex by genotype 'cross table'
+    `r sex_by_genotype`
+
+`Haemdata` includes `r nrow(minimal_metadata_mmu)` RNAseq libraries from `r dplyr::n_distinct(minimal_metadata_mmu$mouse_id, na.rm = TRUE)` mice. 
