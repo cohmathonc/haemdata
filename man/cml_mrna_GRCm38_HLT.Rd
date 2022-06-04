@@ -3,7 +3,7 @@
 \docType{data}
 \name{cml_mrna_GRCm38_HLT}
 \alias{cml_mrna_GRCm38_HLT}
-\title{Expression matrix of 226 samples}
+\title{SummarisedExperiment of 226 samples}
 \format{
 A \code{SummarisedExperiment} object containing 226 samples.
 \describe{
@@ -12,7 +12,7 @@ A \code{SummarisedExperiment} object containing 226 samples.
 }
 }
 \source{
-\url{merge_mrna.html}
+\code{\link[=merge_mrna]{merge_mrna()}}
 }
 \usage{
 data(cml_mrna_GRCm38_HLT)

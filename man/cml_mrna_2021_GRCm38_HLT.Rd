@@ -3,7 +3,7 @@
 \docType{data}
 \name{cml_mrna_2021_GRCm38_HLT}
 \alias{cml_mrna_2021_GRCm38_HLT}
-\title{Expression matrix of 75 samples}
+\title{SummarisedExperiment of 75 samples}
 \format{
 A \code{SummarisedExperiment} object containing 226 samples.
 \describe{

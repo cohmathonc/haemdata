@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_rnaseq_se.R
 \name{get_rnaseq_se}
 \alias{get_rnaseq_se}
-\title{get_rnaseq_se}
+\title{Get a \code{SummarisedExperiment} object from an nf-core/rnaseq run}
 \usage{
 get_rnaseq_se(isilon_path)
 }
@@ -13,9 +13,6 @@ get_rnaseq_se(isilon_path)
 a \code{SummarisedExperiment} object
 }
 \description{
-Get a \code{SummarisedExperiment} object from an nf-core/rnaseq run
-}
-\details{
 Pulls in a \code{SummarisedExperiment} from the nf-core/rnaseq Salmon folder, and annotates
 experiment metadata derived from the path provided.
 }

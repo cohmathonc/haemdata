@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{write_tpm_matrix}
 \alias{write_tpm_matrix}
-\title{write_tpm_matrix}
+\title{Write an expression matrix to file}
 \usage{
 write_tpm_matrix(summarised_experiment, drop = NULL, tpm = 1, samples = 5)
 }
@@ -19,7 +19,7 @@ write_tpm_matrix(summarised_experiment, drop = NULL, tpm = 1, samples = 5)
 path to the CSV file
 }
 \description{
-Write an expression matrix to a CSV file in \code{extdata}
+Write an TPM expression matrix to a CSV file in \code{extdata}
 }
 \details{
 This function writes an expression matrix to a CSV file in \code{extdata},
@@ -28,7 +28,7 @@ filtering out genes with fewer than \code{tpm} reads in at least \code{samples} 
 \examples{
 \dontrun{
 if (interactive()) {
-    write_tpm_matrix(data(cml_mrna_GRCm38_HLT), c("F545.7", "X490.17"), tpm = 1, samples = 5)
+    write_tpm_matrix(cml_mrna_GRCm38_HLT, c("F545.7", "X490.17"), tpm = 1, samples = 5)
 }
 }
 }

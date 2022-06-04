@@ -2,7 +2,7 @@
 % Please edit documentation in R/merge_mrna.R
 \name{merge_mrna}
 \alias{merge_mrna}
-\title{merge_mrna}
+\title{Merge a pair of \code{SummarisedExperiments}}
 \usage{
 merge_mrna(summarised_experiment1, summarised_experiment2, drop = NULL)
 }
@@ -17,10 +17,7 @@ merge_mrna(summarised_experiment1, summarised_experiment2, drop = NULL)
 a \code{SummarisedExperiment} object
 }
 \description{
-Merge a pair of \code{SummarisedExperiments}
-}
-\details{
-Takes a pair of \code{SummarisedExperiments} produced by \code{\link{get_rnaseq_se()}},
+Takes a pair of \code{SummarisedExperiments} produced by \code{\link[=get_rnaseq_se]{get_rnaseq_se()}},
 and merges them into a single \code{SummarisedExperiment}
 }
 \author{

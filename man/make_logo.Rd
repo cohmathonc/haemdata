@@ -2,7 +2,7 @@
 % Please edit documentation in R/logo.R
 \name{make_logo}
 \alias{make_logo}
-\title{make_logo}
+\title{Make the package logo}
 \usage{
 make_logo(url = NULL, text = NULL)
 }
