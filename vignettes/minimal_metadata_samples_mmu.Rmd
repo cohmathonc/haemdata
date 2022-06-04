@@ -44,7 +44,7 @@ sex_by_genotype <- minimal_metadata_mmu |>
 naniar::gg_miss_fct(minimal_metadata_mmu, project)
 ```
 
-The available metadata have been parsed from many sources, in various formats and undoubtedly require close inspection and correction. Please [report any
+The available metadata have been parsed from many sources in various formats and undoubtedly require close inspection and correction. Please [report any
 issues](https://github.com/drejom/haemdata/issues).
 
 - Samples from the `AML.mRNA.novaseq_validation.2020` cohort don't have a `mouse_id`:
