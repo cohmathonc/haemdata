@@ -4,32 +4,51 @@ Version: 0.0.0.9000
 Authors@R: 
     person("Denis", "O'Meally", , "domeally@coh.org", role = c("aut", "cre"),
         comment = c(ORCID = "0000-0001-7749-9506"))
-Description: Harmonised data from mouse RNAseq projects processed with [nf-core](https://nf-co.re) pipelines and published in the `haemdata` package on GitHub.
+Description: Harmonised data from mouse RNAseq projects processed with [nf-core](https://nf-co.re) pipelines
+    and published as the R package `haemdata` on GitHub.
 License: file LICENSE
 Encoding: UTF-8
 Language: en-AU
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Depends: 
-    R (>= 3.5)
+    R (>= 4.1)
 LazyData: true
 LazyDataCompression: xz
-Suggests: 
-    knitr,
-    rmarkdown,
-    S4Vectors,
-    dplyr,
+Suggests:
     hexSticker,
     magick,
-    stringr,
+    Microsoft365R,
     usethis,
+    knitr,
+    rmarkdown,
+    naniar,
+    gtsummary,
+    forcats,
+    BiocParallel,
+    OUTRIDER,
+    glue,
+    parallelly,
+    purrr,
+    rcompanion,
+    readr,
+    readxl,
+    rtracklayer,
+    tidyBulk
+Imports: 
+    S4Vectors,
+    dplyr,
+    stringr,
     ggplot2,
     ggsci,
     tibble,
-    tidyr
-VignetteBuilder: knitr
-Imports: 
+    tidyr,
     SummarizedExperiment,
-    Microsoft365R
+    utils,
+    magrittr,
+    PCAtools,
+    janitor,
+    plyr
+VignetteBuilder: knitr
 URL: https://github.com/drejom/haemdata
 BugReports: https://github.com/drejom/haemdata/issues

@@ -39,7 +39,7 @@ We use GitHub issues to track bugs, fixes and features. Reports can be made by [
 People *love* thorough bug reports.
 
 ## Use a Consistent Coding Style
-If you use the `[rbioc](https://github.com/drejom/devcontainer_RbioC)` development environment, `lintr` is already set up. 
+If you use the [`rbioc`](https://github.com/drejom/devcontainer_RbioC) development environment, `lintr` is already set up. 
 
 ## References
 This document was adapted from [Brian A. Danielak](https://github.com/briandk)'s CONTRIBUTING.md [template](https://gist.github.com/briandk/3d2e8b3ec8daf5a27a62). 
