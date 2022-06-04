@@ -1,8 +1,8 @@
 ---
-title: "Minimal metadata for all mouse samples"
+title: "Missing metadata"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Minimal metadata for all mouse samples}
+  %\VignetteIndexEntry{Missing metadata}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
