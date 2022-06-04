@@ -44,6 +44,10 @@ parse_metadata_AML.mRNA.2018.all_samples <- function() {
             dob = NA
         ) |>
         tidyr::separate(Newname, sep = "_", into = c("timepoint", "mouse_id", NA, "treatment", "genotype", "sex", "batch", NA)) |>
+            dplyr::mutate(treatment = case_when(
+                treatment == "CTL" ~ "Ctrl",
+                TRUE ~ treatment
+            )) |>
         dplyr::select(sample = library_id, fastq_1, fastq_2, strandedness, mouse_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project) |>
         dplyr::mutate(batch = paste0("2018_", batch))
     return(sample_sheet)
