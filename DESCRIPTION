@@ -34,21 +34,24 @@ Suggests:
     readr,
     readxl,
     rtracklayer,
-    tidyBulk
-Imports: 
-    S4Vectors,
-    dplyr,
+    tidybulk,
+    helpeRs,
     stringr,
     ggplot2,
     ggsci,
+    PCAtools,
+    janitor,
+    plyr
+Imports: 
+    S4Vectors,
+    dplyr,
     tibble,
     tidyr,
     SummarizedExperiment,
     utils,
-    magrittr,
-    PCAtools,
-    janitor,
-    plyr
+    magrittr
+Remotes:
+    drejom/helpeRs
 VignetteBuilder: knitr
 URL: https://github.com/drejom/haemdata
 BugReports: https://github.com/drejom/haemdata/issues
