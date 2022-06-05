@@ -19,9 +19,6 @@
 #' @return a SummarisedExperiment
 #' @author Denis O'Meally
 #' @export
-#' @importFrom magrittr %>%
-#' @importFrom plyr .
-
 nfcore_rnaseq_to_se <- function(multiqc_path, sample_metadata) {
     #  multiqc_path <- AML.mRNA.2016_qc
     #   multiqc_path <- all_mice.mRNA_salmon_GRCm38_HLT
