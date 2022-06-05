@@ -46,7 +46,7 @@ find_outliers <- function(summarised_experiment) {
     # remove samples wth very low mapping
 #    ods <- OUTRIDER::estimateSizeFactors(ods)
     ods <- ods[, OUTRIDER::sizeFactors(ods) > 0.1]
-    results$removed_low_mapping <- setdiff(sample_sheet$sample, colnames(ods))
+    results$removed_low_mapping <- setdiff(colnames(summarised_experiment), colnames(ods))
 
     # find number of encoding dimensions
     ods <- OUTRIDER::findEncodingDim(ods, BPPARAM = BiocParallel::bpparam(), params = seq(2, 20, by = 2))
