@@ -3,7 +3,6 @@ docs
 inst/doc
 .RData
 _targets
-inst/extdata
 nohup.out
 run.Rout
 .DS_Store
@@ -14,3 +13,4 @@ slurm-*.err
 slurm-*.out
 
 
+.future
