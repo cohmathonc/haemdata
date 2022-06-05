@@ -56,10 +56,10 @@ merge_mrna <- function(summarised_experiment1, summarised_experiment2, drop = NU
     out_name <- paste(tolower(project), reference_genome, sep = "_")
 
     # write to the package data folder
-    write_data(out_name, summarised_experiment)
+    helpeRs::write_data(out_name, summarised_experiment)
 
     # write a CSV to extdata
-    tpm_matrix_csv <- write_tpm_matrix(summarised_experiment, tpm = 1, samples = 5)
+    tpm_matrix_csv <- helpeRs::write_tpm_matrix(summarised_experiment, tpm = 1, samples = 5)
 
     # publish to Teams
     team <- Microsoft365R::get_team("PSON AML State-Transition")
