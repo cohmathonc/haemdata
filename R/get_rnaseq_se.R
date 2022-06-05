@@ -1,40 +1,80 @@
 #' Get a `SummarisedExperiment` object from an nf-core/rnaseq run
 #'
 #' Pulls in a `SummarisedExperiment` from the nf-core/rnaseq Salmon folder, and annotates
-#' experiment metadata derived from the path provided.
+#' experiment metadata derived from the multiqc path provided. Used in conjunction with [run_nf_core_rnaseq()].
 #'
 #' @name get_rnaseq_se
-#' @param isilon_path a path on the COH Isilon store for raw data. Should begin with `/net`.
+#' @param multiqc_path path to the multiqc report of a successful nf-core/rnaseq pipeline run
+#' @param gtf annotate the SummarisedExperiment using the `gtf` recorded in the multiqc report, Default: TRUE
 #' @return a `SummarisedExperiment` object
 #' @author Denis O'Meally
+#' @seealso
+#' \code{\link{run_nf_core_rnaseq}}
+#' @rdname get_rnaseq_se
+#' #' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  get_rnaseq_se(all_mice.mRNA_qc)
+#'  }
+#' }
 #' @export
-get_rnaseq_se <- function(isilon_path) {
-    summarised_experiment <- readRDS(paste0(isilon_path, "/salmon/salmon.merged.gene_counts_length_scaled.rds"))
+get_rnaseq_se <- function(multiqc_path, gtf = TRUE) {
+    
+    star_salmon <- ifelse(stringr::str_detect(multiqc_path, "star_salmon"), TRUE, FALSE)
 
-    project <- isilon_path |>
-        stringr::str_extract("(?<=MHO\\/)(.*?)(?=\\/)") |>
-        stringr::str_replace_all("[.]", "_")
-
-    reference_genome <- ifelse(grepl("HLT", isilon_path),
-        dplyr::case_when(
-            grepl("GRCm38", isilon_path) ~ "GRCm38_HLT",
-            grepl("GENCODEv33", isilon_path) ~ "GENCODEv33_HLT"
-        ),
-        stop("Reference genome doesn't include human leukemic transgenes (HLT)")
+    out_path <- ifelse(star_salmon,
+        gsub("/multiqc/star_salmon/multiqc_report.html", "", multiqc_path),
+        gsub("/multiqc/multiqc_report.html", "", multiqc_path)
     )
 
-    pipeline <- isilon_path |>
-        stringr::str_extract("(?<=\\/results\\/)(.*?)(?=[\\._]G)")
+    # load SummarisedExperiment
+    salmon_se <- readRDS(glue::glue("{out_path}/salmon/salmon.merged.gene_counts.rds"))
 
-    object_name <- paste0(tolower(project), "_", reference_genome)
+    # If gtf = true, extract the gtf file from the multiqc report and add gene annotations to rowData
+    if (gtf) {
+        gtf <- readr::read_file(multiqc_path) |>
+            stringr::str_extract("\\/ref_genome\\/igenomes\\/.*\\.gtf")
 
-    S4Vectors::metadata(summarised_experiment)$object_name <- object_name
-    S4Vectors::metadata(summarised_experiment)$project <- project
-    S4Vectors::metadata(summarised_experiment)$reference_genome <- reference_genome
-    S4Vectors::metadata(summarised_experiment)$pipeline <- pipeline
+        type <- ifelse(stringr::str_detect(gtf, "GENCODE"), "gene_type", "gene_biotype")
 
-    # Stash a copy of the raw data in the repo
-    write_data(object_name, summarised_experiment)
+        row_data <- rtracklayer::import(gtf) |>
+            tibble::as_tibble() |>
+            dplyr::select(gene_id, gene_name, basepairs = width, gene_type = !!sym(type)) |>
+            dplyr::group_by(gene_id) |>
+            dplyr::slice(which.max(basepairs)) |>
+            dplyr::ungroup()
 
-    return(summarised_experiment)
+        SummarizedExperiment::rowData(salmon_se) <- dplyr::left_join(
+            data.frame(gene_id = rownames(salmon_se)),
+            row_data,
+            by = "gene_id"
+        )
+    }
+
+    # Add some experiment and analysis metadata
+    run_folder <- multiqc_path |>
+        stringr::str_extract("(?<=haemdata-nf-core-cache\\/)(.*?)(?=\\/)") |>
+        stringr::str_replace_all("[.]", "_")
+
+    reference_genome <- dplyr::case_when(
+        stringr::str_detect(multiqc_path, "GRCm38_HLT") ~ "GRCm38_HLT",
+        stringr::str_detect(multiqc_path, "GENCODEm28_HLT") ~ "GENCODEm28_HLT",
+        stringr::str_detect(multiqc_path, "GENCODEr40") ~ "GENCODEr40")
+
+    rnaseq_release <- multiqc_path |>
+        stringr::str_extract("(?<=\\/nfcore-rnaseq-)(.*?)(?=[_]G)")
+
+    workflow <- ifelse(star_salmon, "qc", "salmon")
+
+    object_name <- glue::glue("{run_folder}_{reference_genome}_{workflow}_se")
+
+    S4Vectors::metadata(salmon_se) <- data.frame(
+        object_name = object_name,
+        run_folder = run_folder,
+        reference_genome = reference_genome,
+        rnaseq_release = rnaseq_release,
+        workflow = workflow
+    )
+
+    return(salmon_se)
 }
