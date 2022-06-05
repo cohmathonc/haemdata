@@ -4,7 +4,8 @@
 #' Log2TPM is values are plotted from the `abundance` assay.
 #'
 #' @name plot_transgenes 
-#' @param summarised_experiment a SummarisedExperiment object with an `abundance` assay
+#' @param summarised_experiment a SummarisedExperiment object 
+#' @param assay the matrix to plot, Default: "abundance"
 #' @param group_by a string indicating the column to group by
 #' @return a ggplot2 plot
 #' @author Denis O'Meally
