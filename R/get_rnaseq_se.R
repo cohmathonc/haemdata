@@ -13,13 +13,13 @@
 #' @rdname get_rnaseq_se
 #' #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  get_rnaseq_se(all_mice.mRNA_qc)
+#' if(interactive()) {
+#'  get_rnaseq_se("/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata-nf-core-cache/AML.mRNA.2016/nfcore-rnaseq-v3.7_GENCODEm28_HLT")
 #'  }
 #' }
 #' @export
 get_rnaseq_se <- function(multiqc_path, gtf = TRUE) {
-    
+
     star_salmon <- ifelse(stringr::str_detect(multiqc_path, "star_salmon"), TRUE, FALSE)
 
     out_path <- ifelse(star_salmon,
@@ -73,7 +73,8 @@ get_rnaseq_se <- function(multiqc_path, gtf = TRUE) {
         run_folder = run_folder,
         reference_genome = reference_genome,
         rnaseq_release = rnaseq_release,
-        workflow = workflow
+        workflow = workflow,
+        multiqc_url = sub("/net/isi-dcnl/ifs/user_data/rrockne/", "http://cgt.coh.org/", multiqc_path)
     )
 
     return(salmon_se)
