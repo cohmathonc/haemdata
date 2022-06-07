@@ -4,9 +4,9 @@
 #SBATCH --job-name={{ job_name }}
 #SBATCH --output={{ log_file | /dev/null }}
 #SBATCH --error={{ log_file | /dev/null }}
-#SBATCH --mem-per-cpu={{ memory | 4096 }}
+#SBATCH --mem={{ memory | 80G }}
 #SBATCH --array=1-{{ n_jobs }}
-#SBATCH --cpus-per-task={{ cores | 1 }}
+#SBATCH --cpus-per-task={{ cores | 12 }}
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 
