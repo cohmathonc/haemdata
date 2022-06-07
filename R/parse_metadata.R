@@ -311,14 +311,14 @@ parse_metadata_AML.mRNA.novaseq_validation.2020 <- function() {
             intern = TRUE
         ) %>% grep("_R2_", ., value = TRUE)
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
+    # https://github.com/drejom/haemdata/issues/5
+    mouse_data <- data.frame(sample = c("COHP_38491", "COHP_38493", "COHP_38492"), mouse_id = c("3341", "3341", "3341"), timepoint = c("T2", "T5", "T6"))
 
     sample_sheet <- fastqs |>
         dplyr::mutate(
             project = project,
             sample = library_id,
-            mouse_id = NA_character_,
             tissue = "PBMC",
-            timepoint = NA_character_,
             batch = "2020_B",
             strandedness = "reverse",
             sex = NA_character_,
@@ -326,6 +326,7 @@ parse_metadata_AML.mRNA.novaseq_validation.2020 <- function() {
             treatment = NA_character_,
             genotype = NA_character_
         ) |>
+        dplyr::left_join(mouse_data, by = "sample") |>
         dplyr::select(sample = library_id, fastq_1, fastq_2, strandedness, mouse_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project)
     return(sample_sheet)
 }

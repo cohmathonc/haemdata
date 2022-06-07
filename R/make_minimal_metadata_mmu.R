@@ -42,7 +42,6 @@ make_minimal_metadata_mmu <- function(sample_sheet_all_mice) {
             mouse_id == "4329" & timepoint == "END" ~ 13,
             mouse_id == "4319" & timepoint == "END" ~ 10,
             mouse_id == "4506" & timepoint == "END" ~ 10,
-            stringr::str_detect(sample, "COHP_3849[123]") ~ 100,
             TRUE ~ weeks
         ))
 
