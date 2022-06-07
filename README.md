@@ -7,9 +7,11 @@
 <!-- badges: start -->
 ![](https://img.shields.io/badge/code-unstable-red) <br>
 <!-- badges: end -->
-A data package for RNAseq of AML and CML mouse models generated at COH.
+An R package for accessing genomics data from the PSON AML State-transition project at COH.
 
-This package provides harmonised expression matrices and limited metadata for mice collected between 2016 and 2022.
+This package provides harmonised `SummarisedExperiments` for mice collected between 2016 and 2022, MDS patients from EGA and AML patients from the COH Biobank.
+
+Briefly, raw sequence reads are processed using nf-core pipelines, sample metadata is collated from a range of supplied excel sheets, and outlying samples are flagged using [OUTRIDER](https://doi.org/10.1016/j.ajhg.2018.10.025). Package functions assist in manipulating and subsetting the SUmmarisedExperiment objects that should enable most analyses. If something is lacking, please [contribute](http://cgt.coh.org/haemdata/CONTRIBUTING.html) a solution or raise an [issue](https://github.com/drejom/haemdata/issues).
 
 ## Documentation
 
