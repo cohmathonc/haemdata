@@ -4,17 +4,28 @@
 \alias{get_rnaseq_se}
 \title{Get a \code{SummarisedExperiment} object from an nf-core/rnaseq run}
 \usage{
-get_rnaseq_se(isilon_path)
+get_rnaseq_se(multiqc_path, gtf = TRUE)
 }
 \arguments{
-\item{isilon_path}{a path on the COH Isilon store for raw data. Should begin with \verb{/net}.}
+\item{multiqc_path}{path to the multiqc report of a successful nf-core/rnaseq pipeline run}
+
+\item{gtf}{annotate the SummarisedExperiment using the \code{gtf} recorded in the multiqc report, Default: TRUE}
 }
 \value{
 a \code{SummarisedExperiment} object
 }
 \description{
 Pulls in a \code{SummarisedExperiment} from the nf-core/rnaseq Salmon folder, and annotates
-experiment metadata derived from the path provided.
+experiment metadata derived from the multiqc path provided. Used in conjunction with \code{\link[=run_nf_core_rnaseq]{run_nf_core_rnaseq()}}.
+}
+\examples{
+\dontrun{
+multiqc_path <- 'path_to_a_nf-core_multiqc_report.html'
+get_rnaseq_se(multiqc_path)
+}
+}
+\seealso{
+\code{\link{run_nf_core_rnaseq}}
 }
 \author{
 Denis O'Meally

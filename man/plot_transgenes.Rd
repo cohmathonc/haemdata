@@ -11,7 +11,9 @@ plot_transgenes(
 )
 }
 \arguments{
-\item{summarised_experiment}{a SummarisedExperiment object with an \code{abundance} assay}
+\item{summarised_experiment}{a SummarisedExperiment object}
+
+\item{assay}{the matrix to plot, Default: "abundance"}
 
 \item{group_by}{a string indicating the column to group by}
 }

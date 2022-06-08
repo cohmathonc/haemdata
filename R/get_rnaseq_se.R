@@ -11,11 +11,10 @@
 #' @seealso
 #' \code{\link{run_nf_core_rnaseq}}
 #' @rdname get_rnaseq_se
-#' #' @examples
+#' @examples
 #' \dontrun{
-#' if(interactive()) {
-#'  get_rnaseq_se("/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata-nf-core-cache/AML.mRNA.2016/nfcore-rnaseq-v3.7_GENCODEm28_HLT")
-#'  }
+#' multiqc_path <- 'path_to_a_nf-core_multiqc_report.html'
+#' get_rnaseq_se(multiqc_path)
 #' }
 #' @export
 get_rnaseq_se <- function(multiqc_path, gtf = TRUE) {
