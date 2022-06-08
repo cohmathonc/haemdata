@@ -9,7 +9,6 @@ utils::globalVariables(c(
 ))
 # AML.mRNA.2016 ├-----------------------------------------------------------
 parse_metadata_AML.mRNA.2016 <- function() {
-    # sample = library_id, fastq_1, fastq_2, strandedness, mouse_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project
     project <- "AML.mRNA.2016"
     sample_sheet <- read.csv("/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.mRNA.2016/config/new_name_key.tsv", , sep = "\t") |>
         dplyr::mutate(
@@ -506,5 +505,61 @@ parse_metadata_AML.mRNA.HSA_FLT3.2022 <- function() {
         ) |>
         dplyr::left_join(fastqs) |>
         dplyr::select(sample = library_id, fastq_1, fastq_2, strandedness, sample_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project)
+    return(sample_sheet)
+}
+# MDS.rnaseq.EGAD00001003891 ├-----------------------------------------------------------
+parse_metadata_MDS.rnaseq.EGAD00001003891 <- function() {
+    project <- "MDS.rnaseq.EGAD00001003891"
+    fastqs <- data.frame(
+        fastq_1 = system(
+            paste0("find /net/isi-dcnl/ifs/user_data/rrockne/MHO/MDS.rnaseq.EGAD00001003891/data/fastq2/reads -name '*.1.fq.gz'"),
+            intern = TRUE
+        ),
+        fastq_2 = system(
+            paste0("find /net/isi-dcnl/ifs/user_data/rrockne/MHO/MDS.rnaseq.EGAD00001003891/data/fastq2/reads -name '*.2.fq.gz'"),
+            intern = TRUE
+        )
+    ) |> dplyr::mutate(ega_run_accession_id = gsub("_.*$", "", basename(fastq_1)))
+    sex <- read.table("data-raw/EGAD00001003891/delimited_maps/Run_Sample_meta_info.map", sep = "\t", header = FALSE) |>
+        dplyr::mutate(
+            subject_id = stringr::str_extract(V1, "(?<=subject_id\\=)(.*?)(?=[;])"),
+            sex = stringr::str_extract(V1, "(?<=gender\\=)(.*?)(?=[;])"),
+            sex = dplyr::recode(sex, male = "M", female = "F", unknown = NA_character_)
+        ) |>
+        dplyr::select(subject_id, sex) |>
+        dplyr::distinct()
+    files <- read.table("data-raw/EGAD00001003891/delimited_maps/Sample_File.map",
+        sep = "\t", header = FALSE,
+        col.names = c("subject_id", "ega_sample_accession_id", "bam", "ega_file_unique_accession_id")
+    )
+    experiment <- read.csv("data-raw/EGAD00001003891/delimited_maps/Study_Experiment_Run_sample.map",
+        sep = "\t", header = FALSE,
+        col.names = c(
+            "study_accession", "study_description", "existing_study_type", "platform",
+            "instrument_model", "library_layout", "library_name", "library_strategy",
+            "library_source", "library_selection", "ega_experiment_id", "ega_run_accession_id",
+            "submitter_id", "na", "ega_sample_accession_id"
+        )
+    )
+    ega <- dplyr::left_join(
+        dplyr::left_join(
+            experiment,
+            files,
+            by = "ega_sample_accession_id"
+        ),
+        sex,
+        by = "subject_id"
+    )
+    sample_sheet <- dplyr::left_join(fastqs, ega, by = "ega_run_accession_id") |>
+        dplyr::mutate(
+            batch = "2022_D",
+            strandedness = "reverse",
+            timepoint = NA_character_,
+            treatment = NA_character_,
+            tissue = NA_character_,
+            project = project,
+        ) |>
+        dplyr::select(sample = ega_run_accession_id, fastq_1, fastq_2, strandedness, dplyr::everything(), project)
+
     return(sample_sheet)
 }
