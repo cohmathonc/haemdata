@@ -6,19 +6,21 @@
 <!-- badges: end -->
 An R package for accessing genomics data from the PSON AML State-transition project at COH.
 
-This package provides harmonised `SummarisedExperiments` for mice collected between 2016 and 2022, and R code to produce the same from MDS & AML patients. `SummarisedExperiments` for human data are posted to the [package website](http://cgt.coh.org/haemdata), [Teams channel](https://teams.microsoft.com/l/channel/19%3a210be89215cc4b2c878442a07b1580db%40thread.tacv2/haemdata?groupId=22521432-ac7e-43f8-be63-eb9f86a6f561&tenantId=972a3ea3-f979-4875-a2b8-cff001ab69e7) and to `MHO/haemdata` but cannot be installed with the package.
+This package provides harmonised `SummarisedExperiments` for RNAseq of mice collected between 2016 and 2022, and from MDS & AML patients. `SummarisedExperiments` and sample metadata tables a are posted to the [`MHO/haemdata`](http://cgt.coh.org/MHO/haemdata) folder and [Teams channel](https://teams.microsoft.com/l/channel/19%3a210be89215cc4b2c878442a07b1580db%40thread.tacv2/haemdata?groupId=22521432-ac7e-43f8-be63-eb9f86a6f561&tenantId=972a3ea3-f979-4875-a2b8-cff001ab69e7).
 
-To build the package, raw sequence reads were processed using nf-core pipelines, outlying samples flagged using [OUTRIDER](https://doi.org/10.1016/j.ajhg.2018.10.025), and sample metadata collated from a range of supplied excel sheets. Package [functions](http://cgt.coh.org/haemdata/reference/index.html) assist in visualising and sub-setting `SummarisedExperiment` objects and should facilitate most types of analyses. If something is incorrect or lacking, please [contribute](http://cgt.coh.org/haemdata/CONTRIBUTING.html) a solution or raise an [issue](https://github.com/drejom/haemdata/issues).
+To build the package, raw sequence reads were processed using nf-core pipelines, poorly mapped samples were removed and outlying samples flagged using [OUTRIDER](https://doi.org/10.1016/j.ajhg.2018.10.025). Sample metadata was collated from a range of supplied excel sheets. Package [functions](http://cgt.coh.org/haemdata/reference/index.html) assist in visualising and sub-setting `SummarisedExperiment` objects and should facilitate most types of analyses. If something is incorrect or lacking, please [contribute](http://cgt.coh.org/haemdata/CONTRIBUTING.html) a solution or raise an [issue](https://github.com/drejom/haemdata/issues).
 
 ## Documentation
 See [Getting started](http://cgt.coh.org/haemdata) for usage with examples, including exporting CSV tables for analyses with Matlab, for instance. 
 
 ## Installation
-You can install the default version of haemdata from [GitHub](https://github.com/) with:
+
+Installation is not *required* to use Haemdata, although installing the R package provides a number of useful helper functions that make accessing and working with these data more convinent within the R environment. Adding new data requires the package to be installed.
+
+You can install the default version of Haemdata from the package website with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("drejom/haemdata")
+install.package("haemdata", url = "http://cgt.coh.org/haemdata")
 ```
 
 The latest release provides `SummarizedExperiments` produced with version 3.5 of the nf-core/rnaseq pipeline using the [GRCm38_HLT](articles/genomes.html) reference. 

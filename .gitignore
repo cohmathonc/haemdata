@@ -2,15 +2,10 @@
 docs
 inst/doc
 .RData
-_targets
 nohup.out
 run.Rout
 .DS_Store
-.nextflow*
-nextflow.pid
-nfcore-rnaseq-*
-slurm-*.err
-slurm-*.out
+.Rda
+.rda
+.rds
 
-
-.future

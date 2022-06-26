@@ -4,14 +4,16 @@
 #SBATCH --job-name={{ job_name }}
 #SBATCH --output={{ log_file | /dev/null }}
 #SBATCH --error={{ log_file | /dev/null }}
-#SBATCH --mem={{ memory | 80G }}
+#SBATCH --mem={{ memory | 8G }}
 #SBATCH --array=1-{{ n_jobs }}
-#SBATCH --cpus-per-task={{ cores | 12 }}
+#SBATCH --cpus-per-task={{ cores | 1 }}
+#SBATCH --partition=fast
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 
 /opt/singularity/3.7.0/bin/singularity exec \
     --cleanenv --env CMQ_AUTH="{{ auth }}" \
     -H $HOME/.singularity/home:/home/$USER \
+    -B /run,/var/spool/slurmd/conf-cache,$HOME/.singularity/munge:/etc/munge,$HOME/.container/home/R:/home/$USER/R \    
     /opt/singularity-images/kmorris/rbioc_3.14.005.sif \
     R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'

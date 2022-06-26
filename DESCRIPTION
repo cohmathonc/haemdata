@@ -25,7 +25,6 @@ Suggests:
     naniar,
     gtsummary,
     forcats,
-    BiocParallel,
     OUTRIDER,
     glue,
     parallelly,
@@ -39,17 +38,22 @@ Suggests:
     stringr,
     ggplot2,
     ggsci,
-    PCAtools,
+    plyr,
     janitor,
-    plyr
+    PCAtools
 Imports: 
     S4Vectors,
-    dplyr,
     tibble,
     tidyr,
-    SummarizedExperiment,
+    dplyr,
     utils,
-    magrittr
+    stats,
+    magrittr,
+    future,
+    future.batchtools,
+    SummarizedExperiment,
+    targets,
+    pins
 Remotes:
     drejom/helpeRs
 VignetteBuilder: knitr

@@ -7,31 +7,31 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 ```{r  message=FALSE, warning=FALSE}
-    require(haemdata)
-    data(minimal_metadata_mmu)
+require(haemdata)
+metadata_mmu <- get_data("metadata_mmu.csv")
 ```
 
 ```{r echo=FALSE, include=FALSE}
-# sample metatdata summary
-sample_summary <- minimal_metadata_mmu |>
-        dplyr::ungroup() |>
-        dplyr::select(strandedness, tissue, treatment) |>
-        gtsummary::tbl_summary(missing_text = "(Missing)")
+sample_summary <- metadata_mmu |>
+    dplyr::ungroup() |>
+    dplyr::select(strandedness, tissue, treatment) |>
+    gtsummary::tbl_summary(missing_text = "(Missing)")
 
-missing_mouse_id <-minimal_metadata_mmu |>
-    dplyr::filter(is.na(mouse_id)) |>
-    dplyr::pull(sample)
+mouse_summary <- metadata_mmu |>
+    dplyr::ungroup() |>
+    dplyr::select(mouse_id, genotype, sex) |>
+    gtsummary::tbl_summary(missing_text = "(Missing)")
 
-n_mice <- dplyr::n_distinct(minimal_metadata_mmu$mouse_id, na.rm = TRUE)
-# sex by treatment
-sex_by_treatment<-minimal_metadata_mmu |>
+n_mice <- dplyr::n_distinct(metadata_mmu$mouse_id, na.rm = TRUE)
+
+sex_by_treatment <- metadata_mmu |>
     gtsummary::tbl_cross(
         row = sex,
         col = treatment,
         percent = "none"
     )
 
-sex_by_genotype <- minimal_metadata_mmu |>
+sex_by_genotype <- metadata_mmu |>
     gtsummary::tbl_cross(
         row = sex,
         col = genotype,
@@ -39,23 +39,31 @@ sex_by_genotype <- minimal_metadata_mmu |>
     )
 ```
 
+# Mice 
+`Haemdata` includes `r nrow(metadata_mmu)` RNAseq libraries from `r dplyr::n_distinct(metadata_mmu$mouse_id, na.rm = TRUE)` mice. Metadata
+are parsed by functions in [`parse_metadata.R`](https://github.com/drejom/haemdata/blob/main/R/parse_metadata.R) and collated by the [`make_metadata_mmu()`](../reference/make_metadata_mmu.html) function.
+
 ## Missingness
 ```{r echo=FALSE, img.width=8, message=FALSE}
-naniar::gg_miss_fct(minimal_metadata_mmu, project)
+naniar::gg_miss_fct(metadata_mmu, project)
 ```
 
-The available metadata have been parsed from many sources in various formats and undoubtedly require close inspection and correction. Please [report any
+Metadata have been parsed from many sources in various formats and undoubtedly require close inspection and correction. Please [report any
 issues](https://github.com/drejom/haemdata/issues).
 
-- Samples from the `AML.mRNA.novaseq_validation.2020` cohort don't have a `mouse_id`:
-    `r missing_mouse_id`
+### Sex by treatment 
+`r sex_by_treatment`
 
-- `timepoint` records timepoint labels inconsistently between experiments. `weeks` records time in weeks from the start of an experiment, and has been transcribed manually. We could derive this programmatically if we have **sample dates** available.
+### Sex by genotype
+`r sex_by_genotype`
 
-- Sex by treatment 'cross table'
-    `r sex_by_treatment`
+### Sample summary
+`r sample_summary`
 
-- Sex by genotype 'cross table'
-    `r sex_by_genotype`
+### Mouse summary
+`r mouse_summary`
 
-`Haemdata` includes `r nrow(minimal_metadata_mmu)` RNAseq libraries from `r dplyr::n_distinct(minimal_metadata_mmu$mouse_id, na.rm = TRUE)` mice. 
+# Humans
+
+`Haemdata` includes code to produce `SummarisedExperiments` from human patients with MDS ([EGAD00001003891](https://ega-archive.org/datasets/EGAD00001003891)) 
+and FLT3 AML patients from the COH Biobank. More on metadata to come...

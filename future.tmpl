@@ -34,7 +34,7 @@ log.file = fs::path_expand(log.file)
 
 ## Initialize work environment 
 ## source /etc/profile
-module load singularity
+## module load singularity
 
 ## Export value of DEBUGME environemnt var to slave
 export DEBUGME=<%= Sys.getenv("DEBUGME") %>
@@ -47,6 +47,5 @@ export DEBUGME=<%= Sys.getenv("DEBUGME") %>
 ## we merge R output with stdout from SLURM, which gets then logged via --output option
 /opt/singularity/3.7.0/bin/singularity exec \
     --cleanenv -H $HOME/.singularity/home:/home/$USER \
-    -B /run,/var/spool/slurmd/conf-cache,$HOME/.singularity/munge:/etc/munge,$HOME/.container/home/R:/home/$USER/R \    
     /opt/singularity-images/kmorris/rbioc_3.14.005.sif \
     Rscript -e 'batchtools::doJobCollection("<%= uri %>")'

@@ -15,7 +15,7 @@ Various references are used throughout the project:
 
 ### GENCODEr40
 
-This February 2019 genome build (GRCh39.p13) is paired with GENCODE annotation Release 40, published April 2022. Both were downloaded from https://www.gencodegenes.org/human/release_40.html in May 2022.
+This February 2019 genome build (GRCh39.p13) is paired with GENCODE annotation Release 40, published April 2022. Both were downloaded from [Gencode](https://www.gencodegenes.org/human/release_40.html) in May 2022.
 
 ### GRCm38_HLT
 
@@ -24,7 +24,7 @@ It was originally released in January 2012 and is no longer updated. The version
 
 ### GENCODEm28_HLT
 
-This June 2020 genome build (GRCm39) is paired with GENCODE annotation M28, released Dec 2021. Both were downloaded from https://www.gencodegenes.org/mouse/release_M28.html in Jan 2022.
+This June 2020 genome build (GRCm39) is paired with GENCODE annotation M28, released Dec 2021. Both were downloaded from [Gencode](https://www.gencodegenes.org/mouse/release_M28.html) in Jan 2022.
 
 ### Additional human leukemic transgenes ("HLT")
 

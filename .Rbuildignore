@@ -6,13 +6,16 @@
 
 data-raw
 ^_targets$
+^.future$
 ^_targets\.R$
+^_targets\.yaml$
 ^clustermq\.tmpl$
 ^future\.tmpl
 ^nohup\.out$
-^run\.R$
-^run\.Rout$
-^run\.sh$
+^build\.R$
+^build\.Rout$
+^build\.sh$
 ^CONTRIBUTING\.md$
+\.log$
 
 

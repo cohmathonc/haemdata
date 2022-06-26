@@ -14,6 +14,36 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+# Mouse 
+```{r setup, warnining = FALSE, message = FALSE}
 library(haemdata)
+se <- get_data("mmu_mrna_all_GENCODEm28_HLT_qc.rds")
+
+se <- subset(se,
+    select = grepl("AML", SummarizedExperiment::colData(se)$project)
+)
+
+pca <- pca_se(se)
+hlt <- plot_transgenes_se(se)
 ```
+
+`r pca$biplot`
+
+`r pca$pairs_plot`
+
+`r pca$correlation_plot`
+
+`r hlt`
+
+# Human
+```{r  human, warnining = FALSE, message = FALSE}
+se <- get_data("hsa_mrna_flt3_GENCODEr40_qc.rds")
+
+pca <- pca_se(se, col_by = "patient_id")
+```
+
+`r pca$biplot`
+
+`r pca$pairs_plot`
+
+`r pca$correlation_plot`
