@@ -72,7 +72,7 @@ apollo_bigmem <- targets::tar_resources(
         future::tweak(
             future.batchtools::batchtools_slurm,
             template = "future.tmpl",
-            resources = list(ncpus = 8L, memory = "400G", walltime = "12:00:00", partition = "fast")
+            resources = list(ncpus = 8L, memory = "600G", walltime = "12:00:00", partition = "fast")
         ),
         future::tweak("multisession", workers = 8L)
     ))
