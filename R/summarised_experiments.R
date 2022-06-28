@@ -504,7 +504,7 @@ pca_se <- function(summarised_experiment, assay = "abundance", col_by = NULL) {
         components = PCAtools::getComponents(p, 1:num_components),
         metavars = corr_metadata,
         col = c("white", "cornsilk1", "gold", "forestgreen", "darkgreen"),
-        cexCorval = 0.7,
+        cexCorval = 0.6,
         main = bquote("Pearson" ~ r^2),
         cexMain = 0.9,
         fontCorval = 1,
@@ -517,8 +517,8 @@ pca_se <- function(summarised_experiment, assay = "abundance", col_by = NULL) {
         corFUN = "pearson",
         corUSE = "pairwise.complete.obs",
         corMultipleTestCorrection = "BH",
-        signifSymbols = c("****", "***", "**", "*", ""),
-        signifCutpoints = c(0, 0.0001, 0.001, 0.01, 0.05, 1)
+        signifSymbols = c( '**', '*', ''),
+        signifCutpoints = c(0, 0.01, 0.05, 1)
     )
 
     return(results)
