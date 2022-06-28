@@ -1,14 +1,14 @@
 .Rproj.user
 docs
 inst/doc
-.RData
+*.RData
 nohup.out
 run.Rout
 .DS_Store
-.Rda
-.rda
-.rds
-.log
+*.Rda
+*.rda
+*.rds
+*.log
 
 
 
