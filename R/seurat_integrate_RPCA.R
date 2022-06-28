@@ -17,52 +17,43 @@ seurat_integrate_RPCA <- function(seurat_object_list) {
     options(future.seed = TRUE)
     #seurat_object_list <- GENCODEm28_HLT_seurat_qc
 
-    con <- file(glue::glue("test{round(runif(1,1,1000000))}.log"))
-    sink(con, append = TRUE)
-    sink(con, append = TRUE, type = "message")
-    message(">>>options", date())
-    message(options())
-    message(">>>avail cores", date())
-    message(glue::glue("Available cores: {future::availableCores()}"))
-    message(">>>norm_fvf", date())
     #Normalise and find variable features
     seurat_object_list <- future.apply::future_lapply(seurat_object_list, function(x) {
         x <- Seurat::NormalizeData(x, verbose = FALSE)
         x <- Seurat::FindVariableFeatures(x, verbose = FALSE)
     })
-    message(">>>SelectIntegrationFeatures", date())
     # Get the most variable features across all samples in the list
     features <- Seurat::SelectIntegrationFeatures(seurat_object_list)
-    message(">>>scale_pca", date())
     # scale the normalised data and run PCA on variable features, using scaled data
-    #region seurat_object_list <- future.apply::future_lapply(seurat_object_list,  function(x) {
-    seurat_object_list <- lapply(seurat_object_list,  function(x) {
+    seurat_object_list <- future.apply::future_lapply(seurat_object_list,  function(x) {
         x <- Seurat::ScaleData(x, features = features, verbose = FALSE)
         x <- Seurat::RunPCA(x, features = features, verbose = FALSE)
     })
-    message(">>>FindIntegrationAnchors", date())
+    # FindIntegrationAnchors
     anchors <- Seurat::FindIntegrationAnchors(
         seurat_object_list,
         reduction = "rpca",
-        reference = c(1, 8, 14),
-        dims = 1:50
-    )
-    message(">>>IntegrateData", date())
-    # Find a set of anchors between a list of Seurat objects.
-    seurat_object_rpca <- Seurat::IntegrateData(anchorset = anchors, dims = 1:50)
-    # message(">>>DefaultAssay", date())
-    # seurat_object_rpca <- Seurat::DefaultAssay(seurat_object_rpca, "integrated")
-    # message(">>>ScaleData", date())
-    # seurat_object_rpca <- Seurat::ScaleData(seurat_object_rpca, verbose = FALSE)
-    # message(">>>RunPCA", date())
-    # seurat_object_rpca <- Seurat::RunPCA(seurat_object_rpca, verbose = FALSE)
-    # message(">>>RunUMAP", date())
-    # seurat_object_rpca <- Seurat::RunUMAP(seurat_object_rpca, dims = 1:50)
+        #reference = c(1, 8, 14),
+        dims = 1:20,
 
+    )
+    # Find a set of anchors between a list of Seurat objects.
+    seurat_object_rpca <- Seurat::IntegrateData(anchorset = anchors, dims = 1:20)
+    message(">>>DefaultAssay", date())
+    seurat_object_rpca <- Seurat::DefaultAssay(seurat_object_rpca, "integrated")
+    message(">>>ScaleData", date())
+    seurat_object_rpca <- Seurat::ScaleData(seurat_object_rpca, verbose = FALSE)
+    message(">>>RunPCA", date())
+    seurat_object_rpca <- Seurat::RunPCA(seurat_object_rpca, verbose = FALSE)
+    message(">>>RunUMAP", date())
+    seurat_object_rpca <- Seurat::RunUMAP(seurat_object_rpca, dims = 1:50)
+
+    #<<<<<
     message("<<<", date())
     # Restore output to console
+    sink(type = c("warning", "message"))
     sink()
-    sink(type = "message")
+    #<<<<<
     return(seurat_object_rpca)
 
 }
