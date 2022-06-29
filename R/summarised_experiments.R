@@ -39,7 +39,7 @@ get_rnaseq_se <- function(multiqc_path, gtf = TRUE) {
 
         row_data <- rtracklayer::import(gtf) |>
             tibble::as_tibble() |>
-            dplyr::select(gene_id, gene_name, basepairs = width, gene_type = eval(rlang::sym(type))) |>
+            dplyr::select(gene_id, gene_name, basepairs = width, gene_type = rlang::ensym(type)) |>
             dplyr::group_by(gene_id) |>
             dplyr::slice(which.max(basepairs)) |>
             dplyr::ungroup()
