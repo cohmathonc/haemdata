@@ -31,7 +31,7 @@ list(
     tar_target(logo, make_logo()),
 
     ###############################################################################################
-    # Build sample sheets
+    # Build sample sheets -------------------------------------------------
     # AML
     tar_target(sample_sheet_2016_1, parse_metadata_AML.mRNA.2016()),
     tar_target(sample_sheet_2017_1, parse_metadata_AML.validation.2017()),
@@ -85,7 +85,7 @@ list(
     ),
 
     ###############################################################################################
-    # run the nf-core pipeline
+    # run the nf-core pipeline - mRNA -------------------------------------------
     # Names adhere to the format "cohort_species_protocol_ref-genome_workflow"
     # cohort: {all, validation, flt3, mds}
     # species: {mmu|hsa}
@@ -148,7 +148,8 @@ list(
     )),
 
     ###############################################################################################
-    # make SummarisedExperiment from each pipeline run, annotate with metadata and QC metrics
+    # make SummarisedExperiments -----------------------------------------------------
+    # from each pipeline run, annotate with metadata and QC metrics
     # GENCODEm28_HLT
     tar_target(all_mice.mRNA_qc_se, annotate_se(
         get_rnaseq_se(all_mice.mRNA_qc), metadata_mmu, all_mice.mRNA_qc
@@ -214,7 +215,7 @@ list(
     #     resources = apollo_large)
 
     ###############################################################################################
-    # Publish mRNAseq metadata (with pins package)
+    # Publish mRNAseq metadata (with pins package) ----------------------------------------------
     ###############################################################################################
     # save SummarisedExperiments to disk
     tar_target(all_mice_GENCODEm28_pins, publish_se(all_mice.mRNA_qc_se_flt)),
@@ -226,7 +227,7 @@ list(
     tar_target(metadata_hsa_pins, publish_metadata(metadata_hsa)),
 
     ###############################################################################################
-    # single cell RNA-seq
+    # single cell RNA-seq ------------------------------------------------------------------------
     # load data
     tar_target(GENCODEm28_HLT_seurat, seurat_import_objects("GENCODEm28_HLT"),
         resources = apollo_medium),
@@ -239,27 +240,31 @@ list(
     tar_target(GRCm38_HLT_seurat_qc, seurat_perform_cell_qc(GRCm38_HLT_seurat),
         resources = apollo_bigmem),
 
-    # # Integrate cells using Reciprocal PCA -------------------------------------
-    tar_target(GENCODEm28_HLT_seurat_rpca, seurat_integrate_RPCA(GENCODEm28_HLT_seurat_qc),
-        resources = apollo_large),
-    tar_target(GRCm38_HLT_seurat_rpca, seurat_integrate_RPCA(GRCm38_HLT_seurat_qc),
-        resources = apollo_large),
+    # # # Integrate cells using Reciprocal PCA -------------------------------------
+    #! FIXME some bug in batchtools that causes the following to fail, but works in an interactive session
+    #! For now, run this step manually
+    # tar_target(GENCODEm28_HLT_seurat_rpca, seurat_integrate_RPCA(GENCODEm28_HLT_seurat_qc),
+    #     resources = apollo_large),
+    # tar_target(GRCm38_HLT_seurat_rpca, seurat_integrate_RPCA(GRCm38_HLT_seurat_qc),
+    #     resources = apollo_large),
 
     # # # Integrate cells with SCTransform
     # # tar_target(GENCODEm28_HLT_seurat_sct, integrate_SCTransform(GENCODEm28_HLT_seurat_qc)),
     # # tar_target(GRCm38_HLT_seurat_sct, integrate_SCTransform(GRCm38_HLT_seurat_qc)),
 
     # # Make clusters  ---------------------------------------------------------------
-    tar_target(GENCODEm28_HLT_seurat_rpca_clust, seurat_annotate_umap_and_clusters(GENCODEm28_HLT_seurat_rpca),
+    tar_target(GENCODEm28_HLT_seurat_rpca_clust, seurat_annotate_clusters_and_umap(
+        qs::qread(glue::glue("{nf_core_cache}/tmp/GENCODEm28_HLT_seurat_qc_rpca.qs"))),
         resources = apollo_large),
-    tar_target(GRCm38_HLT_seurat_rpca_clust, seurat_annotate_umap_and_clusters(GRCm38_HLT_seurat_rpca),
+    tar_target(GRCm38_HLT_seurat_rpca_clust, seurat_annotate_clusters_and_umap(
+        qs::qread(glue::glue("{nf_core_cache}/tmp/GRCm38_HLT_seurat_qc_rpca.qs"))),
         resources = apollo_large),
 
     # # Annotate cell cycle ---------------------------------------------------------
     tar_target(GENCODEm28_HLT_seurat_rpca_clust_cc, seurat_annotate_cell_cycle(GENCODEm28_HLT_seurat_rpca_clust),
-        resources = apollo_large),
+        resources = apollo_medium),
     tar_target(GRCm38_HLT_seurat_rpca_clust_cc, seurat_annotate_cell_cycle(GRCm38_HLT_seurat_rpca_clust),
-        resources = apollo_large),
+        resources = apollo_medium),
 
     # # Export objects ---------------------------------------------------------------------
     # tar_target(GENCODEm28_HLT_seurat_rpca_h5, export_seurat_object_h5ad(GENCODEm28_HLT_seurat_rpca)),

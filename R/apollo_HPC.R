@@ -27,7 +27,7 @@ future::plan(
             template = "future.tmpl",
             resources = list(ncpus = 1L, memory = "8G", walltime = "1:00:00")
         ),
-        future::tweak("multisession", workers = 1L)
+        future::tweak("sequential")
     )
 )
 
