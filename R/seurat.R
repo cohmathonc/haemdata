@@ -1,5 +1,66 @@
 # Functions for dealing with scRNAseq data in the Surat package.
 
+#' Find elbow in PCA for Seurat objects.
+#'
+#' Inspired by
+#' https://hbctraining.github.io/scRNA-seq/lessons/elbow_plot_metric.html
+#' Determine percent of variation associated with each PC,
+#' Calculate cumulative percent variation for each PC,
+#' Determine which PC exhibits cumulative variation greater than 90%,
+#' and % variation associated with the PC is less than 5%, then
+#' Choose the minimum of the two
+#'
+#' Optionally makes a plot of the cumulative percent variation.
+#'
+#' @title find_elbow
+#' @name find_elbow
+#' @param seurat_object a Seurat object
+#' @param plot TRUE/FALSE to make a plot of the elbow, Default = FALSE
+#' @return either an `integer` or a `ggplot2` object.
+#' @author Denis O'Meally
+#' @export
+find_elbow <- function(seurat_object, plot = FALSE) {
+    # Determine percent of variation associated with each PC
+    pct <- seurat_object[["pca"]]@stdev / sum(seurat_object[["pca"]]@stdev) * 100
+
+    # Calculate cumulative percent variation for each PC
+    cumu <- cumsum(pct)
+
+    # Determine which PC exhibits cumulative variation greater than 90%,
+    # and % variation associated with the PC is less than 5%
+    co1 <- which(cumu > 90 & pct < 5)[1]
+
+    # Determine the difference between variation of PC and subsequent PC
+    # and get the last point where change of % of variation is more than 0.1%.
+    co2 <- sort(which((pct[1:length(pct) - 1] - pct[2:length(pct)]) > 0.1), decreasing = T)[1] + 1
+
+    # Choose the minimum of the two
+    pcs <- min(co1, co2)
+
+    if (plot) {
+        # Create a data.frame with values to plot
+        plot_df <- data.frame(
+            pct = pct,
+            cumu = cumu,
+            rank = 1:length(pct)
+        )
+        # Elbow plot to visualize
+        elbow_plot <- ggplot2::ggplot(plot_df, ggplot2::aes(cumu, pct, label = rank, color = rank > pcs)) +
+            ggplot2::geom_point() +
+            ggplot2::geom_text(hjust = 1, vjust = -0.5) +
+            geom_vline(xintercept = 90, color = "grey") +
+            ggplot2::geom_hline(yintercept = min(pct[pct > 5]), color = "grey") +
+            ggplot2::theme_bw() +
+            ggplot2::labs(
+                title = paste0("Elbow Plot of Principal Components\nChoose the first ", pcs, " PCs to retain for clustering"),
+                x = "Cumulative variation explained (%)",
+                y = "Percent variation explained (%)"
+            )
+        return(elbow_plot)
+    }
+    return(pcs)
+}
+
 #' Rotate UMAP
 #'
 #' Makes the 1st cell in a Seurat object plot in the top left quadrant (ie -1,-1)
@@ -46,11 +107,11 @@ rotate_umap <- function(integrated, x = FALSE, y = FALSE) {
 #' `percent_mt`, `percent_ribo`, `percent_hb`, `percent_platelet`, `percent_xist`, `chrY_counts`, `percent_myh11`.
 #'
 #' Data are read in from the "cellranger" directory `/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/cellranger`
-#' by searching for files named `sample_feature_bc_matrix.h5`. This can take some time, so after the 1st run, 
+#' by searching for files named `sample_feature_bc_matrix.h5`. This can take some time, so after the 1st run,
 #' the paths are written to `data-raw/cellranger_h5_paths.txt` and read from there for subsequent runs.
 #' Similarly, sex chromosome genes are parsed from the GTF and cached in `inst/extdata`.
 #'
-#' TODO: Include eg for accessing Y genes from package 
+#' TODO: Include eg for accessing Y genes from package
 #'
 #' @param path_regex string, optional, regex pattern to match in path. Use this to select different
 #' genome builds, eg "GRCm38".
@@ -60,9 +121,7 @@ rotate_umap <- function(integrated, x = FALSE, y = FALSE) {
 # Make Seurat objects
 seurat_import_objects <- function(path_regex, cellranger_folder = "/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/cellranger") {
     requireNamespace("hdf5r")
-    # future::plan("multisession")
-    # options(future.seed = TRUE)
-    # options(future.globals.maxSize = 10 * 1024^3) # 10GB
+    options(future.globals.maxSize = 10 * 1024^3) # 10GB
 
     # get a list of ChrY genes from GTF file
     # Parse GTF: https://www.biostars.org/p/140471/
@@ -191,6 +250,71 @@ seurat_perform_cell_qc <- function(raw_seurat_objects) {
 
             # filter on mt and ribo reads, and cells with at least 200 genes ----------
             x <- subset(x, subset = nFeature_RNA > 200 & percent_mt < 20 & percent_ribo > 5)
-        }, future.seed = TRUE
+        }, future.seed = TRUE)
+}
+
+#' Annotate cell cycle
+#'
+#' Uses the function [`Seurat::CellCycleScoring()`] to annotate the cells with their cell cycle phase,
+#' and a score for S/G2M. The Seurat function requires a list of `S` and `G2M` genes to make
+#' the assignments, however, only human gene symbols are included in the Seurat package.
+#'
+#' This function includes an internal function to pull the equivalent mouse symbol from `biomaRt`,
+#' but the service was down at time of writing. In a quick hack, we simply convert the human gene symbols to mouse by making them
+#' lowercase, with the 1st letter in caps.
+#'
+#' https://rdrr.io/cran/Seurat/man/CellCycleScoring.html
+#' https://github.com/satijalab/seurat/issues/2493
+#'
+#' @name seurat_annotate_cell_cycle
+#' @param seurat_object A Seurat object to annotate
+#' @return A Surat object with cell cycle annotations (adds `S.Score`, `G2M.Score` and `Phase` to the cell metadata columns)
+#' @author Denis O'Meally
+#' @export
+seurat_annotate_cell_cycle <- function(seurat_object) {
+
+    # Previously used this with success:
+    # https://ucdavis-bioinformatics-training.github.io/2019-single-cell-RNA-sequencing-Workshop-UCD_UCSF/scrnaseq_analysis/scRNA_Workshop-PART1.html
+    # But its a bit hacky and overly complex. Seurat has a built in function for this.
+
+    # ############################################################################
+    # ### This is the recommenced way to convert to mouse ids, but ensembl is down at time of testing
+    # # Basic function to convert human to mouse gene names
+    # convert_human_gene_list <- function(x) {
+    #     # https://www.r-bloggers.com/2016/10/converting-mouse-to-human-gene-names-with-biomart-package/
+
+    #     human <- biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+    #     mouse <- biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+
+    #     genesV2 <- biomaRt::getLDS(
+    #         attributes = c("hgnc_symbol"),
+    #         filters = "hgnc_symbol",
+    #         values = x,
+    #         mart = human,
+    #         attributesL = c("mgi_symbol"),
+    #         martL = mouse,
+    #         uniqueRows = T
+    #     )
+
+    #     humanx <- unique(genesV2[, 2])
+
+    #     # Print the first 6 genes found to the screen
+    #     print(head(humanx))
+    #     return(humanx)
+    # }
+
+    # g2m.genes <- convert_human_gene_list(Seurat::cc.genes$g2m.genes)
+    # s.genes <- convert_human_gene_list(Seurat::cc.genes$s.genes)
+
+    # In the interim, just make them all look like mice symbols
+    g2m_genes <- gsub("(?<=\\b)([a-z])", "\\U\\1", tolower(Seurat::cc.genes$g2m.genes), perl = TRUE)
+    s_genes <- gsub("(?<=\\b)([a-z])", "\\U\\1", tolower(Seurat::cc.genes$s.genes), perl = TRUE)
+
+    seurat_object <- Seurat::CellCycleScoring(
+        object = seurat_object,
+        g2m.features = g2m_genes,
+        s.features = s_genes
     )
+
+    return(seurat_object)
 }
