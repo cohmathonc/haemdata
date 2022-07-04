@@ -2,7 +2,7 @@
 #'
 #' Runs the 'standard workflow' using 2000 features, but differs in that the number of PCs used for clustering is
 #' is first determined using using the [`find_elbow()`] function. The number of clusters is
-#' tuned using the `cluster_res` parameter within the function.
+#' tuned using the `cluster_res` parameter within the [`Seurat::FindClusters()`] function.
 #'
 #' https://satijalab.org/seurat/articles/integration_introduction.html#perform-an-integrated-analysis-1
 #'
@@ -14,11 +14,9 @@
 seurat_annotate_clusters_and_umap <- function(seurat_object) {
     options(future.globals.maxSize = 10 * 1024^3) # 10GB
 
-    # seurat_object <- qs::qread(glue::glue("{nf_core_cache}/tmp/GENCODEm28_HLT_seurat_qc_rpca.qs"), nthreads = future::availableCores())
+#TODO make a parameter to iterate over cluster resolution values, and one to set it explicitly
 
     # Run the standard workflow for visualization and clustering -------------------
-    nfeatures <- 2000
-    cluster_res <- 0.5
     seed_use <- 24
 
     npcs <- find_elbow(seurat_object)
@@ -27,7 +25,11 @@ seurat_annotate_clusters_and_umap <- function(seurat_object) {
         Seurat::ScaleData() |>
         Seurat::RunPCA(npcs = npcs) |>
         Seurat::FindNeighbors() |>
-        Seurat::FindClusters(resolution = cluster_res) |>
+        # Seurat::FindClusters(resolution = 0.4) |> # 22 clusters for GENCODEm28 integrated
+        # Seurat::FindClusters(resolution = 0.6) |>
+        Seurat::FindClusters(resolution = 0.8) |> # 30 clusters
+        #Seurat::FindClusters(resolution = 1.0) |>
+        #Seurat::FindClusters(resolution = 1.2) |> # 45 clusters
         Seurat::RunUMAP(
             reduction = "pca",
             dims = 1:npcs,
@@ -35,8 +37,8 @@ seurat_annotate_clusters_and_umap <- function(seurat_object) {
         ) |>
         rotate_umap()
 
-    # set default identity -----------------------------------------------------
-    Seurat::DefaultAssay(seurat_object) <- "integrated"
+    # set clusters as the default identity -------------------------
+    Seurat::DefaultAssay(seurat_object) <- "integrated" # setting explicitly
     Seurat::Idents(seurat_object) <- "seurat_clusters"
 
     return(seurat_object)

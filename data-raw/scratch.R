@@ -212,3 +212,20 @@ myData<-jsonlite::read_json(json)
 myData <- jsonlite::fromJSON(json)
 
 mv  MDS.rnaseq.EGAD00001003891 hsa_mrna_mds
+
+
+x <- x |>
+    Seurat::ScaleData() |>
+    Seurat::FindVariableFeatures(nfeatures = 1000) |>
+    Seurat::RunPCA(npcs = 20) |>
+    Seurat::FindNeighbors() |>
+    Seurat::FindClusters(resolution = 0.4) |>
+    Seurat::FindClusters(resolution = 0.6) |>
+    Seurat::FindClusters(resolution = 0.8) |>
+    Seurat::FindClusters(resolution = 1.0) |>
+    Seurat::FindClusters(resolution = 1.2) |>
+    Seurat::RunUMAP(
+        reduction = "pca",
+        dims = 1:2,
+        seed.use = 3
+    ) 

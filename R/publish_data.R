@@ -195,6 +195,6 @@ write_seurat_h5ad_pin <- function(seurat_object) {
                 metadata = metadata
             )
 
-
-    return(h5ad_pin) # return a pin URI
+    system(glue::glue("rm {tmp}/{name}.*"))
+    return(h5ad_pin)
 }

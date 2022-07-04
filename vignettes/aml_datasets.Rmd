@@ -9,14 +9,18 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+    collapse = TRUE,
+    comment = "#>",
+    warning = FALSE,
+    message = FALSE
 )
 ```
 
-# Mouse 
-```{r setup, warnining = FALSE, message = FALSE}
+
+# Mouse
+```{r setup}
 library(haemdata)
+
 se <- get_data("mmu_mrna_all_GENCODEm28_HLT_qc.rds")
 
 se <- subset(se,
@@ -24,26 +28,32 @@ se <- subset(se,
 )
 
 pca <- pca_se(se)
-hlt <- plot_transgenes_se(se)
 ```
 
-`r pca$biplot`
+```{r pca_plots}
+pca$biplot
+pca$pairs_plot
+```
+```{r pca_corr, fig.height=9, fig.width=8}
+pca$correlation_plot
+```
 
-`r pca$pairs_plot`
-
-`r pca$correlation_plot`
-
-`r hlt`
+```{r transgenes}
+plot_transgenes_se(se)
+```
 
 # Human
-```{r  human, warnining = FALSE, message = FALSE}
+
+```{r hsa_flt3}
 se <- get_data("hsa_mrna_flt3_GENCODEr40_qc.rds")
 
 pca <- pca_se(se, col_by = "patient_id")
 ```
 
-`r pca$biplot`
-
-`r pca$pairs_plot`
-
-`r pca$correlation_plot`
+```{r hsa_pca_plots}
+pca$biplot
+pca$pairs_plot
+```
+```{r hsa_pca_corr, fig.height=9, fig.width=8}
+pca$correlation_plot
+```

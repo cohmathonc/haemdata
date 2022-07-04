@@ -1,7 +1,7 @@
 ---
-title: "CML datasets"
+title: "MDS datasets"
 vignette: >
-  %\VignetteIndexEntry{CML datasets}
+  %\VignetteIndexEntry{MDS datasets}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,17 +16,13 @@ knitr::opts_chunk$set(
 ```
 
 
-# Mouse
+# Human
 ```{r setup}
 library(haemdata)
 
-se <- get_data("mmu_mrna_all_GENCODEm28_HLT_qc.rds")
+se <- get_data("hsa_mrna_mds_GENCODEr40_qc.rds")
 
-se <- subset(se,
-    select = grepl("CML", SummarizedExperiment::colData(se)$project)
-)
-
-pca <- pca_se(se)
+pca <- pca_se(se, col_by = "tissue")
 ```
 
 ```{r pca_plots}
@@ -35,8 +31,4 @@ pca$pairs_plot
 ```
 ```{r pca_corr, fig.height=9, fig.width=8}
 pca$correlation_plot
-```
-
-```{r transgenes}
-plot_transgenes_se(se)
 ```

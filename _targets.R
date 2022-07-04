@@ -94,6 +94,8 @@ list(
     # workflow: {qc|salmon}}
     # Name the "run_folder" as "species_protocol_cohort"
 
+    #TODO Rename these so that accommodating additional data is nominally consistent
+    #TODO eg all = 2016_to_2022 or something like that
     # GENCODEm28_HLT Full QC pipeline
     tar_target(all_mice.mRNA_qc,
         run_nf_core_rnaseq("mmu_mrna_all", sample_sheet_all_mice, "GENCODEm28_HLT"),
@@ -141,6 +143,7 @@ list(
     # Consolidate metadata -----------------------------------------------------
     ############################################################################
     # consolidate metadata across all mice samples
+    #TODO fix dates for bone marrow samples
     tar_target(metadata_mmu, make_metadata_mmu(sample_sheet_all_mice)),
     # consolidate metadata across all human samples
     tar_target(metadata_hsa, make_metadata_hsa(
@@ -266,17 +269,25 @@ list(
     tar_target(GRCm38_HLT_seurat_rpca_clust_cc, seurat_annotate_cell_cycle(GRCm38_HLT_seurat_rpca_clust),
         resources = apollo_medium),
 
-    # # Export objects ---------------------------------------------------------------------
-    # tar_target(GENCODEm28_HLT_seurat_rpca_h5, export_seurat_object_h5ad(GENCODEm28_HLT_seurat_rpca)),
-    # tar_target(GRCm38_HLT_seurat_rpca_h5, export_seurat_object_h5ad(GRCm38_HLT_seurat_rpca))
+    #TODO # # Annotate cell type -----------------------------------------------------------
+    
+    #TODO # Export objects ---------------------------------------------------------------------
+    #TODO h5ad pin is done, need csv and seurat object pins
+    # tar_target(GENCODEm28_HLT_seurat_h5ad_pin, export_seurat_object_h5ad(GENCODEm28_HLT_seurat_rpca)),
+    # tar_target(GRCm38_HLT_seurat_h5ad_pin, export_seurat_object_h5ad(GRCm38_HLT_seurat_rpca))
 
 
     ######### Collect latest pin versions #########
     tar_target(
         latest_published_data,
         helpeRs::write_data("published_pins", rbind(
+            # single cell RNA-seq 
+            #GRCm38_HLT_seurat_h5ad_pin,
+            #GENCODEm28_HLT_seurat_h5ad_pin,
+            # metadata
             metadata_mmu_pins,
             metadata_hsa_pins,
+            # bulk RNAseq
             all_mice_GENCODEm28_pins,
             validation_mice_GENCODEm28_pins,
             HSA_COH_FLT3_GENCODEm28_pins

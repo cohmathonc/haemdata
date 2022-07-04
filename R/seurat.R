@@ -253,32 +253,33 @@ seurat_perform_cell_qc <- function(raw_seurat_objects) {
         }, future.seed = TRUE)
 }
 
-#' Annotate cell cycle
+#' Annotate mouse cell cycle
 #'
-#' Uses the function [`Seurat::CellCycleScoring()`] to annotate the cells with their cell cycle phase,
-#' and a score for S/G2M. The Seurat function requires a list of `S` and `G2M` genes to make
-#' the assignments, however, only human gene symbols are included in the Seurat package.
-#'
-#' This function includes an internal function to pull the equivalent mouse symbol from `biomaRt`,
-#' but the service was down at time of writing. In a quick hack, we simply convert the human gene symbols to mouse by making them
-#' lowercase, with the 1st letter in caps.
+#' Uses the function [`Seurat::CellCycleScoring()`] to annotate the cells with their cell cycle `Phase`,
+#' , `S.score` and `G2M.score`. The Seurat function uses an internal list of human gene symbols from 
+#' Tirosh et al 2016.
+#' #'
+#' Here we substitute equivalent mouse symbols from `biomaRt`,
+#' but the service was down at time of writing. In a quick hack, we simply
+#' convert gene symbols by making them lowercase, with the 1st letter in caps.
 #'
 #' https://rdrr.io/cran/Seurat/man/CellCycleScoring.html
 #' https://github.com/satijalab/seurat/issues/2493
 #'
 #' @name seurat_annotate_cell_cycle
+#' @source https://www.science.org/doi/abs/10.1126/science.aad0501
 #' @param seurat_object A Seurat object to annotate
-#' @return A Surat object with cell cycle annotations (adds `S.Score`, `G2M.Score` and `Phase` to the cell metadata columns)
+#' @return A Surat object with cell cycle annotations added to cell `meta.data` (`S.Score`, `G2M.Score` & `Phase`)
 #' @author Denis O'Meally
 #' @export
 seurat_annotate_cell_cycle <- function(seurat_object) {
 
     # Previously used this with success:
     # https://ucdavis-bioinformatics-training.github.io/2019-single-cell-RNA-sequencing-Workshop-UCD_UCSF/scrnaseq_analysis/scRNA_Workshop-PART1.html
-    # But its a bit hacky and overly complex. Seurat has a built in function for this.
+    # But its a bit hacky and overly complex. 
 
     # ############################################################################
-    # ### This is the recommenced way to convert to mouse ids, but ensembl is down at time of testing
+    # ### This is the recommended way to convert to mouse ids, but ensembl is down at time of testing
     # # Basic function to convert human to mouse gene names
     # convert_human_gene_list <- function(x) {
     #     # https://www.r-bloggers.com/2016/10/converting-mouse-to-human-gene-names-with-biomart-package/
@@ -303,12 +304,12 @@ seurat_annotate_cell_cycle <- function(seurat_object) {
     #     return(humanx)
     # }
 
-    # g2m.genes <- convert_human_gene_list(Seurat::cc.genes$g2m.genes)
-    # s.genes <- convert_human_gene_list(Seurat::cc.genes$s.genes)
+    # g2m.genes <- convert_human_gene_list(Seurat::cc.genes.updated.2019$g2m.genes)
+    # s.genes <- convert_human_gene_list(Seurat::cc.genes.updated.2019$s.genes)
 
-    # In the interim, just make them all look like mice symbols
-    g2m_genes <- gsub("(?<=\\b)([a-z])", "\\U\\1", tolower(Seurat::cc.genes$g2m.genes), perl = TRUE)
-    s_genes <- gsub("(?<=\\b)([a-z])", "\\U\\1", tolower(Seurat::cc.genes$s.genes), perl = TRUE)
+    # In the interim, just make them all look like mouse symbols
+    g2m_genes <- gsub("(?<=\\b)([a-z])", "\\U\\1", tolower(Seurat::cc.genes.updated.2019$g2m.genes), perl = TRUE)
+    s_genes <- gsub("(?<=\\b)([a-z])", "\\U\\1", tolower(Seurat::cc.genes.updated.2019$s.genes), perl = TRUE)
 
     seurat_object <- Seurat::CellCycleScoring(
         object = seurat_object,
