@@ -18,7 +18,6 @@ LazyDataCompression: xz
 Suggests:
     hexSticker,
     magick,
-    Microsoft365R,
     usethis,
     knitr,
     rmarkdown,
@@ -53,6 +52,7 @@ Imports:
     future.batchtools,
     SummarizedExperiment,
     targets,
+    Microsoft365R,
     pins
 Remotes:
     drejom/helpeRs
