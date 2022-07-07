@@ -2,7 +2,7 @@
 
 # Setup the pin_board to use
 # Post data to OneDrive pin board (TRUE) or Isilon pin board (FALSE)
-onedrive <- FALSE
+onedrive <- TRUE
 # Location for posting data files, if not OneDrive
 haemdata_folder <- "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata"
 
@@ -60,14 +60,8 @@ publish_metadata <- function(metadata) {
         "A table describing sample metadata. See http://cgt.coh.org/haemdata/reference/", name, ".html for more information."
     )
 
-    # Isilon board
-    MHO_haemdata <- pins::board_folder(
-        haemdata_folder,
-        versioned = TRUE
-    )
-
     csv_pin <- pins::pin_write(
-        MHO_haemdata,
+        pin_board,
         metadata,
         name = glue::glue("{name}.csv"),
         type = "csv",
