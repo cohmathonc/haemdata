@@ -1,0 +1,109 @@
+
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.202.5/containers/r
+{
+    "name": "R (BioC)",
+    "image": "denom/rbioc:3.14.005",
+    // Set *default* container specific settings.json values on container create.
+    "settings": {
+        "r.rterm.linux": "/usr/local/bin/radian",
+        "r.path.linux": "/usr/local/bin/R",
+        "r.bracketedPaste": true,
+        "r.plot.useHttpgd": true,
+        "[r]": {
+            "editor.wordSeparators": "`~!@#%$^&*()-=+[{]}\\|;:'\",<>/?"
+        },
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+            "radian": {
+                "path": "/usr/local/bin/radian",
+                "overrideName": true
+            },
+            "zsh": {
+                "path": "/usr/bin/zsh",
+                "overrideName": true
+            }
+        }
+    },
+    // Add the IDs of extensions you want installed when the container is created.
+    "extensions": [
+        "aaron-bond.better-comments",
+        "christian-kohler.path-intellisense",
+        "codezombiech.gitignore",
+        "cssho.vscode-svgviewer",
+        "donjayamanne.githistory",
+        "eamodio.gitlens",
+        "Equinusocio.vsc-community-material-theme",
+        "felipecaputo.git-project-manager",
+        "GitHub.copilot",
+        "GitHub.remotehub",
+        "GitHub.vscode-pull-request-github",
+        "Ikuyadeu.r",
+        "johnpapa.vscode-peacock",
+        "kenhowardpdx.vscode-gist",
+        "mechatroner.rainbow-csv",
+        "mhutchie.git-graph",
+        "michelemelluso.gitignore",
+        "ms-python.python",
+        "ms-toolsai.jupyter-keymap",
+        "ms-vscode-remote.remote-containers",
+        "ms-vscode-remote.remote-ssh",
+        "ms-vscode-remote.remote-ssh-edit",
+        "ms-vscode-remote.remote-wsl",
+        "ms-vscode-remote.vscode-remote-extensionpack",
+        "ms-vsliveshare.vsliveshare",
+        "nextflow.nextflow",
+        "NicolasVuillamy.vscode-groovy-lint",
+        "oderwat.indent-rainbow",
+        "RDebugger.r-debugger",
+        "reageyao.biosyntax",
+        "redhat.vscode-yaml",
+        "ryuta46.multi-command",
+        "SimonSiefke.svg-preview",
+        "streetsidesoftware.code-spell-checker",
+        "teabyii.ayu",
+        "tht13.html-preview-vscode",
+        "tombonnike.vscode-status-bar-format-toggle",
+        "vscode-icons-team.vscode-icons",
+        "zhuangtongfa.material-theme",
+        "usernamehw.errorlens",
+        "idleberg.openvpn",
+        "ismailmustafa.hacs",
+        "janisdd.vscode-edit-csv",
+        "JannisX11.batch-rename-extension",
+        "keesschollaart.vscode-home-assistant",
+        "mads-hartmann.bash-ide-vscode",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.jupyter-renderers",
+        "ms-vscode.remote-repositories",
+        "streetsidesoftware.code-spell-checker-medical-terms",
+        "streetsidesoftware.code-spell-checker-scientific-terms",
+        "usernamehw.errorlens",
+        "zhuangtongfa.material-theme"
+    ],
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    "forwardPorts": [
+        8787
+    ],
+    // Use 'postCreateCommand' to run commands after the container is created.
+    // "postCreateCommand": "sudo rstudio-server online &",
+    // Uncomment to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker.
+    // "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
+    // Replace runArgs below when using a ptrace-based debugger like C++, Go, and Rust
+    // "runArgs": [ "--init", "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined" ],
+    // Use an env file to set runtime environment variables.
+    "runArgs": [
+        "--init",
+        "--env-file",
+        ".devcontainer/devcontainer.env"
+    ],
+    //"workspaceMount": "source=/isi-dcnl/omeally,target=/workspace,type=bind",
+    "workspaceMount": "source=/Users/domeally/workspaces,target=/workspace,type=bind",
+    "workspaceFolder": "/workspace/${localWorkspaceFolderBasename}",
+    "mounts": [
+        "source=/Users/domeally/.local/container_home,target=/home/domeally,type=bind",
+        "source=/Users/domeally/workspaces/net,target=/net,type=bind"
+    ],
+    // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+    "containerUser": "${localEnv:USER}"
+}
