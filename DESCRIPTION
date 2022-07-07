@@ -39,7 +39,7 @@ Suggests:
     ggsci,
     plyr,
     janitor,
-    PCAtools
+    PCAtools,
 Imports: 
     S4Vectors,
     tibble,
@@ -55,7 +55,8 @@ Imports:
     Microsoft365R,
     pins
 Remotes:
-    drejom/helpeRs
+    drejom/helpeRs,
+    mojaveazure/seurat-disk
 VignetteBuilder: knitr
 URL: https://github.com/drejom/haemdata
 BugReports: https://github.com/drejom/haemdata/issues
