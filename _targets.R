@@ -94,11 +94,9 @@ list(
     # workflow: {qc|salmon}}
     # Name the "run_folder" as "species_protocol_cohort"
 
-    #TODO Rename these so that accommodating additional data is nominally consistent
-    #TODO eg all = 2016_to_2022 or something like that
     # GENCODEm28_HLT Full QC pipeline
     tar_target(all_mice.mRNA_qc,
-        run_nf_core_rnaseq("mmu_mrna_all", sample_sheet_all_mice, "GENCODEm28_HLT"),
+        run_nf_core_rnaseq("mmu_mrna_2016_2022", sample_sheet_all_mice, "GENCODEm28_HLT"),
         format = "file"
     ),
     tar_target(validation_qc,
@@ -135,7 +133,7 @@ list(
         format = "file"
     ),
     tar_target(all_mice.mRNA_salmon_GRCm38_HLT,
-        run_nf_core_rnaseq("mmu_mrna_all", sample_sheet_all_mice, "GRCm38_HLT", qc = FALSE),
+        run_nf_core_rnaseq("mmu_mrna_2016_2022", sample_sheet_all_mice, "GRCm38_HLT", qc = FALSE),
         format = "file"
     ),
 
@@ -270,20 +268,20 @@ list(
         resources = apollo_medium),
 
     #TODO # # Annotate cell type -----------------------------------------------------------
-    
+
     #TODO # Export objects ---------------------------------------------------------------------
     #TODO h5ad pin is done, need csv and seurat object pins
-    # tar_target(GENCODEm28_HLT_seurat_h5ad_pin, export_seurat_object_h5ad(GENCODEm28_HLT_seurat_rpca)),
-    # tar_target(GRCm38_HLT_seurat_h5ad_pin, export_seurat_object_h5ad(GRCm38_HLT_seurat_rpca))
+    tar_target(GENCODEm28_HLT_seurat_h5ad_pins, write_seurat_h5ad_pin(GENCODEm28_HLT_seurat_rpca_clust)),
+    tar_target(GRCm38_HLT_seurat_h5ad_pins, write_seurat_h5ad_pin(GRCm38_HLT_seurat_rpca_clust)),
 
 
     ######### Collect latest pin versions #########
     tar_target(
         latest_published_data,
         helpeRs::write_data("published_pins", rbind(
-            # single cell RNA-seq 
-            #GRCm38_HLT_seurat_h5ad_pin,
-            #GENCODEm28_HLT_seurat_h5ad_pin,
+            # single cell RNA-seq
+            GRCm38_HLT_seurat_h5ad_pins,
+            GENCODEm28_HLT_seurat_h5ad_pins,
             # metadata
             metadata_mmu_pins,
             metadata_hsa_pins,
