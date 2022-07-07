@@ -153,8 +153,8 @@ write_se2tpm_pin <- function(summarised_experiment) {
 
 # Pin a Seurat object as an `h5ad` file, with name, description, and metadata
 write_seurat_h5ad_pin <- function(seurat_object) {
-    requireNamespace(SeuratDisk)
-    requireNamespace(SeuratObject)
+    requireNamespace("SeuratDisk")
+    requireNamespace("SeuratObject")
 
     tmp <- tempdir()
 
