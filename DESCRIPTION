@@ -1,62 +1,76 @@
 Package: haemdata
-Title: Mouse RNAseq Data (Bulk mRNA and microRNA) from AML and CML Projects
+Title: Mouse RNAseq Data (Bulk mRNA and microRNA) from AML and CML
+    Projects
 Version: 0.0.0.9000
 Authors@R: 
     person("Denis", "O'Meally", , "domeally@coh.org", role = c("aut", "cre"),
-        comment = c(ORCID = "0000-0001-7749-9506"))
-Description: Harmonised data from mouse RNAseq projects processed with [nf-core](https://nf-co.re) pipelines
-    and published as the R package `haemdata` on GitHub.
+           comment = c(ORCID = "0000-0001-7749-9506"))
+Description: Harmonised data from mouse RNAseq projects processed with
+    [nf-core](https://nf-co.re) pipelines and published as the R package
+    `haemdata`, available from http://cgt.coh.org/haemdata.
 License: file LICENSE
-Encoding: UTF-8
-Language: en-AU
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+URL: https://github.com/drejom/haemdata
+BugReports: https://github.com/drejom/haemdata/issues
 Depends: 
     R (>= 4.1)
-LazyData: true
-LazyDataCompression: xz
-Suggests:
-    hexSticker,
-    magick,
-    usethis,
-    knitr,
-    rmarkdown,
-    naniar,
-    gtsummary,
-    forcats,
-    OUTRIDER,
-    glue,
-    parallelly,
-    purrr,
-    rcompanion,
-    readr,
-    readxl,
-    rtracklayer,
-    tidybulk,
-    helpeRs,
-    stringr,
-    ggplot2,
-    ggsci,
-    plyr,
-    janitor,
-    PCAtools,
 Imports: 
-    S4Vectors,
-    tibble,
-    tidyr,
     dplyr,
-    utils,
-    stats,
-    magrittr,
     future,
     future.batchtools,
+    ggplot2,
+    hdf5r,
+    helpeRs,
+    janitor,
+    magrittr,
+    Microsoft365R,
+    PCAtools,
+    pins,
+    qs,
+    readr,
+    readxl,
+    rlang (>= 0.4.11),
+    S4Vectors,
+    Seurat,
+    SeuratDisk,
+    SeuratObject,
+    stats,
+    stringr,
     SummarizedExperiment,
     targets,
-    Microsoft365R,
-    pins
+    tibble,
+    tidyr,
+    utils
+Suggests:
+    BiocParallel,
+    clustifyr,
+    forcats,
+    future.apply,
+    ggsci,
+    glue,
+    gtools,
+    gtsummary,
+    hexSticker,
+    knitr,
+    magick,
+    Matrix,
+    naniar,
+    OUTRIDER,
+    parallelly,
+    plyr,
+    rcompanion,
+    rmarkdown,
+    roxygen2,
+    rtracklayer,
+    tidybulk,
+    usethis
+VignetteBuilder: 
+    knitr
 Remotes:
     drejom/helpeRs,
     mojaveazure/seurat-disk
-VignetteBuilder: knitr
-URL: https://github.com/drejom/haemdata
-BugReports: https://github.com/drejom/haemdata/issues
+Encoding: UTF-8
+Language: en-AU
+LazyData: true
+LazyDataCompression: xz
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
