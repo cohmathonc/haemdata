@@ -3,8 +3,13 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^\.vscode$
+^\.git$
+^\.gitignore$
+^\.devcontainer$
 
-data-raw
+
+^data-raw$
 ^_targets$
 ^.future$
 ^_targets\.R$
@@ -12,6 +17,7 @@ data-raw
 ^clustermq\.tmpl$
 ^future\.tmpl
 ^nohup\.out$
+^scratch\.R$
 ^build\.R$
 ^build\.Rout$
 ^build\.sh$
