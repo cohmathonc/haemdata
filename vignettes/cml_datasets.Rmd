@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(haemdata)
 
-se <- get_data("mmu_mrna_2016_2022_GENCODEm28_HLT_qc.rds")
+se <- get_pin("mmu_mrna_2016_2022_GENCODEm28_HLT_qc.rds")
 
 se <- subset(se,
     select = grepl("CML", SummarizedExperiment::colData(se)$project)

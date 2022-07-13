@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(haemdata)
 
-se <- get_data("mmu_mrna_2016_2022_GENCODEm28_HLT_qc.rds")
+se <- get_pin("mmu_mrna_2016_2022_GENCODEm28_HLT_qc.rds")
 
 se <- subset(se,
     select = grepl("AML", SummarizedExperiment::colData(se)$project)
@@ -45,7 +45,7 @@ plot_transgenes_se(se)
 # Human
 
 ```{r hsa_flt3}
-se <- get_data("hsa_mrna_flt3_GENCODEr40_qc.rds")
+se <- get_pin("hsa_mrna_flt3_GENCODEr40_qc.rds")
 
 pca <- pca_se(se, col_by = "patient_id")
 ```
