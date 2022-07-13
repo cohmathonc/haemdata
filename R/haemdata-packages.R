@@ -5,8 +5,8 @@
 #' @importFrom stats na.omit setNames
 #' @importFrom utils read.csv read.table write.table
 #' @importFrom magrittr %>%
-#' @importFrom dplyr select case_when filter left_join mutate distinct 
-#' @importFrom ggplot2 theme geom_vline aes 
+#' @importFrom dplyr select case_when filter left_join mutate distinct
+#' @importFrom ggplot2 theme geom_vline aes
 
 #' @docType package
 #' @name haemdata
@@ -19,3 +19,4 @@ globalVariables(c(
     "percent_ribo", "teams", "timepoint_project", "value", "weeks",
     "width"
 ))
+

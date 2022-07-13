@@ -5,6 +5,9 @@
 onedrive <- TRUE
 # Location for posting data files, if not OneDrive
 haemdata_folder <- "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata"
+# Package URL
+package_url <- pkgdown::as_pkgdown(".") |>
+    pkgdown:::repo_home()
 
 #' Publish a SummarisedExperiment
 #'
@@ -56,8 +59,8 @@ publish_metadata <- function(metadata) {
     name <- deparse(substitute(metadata))
 
     # make description
-    description <- paste0(
-        "A table describing sample metadata. See http://cgt.coh.org/haemdata/reference/", name, ".html for more information."
+    description <- glue::glue(
+        "A table describing sample metadata. See {package_url}/reference/{name}.html for more information."
     )
 
     csv_pin <- pins::pin_write(
@@ -82,13 +85,14 @@ publish_metadata <- function(metadata) {
 
 # set up pin_board
 if (onedrive == TRUE) {
-    # # OneDrive pin_board
+    # OneDrive pin_board
     pin_board <- pins::board_ms365(
         drive = Microsoft365R::get_team("PSON AML State-Transition")$get_drive(),
         path = "haemdata",
         versioned = TRUE
     )
 } else {
+    # Isilon pin_board
     pin_board <- pins::board_folder(
         haemdata_folder,
         versioned = TRUE
@@ -119,9 +123,11 @@ get_pin_list <- function() {
 # write a SummarisedExperiment pin, with name, description, and metadata
 write_se_pin <- function(summarised_experiment) {
     name <- summarised_experiment@metadata$object_name
-    description <- paste0(
-        "A SummarisedExperiment object. See http://cgt.coh.org/haemdata/reference/", name, ".html for more information."
+    
+    description <- glue::glue(
+        "A SummarisedExperiment object. See {package_url}/reference/{name}.html for more information."
     )
+    
     pin_board |>
         pins::pin_write(
             summarised_experiment,
@@ -136,10 +142,13 @@ write_se_pin <- function(summarised_experiment) {
 # calls make_tpm_matrix() with defaults for the expression matrix
 write_se2tpm_pin <- function(summarised_experiment) {
     name <- summarised_experiment@metadata$object_name
-    description <- paste0(
-        "An expression matrix of genes expressed > 1 TPM in > 5 samples. See http://cgt.coh.org/haemdata/reference/", name, ".html for more information."
+    
+    description <- glue::glue(
+        "An expression matrix of genes expressed > 1 TPM in > 5 samples. See {package_url}/reference/{name}.html for more information."
     )
+    
     expn_mat <- make_tpm_matrix(summarised_experiment)
+    
     pin_board |>
         pins::pin_write(
             expn_mat$tpm_matrix,
@@ -155,7 +164,6 @@ write_se2tpm_pin <- function(summarised_experiment) {
 #' @import SeuratDisk SeuratObject
 #'
 write_seurat_h5ad_pin <- function(seurat_object) {
-
     tmp <- tempdir()
 
     name <- ifelse(
@@ -164,9 +172,10 @@ write_seurat_h5ad_pin <- function(seurat_object) {
             "mmu_10x_2022_1_GRCm38_HLT_seurat"
     )
 
-    description <- paste0(
-        "A Seurat object exported to h5ad format. See http://cgt.coh.org/haemdata/articles/scRNAseq.html for more information."
+    description <- glue::glue(
+        "A Seurat object exported to h5ad format. See {package_url}/reference/{name}.html for more information."
     )
+
     metadata <- list(
         "cell_metadata" = list(seurat_object@meta.data |> names())
     )
@@ -188,7 +197,8 @@ write_seurat_h5ad_pin <- function(seurat_object) {
                 description = description,
                 metadata = metadata
             )
-
+    
     system(glue::glue("rm {tmp}/{name}.*"))
+    
     return(h5ad_pin)
 }
