@@ -7,19 +7,17 @@
 \format{
 A \code{data.frame} with the following columns:
 \describe{
-\item{counts}{\code{mat} Salmon \emph{transcript length bias corrected} gene counts}
-\item{abundance}{\code{mat} Salmon \emph{transcript length bias corrected} TPM}
+\item{pin_name}{Name of the dataset on the pin board, including the file extension}
+\item{version}{Version of the pin to which the dataset belongs}
 }
-}
-\source{
-\code{\link{R/publish_data.R}}
 }
 \usage{
 data(published_pins)
 }
 \description{
-TODO
+Lists the name and most recent version of each dataset published to the Haemdata pin board.
+Pins can be retrieved with the \code{\link[=get_pin]{get_pin()}} function.
 }
-\keyword{2021}
-\keyword{cml}
-\keyword{mrna}
+\examples{
+published_pins
+}

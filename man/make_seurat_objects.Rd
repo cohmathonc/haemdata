@@ -14,6 +14,9 @@ seurat_import_objects(
 \arguments{
 \item{path_regex}{string, optional, regex pattern to match in path. Use this to select different
 genome builds, eg "GRCm38".}
+
+\item{cellranger_folder}{string, path to the cellranger folder. Default
+is \verb{/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/cellranger}}
 }
 \value{
 a list of Seurat objects

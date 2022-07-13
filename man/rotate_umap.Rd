@@ -4,10 +4,10 @@
 \alias{rotate_umap}
 \title{Rotate UMAP}
 \usage{
-rotate_umap(integrated, x = FALSE, y = FALSE)
+rotate_umap(seurat_object, x = FALSE, y = FALSE)
 }
 \arguments{
-\item{integrated}{a Seurat object}
+\item{seurat_object}{a Seurat object}
 
 \item{x}{flip the x-axis LOGICAL (TRUE or FALSE)}
 
