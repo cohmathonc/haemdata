@@ -31,7 +31,7 @@ publish_se <- function(summarised_experiment) {
     # Publish a note to Teams
     if (teams == TRUE) {
         post_teams_chat(glue::glue(
-            "A new <em>SummarisedExperiment</em> and expression matrix have been posted to MHO/haemdata on Isilon: <br>
+            "A new <em>SummarisedExperiment</em> and expression matrix have been posted to Teams: <br>
         {name}.rds<br>
         {name}.csv"
         ))
@@ -152,16 +152,16 @@ write_se2tpm_pin <- function(summarised_experiment) {
 }
 
 # Pin a Seurat object as an `h5ad` file, with name, description, and metadata
+#' @import SeuratDisk SeuratObject
+#'
 write_seurat_h5ad_pin <- function(seurat_object) {
-    requireNamespace("SeuratDisk")
-    requireNamespace("SeuratObject")
 
     tmp <- tempdir()
 
     name <- ifelse(
         stringr::str_detect(seurat_object$ref_genome[1], "GENCODEm28"),
-            "mmu_aml_seurat_GENCODEm28_HLT",
-            "mmu_aml_seurat_GRCm38_HLT"
+            "mmu_10x_2022_1_GENCODEm28_HLT_seurat",
+            "mmu_10x_2022_1_GRCm38_HLT_seurat"
     )
 
     description <- paste0(
@@ -183,7 +183,7 @@ write_seurat_h5ad_pin <- function(seurat_object) {
     h5ad_pin <- pin_board |>
             pins::pin_upload(
                 paths = glue::glue("{tmp}/{name}.h5ad"),
-                name = name,
+                name = glue::glue("{name}.h5ad"),
                 title = name,
                 description = description,
                 metadata = metadata
