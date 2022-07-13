@@ -10,20 +10,18 @@
 #' @return An object from the pin_board
 #' @export
 
-get_data <- function(pin_name, version = NULL) {
-
+get_pin <- function(pin_name, version = NULL) {
     available_pins <- get_pin_list()
     if (pin_name %in% available_pins) {
+        if (is.null(version)) {
+            version <- get_latest_pin_version(pin_name)
+        }
+        hash <- gsub(".*-", "", version)
 
-    if(is.null(version)) {
-        version <- get_latest_pin_version(pin_name)
+        pins::pin_read(pin_board, pin_name, version = version, hash = hash)
+    } else {
+        stop("Pin not found in pin_board; use get_pin_list() to see available pins")
     }
-    hash <- gsub(".*-", "", version)
-
-    pins::pin_read(pin_board, pin_name, version = version, hash = hash)
-} else {
-    stop("Pin not found in pin_board; use get_pin_list() to see available pins")
-}
 }
 
 #' @title get_pin_list
@@ -157,7 +155,7 @@ nextflow run \\
 
 # Hex sticker
 # https://nelson-gon.github.io/12/06/2020/hex-sticker-creation-r/
-make_logo <- function(url=NULL, text=NULL) {
+make_logo <- function(url = NULL, text = NULL) {
     if (is.null(url)) {
         img <- magick::image_read("https://www.maxpixel.net/static/photo/2x/Blood-Group-0-Blood-Rh-factor-Positive-2781421.jpg")
     } else {
