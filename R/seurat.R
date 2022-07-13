@@ -68,14 +68,14 @@ find_elbow <- function(seurat_object, plot = FALSE) {
 #' The "x" and "y" parameters rotate the axis by 90 degrees.
 #'
 #' @name rotate_umap
-#' @param integrated a Seurat object
+#' @param seurat_object a Seurat object
 #' @param x flip the x-axis LOGICAL (TRUE or FALSE)
 #' @param y flip the y-axis LOGICAL (TRUE or FALSE)
 #' @return A Seurat object
 #' @author Denis O'Meally
 #' @export
-rotate_umap <- function(integrated, x = FALSE, y = FALSE) {
-    umap_coord <- (Seurat::Embeddings(integrated[["umap"]]))
+rotate_umap <- function(seurat_object, x = FALSE, y = FALSE) {
+    umap_coord <- (Seurat::Embeddings(seurat_object[["umap"]]))
 
     # check X coords
     if (umap_coord[1, 1] > 0) {
@@ -93,11 +93,11 @@ rotate_umap <- function(integrated, x = FALSE, y = FALSE) {
         umap_coord[, 2] <- umap_coord[, 2] * -1
     }
 
-    integrated@reductions$umap <- Seurat::CreateDimReducObject(
+    seurat_object@reductions$umap <- Seurat::CreateDimReducObject(
         embeddings = umap_coord,
         assay = "RNA"
     )
-    return(integrated)
+    return(seurat_object)
 }
 
 #' @title Make a Seurat object from 10X Cellranger CellPlex data
@@ -115,14 +115,16 @@ rotate_umap <- function(integrated, x = FALSE, y = FALSE) {
 #'
 #' @param path_regex string, optional, regex pattern to match in path. Use this to select different
 #' genome builds, eg "GRCm38".
+#' @param cellranger_folder string, path to the cellranger folder. Default 
+#' is `/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/cellranger`
 #' @return a list of Seurat objects
+#' @import hdf5r
 #' @author Denis O'Meally
 
 # Make Seurat objects
-seurat_import_objects <- function(path_regex, cellranger_folder = "/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/cellranger") {
-    requireNamespace("hdf5r")
-    options(future.globals.maxSize = 10 * 1024^3) # 10GB
-
+seurat_import_objects <- function(
+    path_regex,
+    cellranger_folder = "/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/cellranger") {
     # get a list of ChrY genes from GTF file
     # Parse GTF: https://www.biostars.org/p/140471/
 
@@ -130,11 +132,11 @@ seurat_import_objects <- function(path_regex, cellranger_folder = "/net/isi-dcnl
         chrY_genes <- scan("inst/extdata/mmu_chrY_genes.txt", character())
     } else {
         gtf <- glue::glue("{cellranger_folder}/ref/GENCODEm28_human_genes.filtered.gtf")
-        gtf_genes <- rtracklayer::import(gtf) %>%
-            as.data.frame() %>%
+        gtf_genes <- rtracklayer::import(gtf) |>
+            as.data.frame() |>
             unique()
-        chrY_genes <- gtf_genes$gene_name[grepl("^chrY|^Y", gtf_genes$seqnames)] %>% unique()
-        chrX_genes <- gtf_genes$gene_name[grepl("^chrX|^X", gtf_genes$seqnames)] %>% unique()
+        chrY_genes <- gtf_genes$gene_name[grepl("^chrY|^Y", gtf_genes$seqnames)] |> unique()
+        chrX_genes <- gtf_genes$gene_name[grepl("^chrX|^X", gtf_genes$seqnames)] |> unique()
         # Remove PAR genes
         chrY_genes <- chrY_genes[!(chrY_genes %in% chrX_genes)]
         write.table(chrY_genes, "inst/extdata/mmu_chrY_genes.txt",
