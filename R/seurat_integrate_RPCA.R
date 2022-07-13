@@ -8,8 +8,8 @@
 #' @return a seurat object
 #' @author Denis O'Meally
 #' @export
+#' @import SeuratObject
 seurat_integrate_RPCA <- function(seurat_object_list) {
-    requireNamespace("SeuratObject")
     # https://satijalab.org/seurat/articles/integration_large_datasets.html
     # Integrate across orig.ident
     # Reciprocal PCA
