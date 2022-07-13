@@ -51,12 +51,14 @@ list(
     tar_target(sample_sheet_2022_2, parse_metadata_AML.mRNA.HSA_FLT3.2022()),
     tar_target(sample_sheet_2022_3, parse_metadata_MDS.rnaseq.EGAD00001003891()),
 
-    # combine sample sheets for the nf-core/rnaseq pipeline
+    # Make sample sheets for the nf-core/rnaseq pipeline as described in the manual:
+    # https://nf-co.re/rnaseq/usage#samplesheet-input
+    # CML mice
     tar_target(
         sample_sheet_CML,
         rbind(sample_sheet_CML_1, sample_sheet_CML_2)
     ),
-    # all mice (no validation sets included)
+    # 2016_2022 mice (no validation sets included)
     tar_target(
         sample_sheet_all_mice,
         rbind(
@@ -73,11 +75,11 @@ list(
         )
     ),
 
-    # Make a "validation" run with samples from the validation sets 2017, 2022
-    # these are essentially technical replicates and so are not included with
+    # Make a sample sheet for the validation sets 2017_1 & 2020_2
+    # which are essentially technical replicates and so are not included with
     # the remaining samples
     tar_target(
-        sample_sheet_validation_mice,
+        sample_sheet_techrep_mice,
         rbind(
             sample_sheet_2017_1,
             sample_sheet_2020_2
@@ -86,21 +88,21 @@ list(
 
     ###############################################################################################
     # run the nf-core pipeline - mRNA -------------------------------------------
-    # Names adhere to the format "cohort_species_protocol_ref-genome_workflow"
-    # cohort: {all, validation, flt3, mds}
+    # Names adhere to the format "species_protocol_cohort_ref-genome_workflow"
+    # cohort: {2016_2022, validation, flt3, mds, 2022_1}
     # species: {mmu|hsa}
-    # protocol: {mrna|scrna|mirna}
+    # protocol: {mrna|10x|mirna}
     # ref-genome: {GENCODEr40|GENCODEm28_HLT|GRCm38_HLT}
-    # workflow: {qc|salmon}}
-    # Name the "run_folder" as "species_protocol_cohort"
+    # workflow: {qc|salmon|seurat}}
+    # Construct the `run_folder` parameter for run_nf_core_rnaseq() as "species_protocol_cohort"
 
     # GENCODEm28_HLT Full QC pipeline
     tar_target(all_mice.mRNA_qc,
         run_nf_core_rnaseq("mmu_mrna_2016_2022", sample_sheet_all_mice, "GENCODEm28_HLT"),
         format = "file"
     ),
-    tar_target(validation_qc,
-        run_nf_core_rnaseq("mmu_mrna_validation", sample_sheet_validation_mice, "GENCODEm28_HLT"),
+    tar_target(techrep_qc,
+        run_nf_core_rnaseq("mmu_mrna_techrep", sample_sheet_techrep_mice, "GENCODEm28_HLT"),
         format = "file"
     ),
     tar_target(AML.mRNA.HSA_FLT3_qc,
@@ -150,7 +152,8 @@ list(
 
     ###############################################################################################
     # make SummarisedExperiments -----------------------------------------------------
-    # from each pipeline run, annotate with metadata and QC metrics
+    # from each nf-core/rnaseq pipeline run, annotate the salmon/salmon.merged.gene_counts.rds
+    # SummarizedExperiment with sample metadata and QC metrics
     # GENCODEm28_HLT
     tar_target(all_mice.mRNA_qc_se, annotate_se(
         get_rnaseq_se(all_mice.mRNA_qc), metadata_mmu, all_mice.mRNA_qc
@@ -170,8 +173,8 @@ list(
     tar_target(AML.mRNA.2016_qc_se, annotate_se(
         get_rnaseq_se(AML.mRNA.2016_qc), metadata_mmu, AML.mRNA.2016_qc
     )),
-    tar_target(validation_qc_se, annotate_se(
-        get_rnaseq_se(validation_qc), metadata_mmu, validation_qc
+    tar_target(techrep_qc_se, annotate_se(
+        get_rnaseq_se(techrep_qc), metadata_mmu, techrep_qc
     )),
 
     # GRCm38_HLT
@@ -199,7 +202,7 @@ list(
     # Drop samples that fail mapping threshold  -- only for SummarisedExperiments generated from qc runs
     tar_target(AML.mRNA.2016_qc_se_flt, qc_filter_se(AML.mRNA.2016_qc_se)),
     tar_target(all_mice.mRNA_qc_se_flt, qc_filter_se(all_mice.mRNA_qc_se)),
-    tar_target(validation_qc_se_flt, qc_filter_se(validation_qc_se)),
+    tar_target(techrep_qc_se_flt, qc_filter_se(techrep_qc_se)),
     tar_target(AML.mRNA.HSA_FLT3_qc_se_flt, qc_filter_se(AML.mRNA.HSA_FLT3_qc_se)),
     tar_target(hsa_mrna_mds_qc_se_flt, qc_filter_se(hsa_mrna_mds_qc_se)),
     ###############################################################################################
@@ -220,7 +223,7 @@ list(
     ###############################################################################################
     # save SummarisedExperiments to disk
     tar_target(all_mice_GENCODEm28_pins, publish_se(all_mice.mRNA_qc_se_flt)),
-    tar_target(validation_mice_GENCODEm28_pins, publish_se(validation_qc_se_flt)),
+    tar_target(techrep_mice_GENCODEm28_pins, publish_se(techrep_qc_se_flt)),
     tar_target(HSA_COH_FLT3_GENCODEm28_pins, publish_se(AML.mRNA.HSA_FLT3_qc_se_flt)),
     tar_target(HSA_EGA_MDS_GENCODEm28_pins, publish_se(hsa_mrna_mds_qc_se_flt)),
 
@@ -287,7 +290,7 @@ list(
             metadata_hsa_pins,
             # bulk RNAseq
             all_mice_GENCODEm28_pins,
-            validation_mice_GENCODEm28_pins,
+            techrep_mice_GENCODEm28_pins,
             HSA_COH_FLT3_GENCODEm28_pins
         ))
     )
