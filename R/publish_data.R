@@ -6,8 +6,7 @@ onedrive <- TRUE
 # Location for posting data files, if not OneDrive
 haemdata_folder <- "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata"
 # Package URL
-package_url <- pkgdown::as_pkgdown(".") |>
-    pkgdown:::repo_home()
+package_url <- "http://cgt.coh.org/haemdata"
 
 #' Publish a SummarisedExperiment
 #'
@@ -123,11 +122,11 @@ get_pin_list <- function() {
 # write a SummarisedExperiment pin, with name, description, and metadata
 write_se_pin <- function(summarised_experiment) {
     name <- summarised_experiment@metadata$object_name
-    
+
     description <- glue::glue(
         "A SummarisedExperiment object. See {package_url}/reference/{name}.html for more information."
     )
-    
+
     pin_board |>
         pins::pin_write(
             summarised_experiment,
@@ -142,13 +141,13 @@ write_se_pin <- function(summarised_experiment) {
 # calls make_tpm_matrix() with defaults for the expression matrix
 write_se2tpm_pin <- function(summarised_experiment) {
     name <- summarised_experiment@metadata$object_name
-    
+
     description <- glue::glue(
         "An expression matrix of genes expressed > 1 TPM in > 5 samples. See {package_url}/reference/{name}.html for more information."
     )
-    
+
     expn_mat <- make_tpm_matrix(summarised_experiment)
-    
+
     pin_board |>
         pins::pin_write(
             expn_mat$tpm_matrix,
@@ -197,8 +196,38 @@ write_seurat_h5ad_pin <- function(seurat_object) {
                 description = description,
                 metadata = metadata
             )
-    
+
     system(glue::glue("rm {tmp}/{name}.*"))
-    
+
     return(h5ad_pin)
+}
+# Pin a Seurat object, with name, description, and metadata
+#'
+write_seurat_pin <- function(seurat_object) {
+
+    name <- ifelse(
+        stringr::str_detect(seurat_object$ref_genome[1], "GENCODEm28"),
+        "mmu_10x_2022_1_GENCODEm28_HLT_seurat",
+        "mmu_10x_2022_1_GRCm38_HLT_seurat"
+    )
+
+    description <- glue::glue(
+        "A Seurat object saved in rds format. See {package_url}/reference/{name}.html for more information."
+    )
+
+    metadata <- list(
+        "cell_metadata" = list(seurat_object@meta.data |> names())
+    )
+
+    seurat_pin <- pin_board |>
+        pins::pin_write(
+            seurat_object,
+            name = glue::glue("{name}.rds"),
+            type = "rds",
+            title = name,
+            description = description,
+            metadata = metadata
+        )
+
+    return(seurat_pin)
 }
