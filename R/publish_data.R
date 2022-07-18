@@ -165,10 +165,11 @@ write_se2tpm_pin <- function(summarised_experiment) {
 write_seurat_h5ad_pin <- function(seurat_object) {
     tmp <- tempdir()
 
-    name <- ifelse(
-        stringr::str_detect(seurat_object$ref_genome[1], "GENCODEm28"),
-            "mmu_10x_2022_1_GENCODEm28_HLT_seurat",
-            "mmu_10x_2022_1_GRCm38_HLT_seurat"
+    name <- gsub(
+        "(?<=GENCODEm28_HLT|GRCm38_HLT).*$",
+        "_seurat",
+        deparse(substitute(seurat_object)),
+        perl = TRUE
     )
 
     description <- glue::glue(
@@ -205,10 +206,11 @@ write_seurat_h5ad_pin <- function(seurat_object) {
 #'
 write_seurat_pin <- function(seurat_object) {
 
-    name <- ifelse(
-        stringr::str_detect(seurat_object$ref_genome[1], "GENCODEm28"),
-        "mmu_10x_2022_1_GENCODEm28_HLT_seurat",
-        "mmu_10x_2022_1_GRCm38_HLT_seurat"
+    name <- gsub(
+        "(?<=GENCODEm28_HLT|GRCm38_HLT).*$",
+        "_seurat",
+        deparse(substitute(seurat_object)),
+        perl = TRUE
     )
 
     description <- glue::glue(
