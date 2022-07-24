@@ -47,7 +47,7 @@ list(
     tar_target(sample_sheet_CML_2, parse_metadata_CML.mRNA.2022()),
     # AML scRNAseq
     tar_target(sample_sheet_2022_1, parse_metadata_AML.scRNAseq.2022()),
-    # Human FLT3 patients - COH Biobank & MDS from EGAD00001003891
+    # FLT3 AML patients (COH Biobank) & MDS from EGAD00001003891
     tar_target(sample_sheet_2022_2, parse_metadata_AML.mRNA.HSA_FLT3.2022()),
     tar_target(sample_sheet_2022_3, parse_metadata_MDS.rnaseq.EGAD00001003891()),
 
@@ -275,11 +275,11 @@ list(
     #TODO # Export objects ---------------------------------------------------------------------
     #TODO need csv object pins ?? Eg for upload to GEO?
     # Seurat objects
-    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_pins, write_seurat_pin(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust)),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT_pins, write_seurat_pin(mmu_10x_2022_1_GRCm38_HLT_rpca_clust)),
+    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_pins, write_seurat_pin(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust_cc)),
+    tar_target(mmu_10x_2022_1_GRCm38_HLT_pins, write_seurat_pin(mmu_10x_2022_1_GRCm38_HLT_rpca_clust_cc)),
     # h5ad format
-    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_h5ad_pins, write_seurat_h5ad_pin(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust)),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT_h5ad_pins, write_seurat_h5ad_pin(mmu_10x_2022_1_GRCm38_HLT_rpca_clust)),
+    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_h5ad_pins, write_seurat_h5ad_pin(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust_cc)),
+    tar_target(mmu_10x_2022_1_GRCm38_HLT_h5ad_pins, write_seurat_h5ad_pin(mmu_10x_2022_1_GRCm38_HLT_rpca_clust_cc)),
 
     ######### Collect latest pin versions #########
     #TODO make a function to prune pins not in a release
