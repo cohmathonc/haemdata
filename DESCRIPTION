@@ -14,9 +14,12 @@ BugReports: https://github.com/drejom/haemdata/issues
 Depends: 
     R (>= 4.1)
 Imports: 
+    digest,
     dplyr,
     future,
     future.batchtools,
+    future.apply,
+    glue,
     ggplot2,
     hdf5r,
     helpeRs,
@@ -44,9 +47,7 @@ Suggests:
     BiocParallel,
     clustifyr,
     forcats,
-    future.apply,
     ggsci,
-    glue,
     gtools,
     gtsummary,
     hexSticker,
@@ -59,7 +60,6 @@ Suggests:
     plyr,
     rcompanion,
     rmarkdown,
-    roxygen2,
     rtracklayer,
     tidybulk,
     usethis
