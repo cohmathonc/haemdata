@@ -3,21 +3,39 @@
 # See https://books.ropensci.org/targets/hpc.html
 # to learn about your options.
 
-#targets::tar_make()
-#targets::tar_make_clustermq()
-targets::tar_make_future() 
+
+# clear all pins and upload a new version to the pinboard
+targets::tar_invalidate(ends_with("_pins"))
+
+# run the pipeline
+targets::tar_make_future()
 
 # Check the package
 devtools::check(error_on = "error")
 
+# Make a release on GitHub
+## put fields in standard order and alphabetises dependencies
+use_tidy_description()
+use_tidy_eval()
+use_version()
+
+
+
 # build the package
-#devtools::build()
+tgz <- devtools::build()
+# Publish to cgt.coh.org
+drat::insertPackage(tgz, "/net/isi-dcnl/ifs/user_data/rrockne/MHO")
 
 # install locally
-devtools::install()
+#devtools::install()
+install.packages("haemdata", repo = "http://cgt.coh.org/MHO")
 
 # build the pkgdown site
 pkgdown::clean_site()
 devtools::document()
 
 pkgdown::build_site()
+
+
+install.packages("pak")
+pak::pak(c("drejom/helpeRs", "janitor", "Microsoft365R", "PCAtools", "pins", "qs"))

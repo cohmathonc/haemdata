@@ -106,7 +106,7 @@ AML.mRNA.HSA_FLT3.2022_metadata <- left_join(dat, metadata_mmu) |>
 
 
 
-library("future.batchtools")
+#library("future.batchtools")
 plan(batchtools_slurm, template = "future.tmpl", resources = list(ncpus = 2, memory = "80G", walltime = "24:00:00"))
 demo("mandelbrot", package = "future", ask = FALSE)
 
