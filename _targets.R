@@ -5,8 +5,11 @@
 ###### PIPELINE SETUP ######
 # nf-core pipeline version
 rnaseq_release <- "3.7"
-# Post chat to teams with new data
-teams <- FALSE
+# Post to haemdata_folder
+onedrive <- FALSE
+# Path for haemdata_folder
+haemdata_folder <- "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata"
+
 ###########################
 
 # Load packages required to define the pipeline:

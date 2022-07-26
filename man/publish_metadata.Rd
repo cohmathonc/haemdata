@@ -14,7 +14,6 @@ a data.frame of the pins and version numbers for the published object
 }
 \description{
 Publishes a metadata table to the \code{MHO/haemdata} folder on Isilon storage in \code{.csv} format.
-If \code{teams} is \code{TRUE}, a note is posted to the Teams channel.
 }
 \author{
 Denis O'Meally

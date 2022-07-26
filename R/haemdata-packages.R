@@ -9,6 +9,6 @@ NULL
 globalVariables(c(
     ".", "DOB", "Gender", "Mice", "bam", "cellAmt", "ega_run_accession_id",
     "htbIdPb", "nFeature_RNA", "name", "number", "patient_id", "percent_mt",
-    "percent_ribo", "teams", "timepoint_project", "value", "weeks",
+    "percent_ribo", "timepoint_project", "value", "weeks",
     "width"
 ))
