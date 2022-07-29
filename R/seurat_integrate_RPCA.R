@@ -49,6 +49,22 @@ seurat_integrate_RPCA <- function(seurat_object_list) {
     # some mem management
     rm(anchors)
 
+    # add Misc metadata to the seurat object
+    name <- gsub(
+        "(?<=GENCODEm28_HLT|GRCm38_HLT).*$",
+        "",
+        deparse(substitute(seurat_object_list)),
+        perl = TRUE
+    )
+    description <- glue::glue(
+        "A haemdata Seurat object created using the RPCA integration method. See {package_url}/reference/{name}.html for more information."
+    )
+
+    Seurat::Misc(seurat_object_rpca, slot = "description") <- description
+    Seurat::Misc(seurat_object_rpca, slot = "name") <- name
+
+
+
     #! FIXME Work around....see _targets.R for details
     ref <- ifelse(stringr::str_detect(seurat_object_list[[1]]$ref_genome[1], "GENCODEm28"), "GENCODEm28", "GRCm38")
     qs::qsave(seurat_object_rpca, file = glue::glue("{nf_core_cache}/tmp/{ref}_HLT_seurat_qc_rpca.qs", nthreads = future::availableCores()))
