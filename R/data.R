@@ -10,12 +10,12 @@
 #'  | `fastq_2`      | Full path of fastq2, or blank for single-end reads                                                                                                     |
 #'  | `strandedness` | Sequencing library protocol (`reverse` or `unstranded`)                                                                                               |
 #'  | `mouse_id`     | A unique identifier for each mouse, a 3 or 4 digit number; database held by Kuo lab                                                                   |
-#'  | `tissue`       | Tissue type of the sample being sequenced: `PBMC` peripheral blood mononuclear cells; `BM` bone marrow aspirant; `BM_CKIT` ckit+ flow sorted `BM`|
-#'  | `weeks`        | Time in weeks a sample was taken                                                            |
-#'  | `timepoint`    | Timepoint label; formatting is inconsistent and needs to be harmonised                                                             |
+#'  | `tissue`       | Tissue type: `PBMC` peripheral blood mononuclear cells; `BM` bone marrow aspirant; `BM_CKIT` ckit+ flow sorted `BM`|
+#'  | `weeks`       | Timepoint in weeks                                                            |
+#'  | `timepoint`    | Timepoint label; formatting is inconsistent across cohorts                                                             |
 #'  | `batch`        | Sequencing groups                                                                                                      |
-#'  | `treatment`    | Experimental treatment groups                                                                                                       |
-#'  | `genotype`     | Mouse's genotype                                                                                                                |
+#'  | `treatment`    | Experimental treatment group                                                                                                       |
+#'  | `genotype`     | Mouse genotype                                                                                                                |
 #'  | `sex`          | Sex of the mouse                                                                                                                                    |
 #'  | `dob`          | Date of birth of the mouse                                                                                                                          |
 #'  | `project`      | Indicates which samples were processed together; a project may contain multiple `batches`                                                             |
