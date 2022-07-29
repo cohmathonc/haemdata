@@ -20,12 +20,21 @@ Installation is not *required* to use Haemdata, but installing the R package pro
 You can install the default version of Haemdata from the package website with:
 
 ``` r
-install.packages("haemdata", repo = "http://cgt.coh.org/MHO")
+if (!require("remotes", quietly = TRUE)) install.packages("remotes")
+if (!require("pak", quietly = TRUE)) install.packages("pak")
+install_github(c("drejom/helpeRs", "mojaveazure/seurat-disk"))
+pak::pak(c('future.batchtools', 'janitor', 'Microsoft365R', 'PCAtools', 'pins', 'qs', 'readr', 're
+    adxl', 'S4Vectors', 'SummarizedExperiment', 'targets'))
+install_version("haemdata", repos = "http://cgt.coh.org/MHO", dependencies = TRUE)
 ```
 
 The latest release provides `SummarizedExperiments` produced with version 3.5 of the nf-core/rnaseq pipeline using the [GRCm38_HLT](articles/genomes.html) reference. 
 
 Can't find something that was previously available? Check the [release history](https://github.com/drejom/haemdata/releases).
+
+### Windows users
+
+Windows users require the `Rtools` toolchain bundle installed to build libraries, including some dependencies used by Haemdata. Find the appropriate installer for your version of R [here](https://cran.r-project.org/bin/windows/Rtools/).
 
 ## Publications
 * Frankhouser et al 2022 *Science Advances* <br>[![DOI](https://zenodo.org/badge/DOI/10.1126/sciadv.abj1664.svg)](https://doi.org/10.1126/sciadv.abj1664)
