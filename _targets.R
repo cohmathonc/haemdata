@@ -5,11 +5,9 @@
 ###### PIPELINE SETUP ######
 # nf-core pipeline version
 rnaseq_release <- "3.7"
-# Post to haemdata_folder
-onedrive <- FALSE
-# Path for haemdata_folder
-haemdata_folder <- "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata"
-
+# Which pinboard to use?
+#library(haemdata)
+haemdata::use_pinboard("isilon")
 ###########################
 
 # Load packages required to define the pipeline:
@@ -278,12 +276,9 @@ list(
     #TODO # Export objects ---------------------------------------------------------------------
     #TODO need csv object pins ?? Eg for upload to GEO?
     # Seurat objects
-    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_pins, write_seurat_pin(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust_cc)),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT_pins, write_seurat_pin(mmu_10x_2022_1_GRCm38_HLT_rpca_clust_cc)),
-    # h5ad format
-    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_h5ad_pins, write_seurat_h5ad_pin(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust_cc)),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT_h5ad_pins, write_seurat_h5ad_pin(mmu_10x_2022_1_GRCm38_HLT_rpca_clust_cc)),
-
+    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_pins, publish_seurat(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust_cc)),
+    tar_target(mmu_10x_2022_1_GRCm38_HLT_pins, publish_seurat(mmu_10x_2022_1_GRCm38_HLT_rpca_clust_cc)),
+    
     ######### Collect latest pin versions #########
     #TODO make a function to prune pins not in a release
     tar_target(
