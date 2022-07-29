@@ -1,13 +1,16 @@
 Package: haemdata
-Title: Mouse RNAseq Data (Bulk mRNA and microRNA) from AML and CML
-    Projects
+Title: An R package for accessing genomic data from the PSON AML
+    State-transition project at COH
 Version: 0.0.0.9000
 Authors@R: 
     person("Denis", "O'Meally", , "domeally@coh.org", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7749-9506"))
-Description: Harmonised data from mouse RNAseq projects processed with
-    [nf-core](https://nf-co.re) pipelines and published as the R package
-    `haemdata`, available from http://cgt.coh.org/haemdata.
+Description: Harmonised, preprocessed data from the COH PSON
+    State-transition projects at COH. Accessor functions published as the
+    R package `haemdata`, available from http://cgt.coh.org/haemdata.  A
+    COH account is required to access published resources; contact
+    [Russell Rockne](mailto:rrockne@coh.org) to be added to the
+    Sharepoint/Teams PSON group.
 License: file LICENSE
 URL: https://github.com/drejom/haemdata
 BugReports: https://github.com/drejom/haemdata/issues
@@ -17,10 +20,10 @@ Imports:
     digest,
     dplyr,
     future,
-    future.batchtools,
     future.apply,
-    glue,
+    future.batchtools,
     ggplot2,
+    glue,
     hdf5r,
     helpeRs,
     janitor,
@@ -74,3 +77,18 @@ LazyData: true
 LazyDataCompression: xz
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+Collate: 
+    'haemdata.R'
+    'access_data.R'
+    'apollo_HPC.R'
+    'data.R'
+    'import_metadata.R'
+    'publish_data.R'
+    'run_nfcore.R'
+    'seurat.R'
+    'seurat_annotate_clusters_and_umap.R'
+    'seurat_annotate_type.R'
+    'seurat_integrate_RPCA.R'
+    'summarised_experiments.R'
+    'utils-tidy-eval.R'
+    'utils.R'
