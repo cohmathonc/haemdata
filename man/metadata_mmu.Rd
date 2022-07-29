@@ -15,12 +15,12 @@
    \code{fastq_2} \tab Full path of fastq2, or blank for single-end reads \cr
    \code{strandedness} \tab Sequencing library protocol (\code{reverse} or \code{unstranded}) \cr
    \code{mouse_id} \tab A unique identifier for each mouse, a 3 or 4 digit number; database held by Kuo lab \cr
-   \code{tissue} \tab Tissue type of the sample being sequenced: \code{PBMC} peripheral blood mononuclear cells; \code{BM} bone marrow aspirant; \code{BM_CKIT} ckit+ flow sorted \code{BM} \cr
-   \code{weeks} \tab Time in weeks a sample was taken \cr
-   \code{timepoint} \tab Timepoint label; formatting is inconsistent and needs to be harmonised \cr
+   \code{tissue} \tab Tissue type: \code{PBMC} peripheral blood mononuclear cells; \code{BM} bone marrow aspirant; \code{BM_CKIT} ckit+ flow sorted \code{BM} \cr
+   \code{weeks} \tab Timepoint in weeks \cr
+   \code{timepoint} \tab Timepoint label; formatting is inconsistent across cohorts \cr
    \code{batch} \tab Sequencing groups \cr
-   \code{treatment} \tab Experimental treatment groups \cr
-   \code{genotype} \tab Mouse's genotype \cr
+   \code{treatment} \tab Experimental treatment group \cr
+   \code{genotype} \tab Mouse genotype \cr
    \code{sex} \tab Sex of the mouse \cr
    \code{dob} \tab Date of birth of the mouse \cr
    \code{project} \tab Indicates which samples were processed together; a project may contain multiple \code{batches} \cr
