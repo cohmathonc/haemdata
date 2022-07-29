@@ -1,24 +1,17 @@
-# Functions for publishing data to the Heamdata pin_board
+# Functions for publishing data to the Heamdata pin_board --- ####
+#' @include haemdata.R
 
-# Setup the pin_board to use
-# Post data to OneDrive pin board (TRUE) or Isilon pin board (FALSE)
-onedrive <- TRUE
-# Location for posting data files, if not OneDrive
-haemdata_folder <- "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata"
-# Package URL
-package_url <- "http://cgt.coh.org/haemdata"
+# --- Publishing versioned objects --- ####
 
-#' Publish a SummarisedExperiment
-#'
-#' Publishes a SummarisedExperiment to the Haemdata Teams channel and to the `MHO/haemdata` folder
+#' @title Publish a SummarisedExperiment
+#' @description Publishes a SummarisedExperiment to the Haemdata Teams channel and to the `MHO/haemdata` folder
 #' on the COH Isilon storage (in `.rda` format) along with an expression matrix
 #' (in `.csv` format). Files are named according to the SummarisedExperiment's
 #' `metadata$oject_name` variable
-#'
-#' @name publish_se
 #' @param summarised_experiment a SummarisedExperiment ready to publish
 #' @return the path to the published object
 #' @author Denis O'Meally
+#' @rdname publish_se
 #' @export
 publish_se <- function(summarised_experiment) {
     name <- summarised_experiment@metadata$object_name
@@ -33,9 +26,39 @@ publish_se <- function(summarised_experiment) {
     return(data.frame("pin_name" = c(csv_pin, rds_pin), "version" = c(csv_version, rds_version)))
 }
 
+#' Publish a Seurat object
+#'
+#' Publishes a Seurat object to the Haemdata Teams channel or to the `MHO/haemdata` folder
+#' on the COH Isilon storage (in `.rda` format) along with a ScanPy object (in `.h5ad` format).
+#' Files are named according to the Seurat object's `name` slot.
+#'
+#' @name publish_seurat
+#' @param seurat_object a Seurat object ready to publish
+#' @return the path to the published object
+#' @author Denis O'Meally
+#' @export
+publish_seurat <- function(seurat_object) {
+    # TODO: move name assignment (deparse) to seurat_import_objects(); see Seurat::Misc() for adding arbitrary metadata to the seurat object
+    name <- gsub(
+        "(?<=GENCODEm28_HLT|GRCm38_HLT).*$",
+        "_seurat",
+        deparse(substitute(seurat_object)),
+        perl = TRUE
+    )
+    # Publish the Seurat rds file
+    rds_pin <- write_seurat_pin(seurat_object)
+    rds_version <- get_latest_pin_version(rds_pin)
+
+    # Publish the ScanPy h5ad file
+    h5ad_pin <- write_seurat_h5ad_pin(seurat_object)
+    h5ad_version <- get_latest_pin_version(rds_pin)
+
+    return(data.frame("pin_name" = c(rds_pin, h5ad_pin), "version" = c(rds_version, h5ad_version)))
+}
 #' Publish sample metadata
 #'
-#' Publishes a metadata table to the `MHO/haemdata` folder on Isilon storage in `.csv` format.
+#' Publishes a metadata table to the  Haemdata Teams channel or to the `MHO/haemdata`
+#' folder on Isilon storage in `.csv` format.
 #'
 #' @name publish_metadata
 #' @param metadata a data.frame ready to publish
@@ -43,101 +66,117 @@ publish_se <- function(summarised_experiment) {
 #' @author Denis O'Meally
 #' @export
 publish_metadata <- function(metadata) {
+    if (is.null(haemdata_env$pin_board)) {
+        rlang::inform(haemdata_env$pin_board_msg, .frequency = "always")
+    } else {
+        # extract name
+        name <- deparse(substitute(metadata))
 
-    # extract name
-    name <- deparse(substitute(metadata))
+        # make description
+        description <- glue::glue(
+            "A table describing sample metadata. See {package_url}/reference/{name}.html for more information."
+        )
 
-    # make description
-    description <- glue::glue(
-        "A table describing sample metadata. See {package_url}/reference/{name}.html for more information."
-    )
+        csv_pin <- pins::pin_write(
+            haemdata_env$pin_board,
+            metadata,
+            name = glue::glue("{name}.csv"),
+            type = "csv",
+            title = name,
+            description = description
+        )
 
-    csv_pin <- pins::pin_write(
-        pin_board,
-        metadata,
-        name = glue::glue("{name}.csv"),
-        type = "csv",
-        title = name,
-        description = description
-    )
+        csv_version <- get_latest_pin_version(csv_pin)
 
-    csv_version <- get_latest_pin_version(csv_pin)
-
-    return(data.frame("pin_name" = c(csv_pin), "version" = c(csv_version)))
+        return(data.frame("pin_name" = c(csv_pin), "version" = c(csv_version)))
+    }
 }
+
+# --- Writing pins to the pin_board --- ####
 
 # write a SummarisedExperiment pin, with name, description, and metadata
 write_se_pin <- function(summarised_experiment) {
-    name <- summarised_experiment@metadata$object_name
+    if (is.null(haemdata_env$pin_board)) {
+        rlang::inform(haemdata_env$pin_board_msg, .frequency = "always")
+    } else {
+        name <- summarised_experiment@metadata$object_name
 
-    description <- glue::glue(
-        "A SummarisedExperiment object. See {package_url}/reference/{name}.html for more information."
-    )
-
-    pin_board |>
-        pins::pin_write(
-            summarised_experiment,
-            name = glue::glue("{name}.rds"),
-            type = "rds",
-            title = name,
-            description = description,
-            metadata = as.list(summarised_experiment@metadata)
+        description <- glue::glue(
+            "A SummarisedExperiment object. See {package_url}/reference/{name}.html for more information."
         )
+
+        haemdata_env$pin_board |>
+            pins::pin_write(
+                summarised_experiment,
+                name = glue::glue("{name}.rds"),
+                type = "rds",
+                title = name,
+                description = description,
+                metadata = as.list(summarised_experiment@metadata)
+            )
+    }
 }
 
 # write an expression matrix pin, with name, description, and metadata from the summarised experment
 # calls make_tpm_matrix() with defaults for the expression matrix
 write_se2tpm_pin <- function(summarised_experiment) {
-    name <- summarised_experiment@metadata$object_name
+    if (is.null(haemdata_env$pin_board)) {
+        rlang::inform(haemdata_env$pin_board_msg, .frequency = "always")
+    } else {
+        name <- summarised_experiment@metadata$object_name
 
-    description <- glue::glue(
-        "An expression matrix of genes expressed > 1 TPM in > 5 samples. See {package_url}/reference/{name}.html for more information."
-    )
-
-    expn_mat <- make_tpm_matrix(summarised_experiment)
-
-    pin_board |>
-        pins::pin_write(
-            expn_mat$tpm_matrix,
-            name = glue::glue("{expn_mat$name}.csv"),
-            type = "csv",
-            title = name,
-            description = description,
-            metadata = as.list(summarised_experiment@metadata)
+        description <- glue::glue(
+            "An expression matrix of genes expressed > 1 TPM in > 5 samples. See {package_url}/reference/{name}.html for more information."
         )
+
+        expn_mat <- make_tpm_matrix(summarised_experiment)
+
+        haemdata_env$pin_board |>
+            pins::pin_write(
+                expn_mat$tpm_matrix,
+                name = glue::glue("{expn_mat$name}.csv"),
+                type = "csv",
+                title = name,
+                description = description,
+                metadata = as.list(summarised_experiment@metadata)
+            )
+    }
 }
 
 # Pin a Seurat object as an `h5ad` file, with name, description, and metadata
-#' @import SeuratDisk SeuratObject
 #'
 write_seurat_h5ad_pin <- function(seurat_object) {
-    tmp <- tempdir()
+    if (is.null(haemdata_env$pin_board)) {
+        rlang::inform(haemdata_env$pin_board_msg, .frequency = "always")
+    } else {
+        tmp <- tempdir()
 
-    name <- gsub(
-        "(?<=GENCODEm28_HLT|GRCm38_HLT).*$",
-        "_seurat",
-        deparse(substitute(seurat_object)),
-        perl = TRUE
-    )
+        # TODO: move name assignment (deparse) to seurat_import_objects(); see Seurat::Misc() for adding arbitrary metadata to the seurat object
+        name <- gsub(
+            "(?<=GENCODEm28_HLT|GRCm38_HLT).*$",
+            "_seurat",
+            deparse(substitute(seurat_object)),
+            perl = TRUE
+        )
 
-    description <- glue::glue(
-        "A Seurat object exported to h5ad format. See {package_url}/reference/{name}.html for more information."
-    )
+        description <- glue::glue(
+            "A Seurat object exported to h5ad format. See {package_url}/reference/{name}.html for more information."
+        )
 
-    metadata <- list(
-        "cell_metadata" = list(seurat_object@meta.data |> names())
-    )
+        metadata <- list(
+            "cell_metadata" = list(seurat_object@meta.data |> names())
+        )
 
-    SeuratDisk::SaveH5Seurat(
-        seurat_object,
-        filename = glue::glue("{tmp}/{name}.h5seurat"),
-        verbose = TRUE,
-        overwrite = TRUE
-    )
+        SeuratDisk::SaveH5Seurat(
+            seurat_object,
+            filename = glue::glue("{tmp}/{name}.h5seurat"),
+            verbose = TRUE,
+            overwrite = TRUE
+        )
 
-    SeuratDisk::Convert(glue::glue("{tmp}/{name}.h5seurat"), dest = "h5ad", overwrite = TRUE)
+        SeuratDisk::Convert(glue::glue("{tmp}/{name}.h5seurat"), dest = "h5ad", overwrite = TRUE)
 
-    h5ad_pin <- pin_board |>
+        h5ad_pin <- haemdata_env$pin_board |>
             pins::pin_upload(
                 paths = glue::glue("{tmp}/{name}.h5ad"),
                 name = glue::glue("{name}.h5ad"),
@@ -146,38 +185,45 @@ write_seurat_h5ad_pin <- function(seurat_object) {
                 metadata = metadata
             )
 
-    system(glue::glue("rm {tmp}/{name}.*"))
+        system(glue::glue("rm {tmp}/{name}.*"))
 
-    return(h5ad_pin)
+        return(h5ad_pin)
+    }
 }
+
 # Pin a Seurat object, with name, description, and metadata
 #'
 write_seurat_pin <- function(seurat_object) {
+    if (is.null(haemdata_env$pin_board)) {
+        rlang::inform(haemdata_env$pin_board_msg, .frequency = "always")
+    } else {
 
-    name <- gsub(
-        "(?<=GENCODEm28_HLT|GRCm38_HLT).*$",
-        "_seurat",
-        deparse(substitute(seurat_object)),
-        perl = TRUE
-    )
-
-    description <- glue::glue(
-        "A Seurat object saved in rds format. See {package_url}/reference/{name}.html for more information."
-    )
-
-    metadata <- list(
-        "cell_metadata" = list(seurat_object@meta.data |> names())
-    )
-
-    seurat_pin <- pin_board |>
-        pins::pin_write(
-            seurat_object,
-            name = glue::glue("{name}.rds"),
-            type = "rds",
-            title = name,
-            description = description,
-            metadata = metadata
+        # TODO: move name assignment (deparse) to seurat_import_objects(); see Seurat::Misc() for adding arbitrary metadata to the seurat object
+        name <- gsub(
+            "(?<=GENCODEm28_HLT|GRCm38_HLT).*$",
+            "_seurat",
+            deparse(substitute(seurat_object)),
+            perl = TRUE
         )
 
-    return(seurat_pin)
+        description <- glue::glue(
+            "A Seurat object saved in rds format. See {package_url}/reference/{name}.html for more information."
+        )
+
+        metadata <- list(
+            "cell_metadata" = list(seurat_object@meta.data |> names())
+        )
+
+        seurat_pin <- haemdata_env$pin_board |>
+            pins::pin_write(
+                seurat_object,
+                name = glue::glue("{name}.rds"),
+                type = "rds",
+                title = name,
+                description = description,
+                metadata = metadata
+            )
+
+        return(seurat_pin)
+    }
 }
