@@ -11,18 +11,16 @@ targets::tar_invalidate(ends_with("_pins"))
 targets::tar_make_future()
 
 # Check the package
-devtools::check(error_on = "error")
+devtools::check(error_on = "error", vignettes = FALSE)
 
 # Make a release on GitHub
 ## put fields in standard order and alphabetises dependencies
 use_tidy_description()
-use_tidy_eval()
-use_version()
-
-
+#use_tidy_eval()
+#use_version()
 
 # build the package
-tgz <- devtools::build()
+tgz <- devtools::build(vignettes = FALSE)
 # Publish to cgt.coh.org
 drat::insertPackage(tgz, "/net/isi-dcnl/ifs/user_data/rrockne/MHO")
 
@@ -37,5 +35,3 @@ devtools::document()
 pkgdown::build_site()
 
 
-install.packages("pak")
-pak::pak(c("drejom/helpeRs", "janitor", "Microsoft365R", "PCAtools", "pins", "qs"))
