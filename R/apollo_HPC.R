@@ -8,7 +8,7 @@ options(clustermq.scheduler = "slurm")
 options(clustermq.template = "clustermq.tmpl")
 
 # tar_make_future() configuration:
-options(future.globals.maxSize = 20 * 1024^3) # 20GB
+options(future.globals.maxSize = 40 * 1024^3) # 20GB
 options(future.seed = TRUE)
 options(future.cache.path = glue::glue("{nf_core_cache}/_future"))
 
@@ -72,8 +72,8 @@ apollo_bigmem <- targets::tar_resources(
         future::tweak(
             future.batchtools::batchtools_slurm,
             template = "future.tmpl",
-            resources = list(ncpus = 8L, memory = "600G", walltime = "12:00:00", partition = "fast")
+            resources = list(ncpus = 6L, memory = "600G", walltime = "12:00:00", partition = "fast")
         ),
-        future::tweak("multisession", workers = 8L)
+        future::tweak("multisession", workers = 6L)
     ))
 )
