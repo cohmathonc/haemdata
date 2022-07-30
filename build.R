@@ -33,5 +33,3 @@ pkgdown::clean_site()
 devtools::document()
 
 pkgdown::build_site()
-
-
