@@ -115,7 +115,7 @@ rotate_umap <- function(seurat_object, x = FALSE, y = FALSE) {
 #'
 #' @param path_regex string, optional, regex pattern to match in path. Use this to select different
 #' genome builds, eg "GRCm38".
-#' @param cellranger_folder string, path to the cellranger folder. Default 
+#' @param cellranger_folder string, path to the cellranger folder. Default
 #' is `/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/cellranger`
 #' @return a list of Seurat objects
 #' @import hdf5r
@@ -228,16 +228,17 @@ seurat_import_objects <- function(
 
 #' Basic single cell QC
 #'
-#' Applies the following filters to the data:
+#' Applies the following filters to each Seurat object in the list:
 #' 1. Removes genes expressed in fewer than 3 cells
 #' 2. Removes cells with fewer than 200 genes expressed
 #' 3. Removes cells where mitochondrial genes account for more than 20% of expressed transcripts
 #' 4. Removes cells where ribosomal genes account for fewer than 5% of expressed transcripts
 #'
+#' The resulting list of Seurat objects is returned as a merged Seurat object, ready for downstream analysis.
 #'
 #' @name seurat_perform_cell_qc
 #' @param raw_seurat_objects a list of Seurat objects, fresh in from Cellranger
-#' @return a list of Seurat objects
+#' @return a Seurat object
 #' @author Denis O'Meally
 #' @export
 seurat_perform_cell_qc <- function(raw_seurat_objects) {
@@ -253,14 +254,34 @@ seurat_perform_cell_qc <- function(raw_seurat_objects) {
             # filter on mt and ribo reads, and cells with at least 200 genes ----------
             x <- subset(x, subset = nFeature_RNA > 200 & percent_mt < 20 & percent_ribo > 5)
         }, future.seed = TRUE)
+
+    seurat_object <- merge(
+        x = filtered_seurat_objects[[1]],
+        y = filtered_seurat_objects[2:length(filtered_seurat_objects)]
+    )
+
+    # add Misc metadata to the seurat object
+    name <- gsub(
+        "(?<=GENCODEm28_HLT|GRCm38_HLT).*$",
+        "",
+        deparse(substitute(raw_seurat_objects)),
+        perl = TRUE
+    )
+    description <- glue::glue(
+        "A haemdata Seurat object created using the SCTransform v2 integration method. See {package_url}/reference/{name}.html for more information." 
+    )
+    Seurat::Misc(seurat_object, slot = "description") <- description
+    Seurat::Misc(seurat_object, slot = "name") <- name
+
+    return(seurat_object)
 }
 
 #' Annotate mouse cell cycle
 #'
 #' Uses the function [`Seurat::CellCycleScoring()`] to annotate the cells with their cell cycle `Phase`,
-#' , `S.score` and `G2M.score`. The Seurat function uses an internal list of human gene symbols from 
+#' `S.score` and `G2M.score`. The Seurat function uses an internal list of human gene symbols from
 #' Tirosh et al 2016.
-#' #'
+#'
 #' Here we substitute equivalent mouse symbols from `biomaRt`,
 #' but the service was down at time of writing. In a quick hack, we simply
 #' convert gene symbols by making them lowercase, with the 1st letter in caps.
@@ -278,7 +299,7 @@ seurat_annotate_cell_cycle <- function(seurat_object) {
 
     # Previously used this with success:
     # https://ucdavis-bioinformatics-training.github.io/2019-single-cell-RNA-sequencing-Workshop-UCD_UCSF/scrnaseq_analysis/scRNA_Workshop-PART1.html
-    # But its a bit hacky and overly complex. 
+    # But its a bit hacky and overly complex.
 
     # ############################################################################
     # ### This is the recommended way to convert to mouse ids, but ensembl is down at time of testing
