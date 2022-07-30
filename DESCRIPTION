@@ -23,6 +23,7 @@ Imports:
     future.apply,
     future.batchtools,
     ggplot2,
+    glmGamPoi,
     glue,
     hdf5r,
     helpeRs,
@@ -36,6 +37,7 @@ Imports:
     readxl,
     rlang (>= 0.4.11),
     S4Vectors,
+    sctransform,
     Seurat,
     SeuratDisk,
     SeuratObject,
@@ -70,7 +72,8 @@ VignetteBuilder:
     knitr
 Remotes:
     drejom/helpeRs,
-    mojaveazure/seurat-disk
+    mojaveazure/seurat-disk,
+    satijalab/sctransform@develop
 Encoding: UTF-8
 Language: en-AU
 LazyData: true
@@ -89,6 +92,7 @@ Collate:
     'seurat_annotate_clusters_and_umap.R'
     'seurat_annotate_type.R'
     'seurat_integrate_RPCA.R'
+    'seurat_integrate_scTransform.R'
     'summarised_experiments.R'
     'utils-tidy-eval.R'
     'utils.R'

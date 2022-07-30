@@ -6,8 +6,8 @@
 # nf-core pipeline version
 rnaseq_release <- "3.7"
 # Which pinboard to use?
-#library(haemdata)
-haemdata::use_pinboard("isilon")
+library(haemdata)
+use_pinboard("isilon")
 ###########################
 
 # Load packages required to define the pipeline:
@@ -15,7 +15,9 @@ library(targets)
 library(tarchetypes)
 # Set target options:
 tar_option_set(
-    packages = c("tidyverse", "SummarizedExperiment"), # packages that targets need to run
+  #  packages = c("haemdata"), # packages that targets need to run
+   # imports = c("haemdata"), # packages that targets need to run
+    error = "continue", # continue or stop on error
     # format = "qs", # default storage format
     # # Set other options as needed.
     storage = "worker",
@@ -246,39 +248,54 @@ list(
     tar_target(mmu_10x_2022_1_GRCm38_HLT_qc, seurat_perform_cell_qc(mmu_10x_2022_1_GRCm38_HLT),
         resources = apollo_bigmem),
 
-    # # # Integrate cells using Reciprocal PCA -------------------------------------
-    #! FIXME some bug in batchtools that causes the following to fail, but works in an interactive session
-    #! For now, run this step manually
-    # tar_target(mmu_10x_2022_1_GENCODEm28_HLT_rpca, seurat_integrate_RPCA(mmu_10x_2022_1_GENCODEm28_HLT_qc),
+    # # # # Integrate cells using Reciprocal PCA -------------------------------------
+    # #! FIXME some bug in batchtools that causes the following to fail, but works in an interactive session
+    # #! For now, run this step manually
+    # # tar_target(mmu_10x_2022_1_GENCODEm28_HLT_rpca, seurat_integrate_RPCA(mmu_10x_2022_1_GENCODEm28_HLT_qc),
+    # #     resources = apollo_large),
+    # # tar_target(mmu_10x_2022_1_GRCm38_HLT_rpca, seurat_integrate_RPCA(mmu_10x_2022_1_GRCm38_HLT_qc),
+    # #     resources = apollo_large),
+
+    # # # Make clusters  ---------------------------------------------------------------
+    # tar_target(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust, seurat_annotate_clusters_and_umap(
+    #     # mmu_10x_2022_1_GENCODEm28_HLT_rpca),
+    #     qs::qread(glue::glue("{nf_core_cache}/tmp/GENCODEm28_HLT_seurat_qc_rpca.qs"))),
     #     resources = apollo_large),
-    # tar_target(mmu_10x_2022_1_GRCm38_HLT_rpca, seurat_integrate_RPCA(mmu_10x_2022_1_GRCm38_HLT_qc),
+    # tar_target(mmu_10x_2022_1_GRCm38_HLT_rpca_clust, seurat_annotate_clusters_and_umap(
+    #     # mmu_10x_2022_1_GRCm38_HLT_rpca)
+    #     qs::qread(glue::glue("{nf_core_cache}/tmp/GRCm38_HLT_seurat_qc_rpca.qs"))),
     #     resources = apollo_large),
+    # # # Annotate cell cycle ---------------------------------------------------------
+    # tar_target(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust_cc, seurat_annotate_cell_cycle(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust),
+    #     resources = apollo_medium),
+    # tar_target(mmu_10x_2022_1_GRCm38_HLT_rpca_clust_cc, seurat_annotate_cell_cycle(mmu_10x_2022_1_GRCm38_HLT_rpca_clust),
+    #     resources = apollo_medium),
 
     # # # Integrate cells with SCTransform
-    # # tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct, integrate_SCTransform(mmu_10x_2022_1_GENCODEm28_HLT_qc)),
-    # # tar_target(mmu_10x_2022_1_GRCm38_HLT_sct, integrate_SCTransform(mmu_10x_2022_1_GRCm38_HLT_qc)),
-
+    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct, seurat_sctransform(mmu_10x_2022_1_GENCODEm28_HLT_qc),
+        resources = apollo_bigmem),
+    tar_target(mmu_10x_2022_1_GRCm38_HLT_sct, seurat_sctransform(mmu_10x_2022_1_GRCm38_HLT_qc),
+        resources = apollo_bigmem),
     # # Make clusters  ---------------------------------------------------------------
-    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust, seurat_annotate_clusters_and_umap(
-        qs::qread(glue::glue("{nf_core_cache}/tmp/GENCODEm28_HLT_seurat_qc_rpca.qs"))),
+    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust, seurat_annotate_clusters_and_umap(
+        mmu_10x_2022_1_GENCODEm28_HLT_sct),
         resources = apollo_large),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT_rpca_clust, seurat_annotate_clusters_and_umap(
-        qs::qread(glue::glue("{nf_core_cache}/tmp/GRCm38_HLT_seurat_qc_rpca.qs"))),
+    tar_target(mmu_10x_2022_1_GRCm38_HLT_sct_clust, seurat_annotate_clusters_and_umap(
+        mmu_10x_2022_1_GRCm38_HLT_sct),
         resources = apollo_large),
     # # Annotate cell cycle ---------------------------------------------------------
-    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust_cc, seurat_annotate_cell_cycle(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust),
+    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc, seurat_annotate_cell_cycle(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust),
         resources = apollo_medium),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT_rpca_clust_cc, seurat_annotate_cell_cycle(mmu_10x_2022_1_GRCm38_HLT_rpca_clust),
+    tar_target(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc, seurat_annotate_cell_cycle(mmu_10x_2022_1_GRCm38_HLT_sct_clust),
         resources = apollo_medium),
+
 
     #TODO # # Annotate cell type -----------------------------------------------------------
 
-    #TODO # Export objects ---------------------------------------------------------------------
-    #TODO need csv object pins ?? Eg for upload to GEO?
-    # Seurat objects
-    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_pins, publish_seurat(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust_cc)),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT_pins, publish_seurat(mmu_10x_2022_1_GRCm38_HLT_rpca_clust_cc)),
-    
+    # Publish Seurat objects -----------------------------------------------------------
+    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_pins, publish_seurat(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc)),
+    tar_target(mmu_10x_2022_1_GRCm38_HLT_pins, publish_seurat(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc)),
+
     ######### Collect latest pin versions #########
     #TODO make a function to prune pins not in a release
     tar_target(
@@ -287,8 +304,6 @@ list(
             # single cell RNA-seq
             mmu_10x_2022_1_GRCm38_HLT_pins,
             mmu_10x_2022_1_GENCODEm28_HLT_pins,
-            mmu_10x_2022_1_GRCm38_HLT_h5ad_pins,
-            mmu_10x_2022_1_GENCODEm28_HLT_h5ad_pins,
             # metadata
             metadata_mmu_pins,
             metadata_hsa_pins,
