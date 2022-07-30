@@ -10,16 +10,19 @@ seurat_perform_cell_qc(raw_seurat_objects)
 \item{raw_seurat_objects}{a list of Seurat objects, fresh in from Cellranger}
 }
 \value{
-a list of Seurat objects
+a Seurat object
 }
 \description{
-Applies the following filters to the data:
+Applies the following filters to each Seurat object in the list:
 \enumerate{
 \item Removes genes expressed in fewer than 3 cells
 \item Removes cells with fewer than 200 genes expressed
 \item Removes cells where mitochondrial genes account for more than 20\% of expressed transcripts
 \item Removes cells where ribosomal genes account for fewer than 5\% of expressed transcripts
 }
+}
+\details{
+The resulting list of Seurat objects is returned as a merged Seurat object, ready for downstream analysis.
 }
 \author{
 Denis O'Meally

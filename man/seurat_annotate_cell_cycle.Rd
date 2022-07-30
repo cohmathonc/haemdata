@@ -17,14 +17,14 @@ A Surat object with cell cycle annotations added to cell \code{meta.data} (\code
 }
 \description{
 Uses the function \code{\link[Seurat:CellCycleScoring]{Seurat::CellCycleScoring()}} to annotate the cells with their cell cycle \code{Phase},
-, \code{S.score} and \code{G2M.score}. The Seurat function uses an internal list of human gene symbols from
+\code{S.score} and \code{G2M.score}. The Seurat function uses an internal list of human gene symbols from
 Tirosh et al 2016.
-#'
+}
+\details{
 Here we substitute equivalent mouse symbols from \code{biomaRt},
 but the service was down at time of writing. In a quick hack, we simply
 convert gene symbols by making them lowercase, with the 1st letter in caps.
-}
-\details{
+
 https://rdrr.io/cran/Seurat/man/CellCycleScoring.html
 https://github.com/satijalab/seurat/issues/2493
 }

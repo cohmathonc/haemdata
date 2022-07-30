@@ -11,14 +11,17 @@ seurat_annotate_clusters_and_umap(seurat_object)
 \item{seurat_object}{a Seurat object}
 }
 \value{
-a Seurat object with UMAP and knn clusters
+a Seurat object with UMAP and knn clusters annotated
 }
 \description{
-Runs the 'standard workflow' using 2000 features, but differs in that the number of PCs used for clustering is
-is first determined using using the \code{\link[=find_elbow]{find_elbow()}} function. The number of clusters is
-tuned using the \code{cluster_res} parameter within the \code{\link[Seurat:FindClusters]{Seurat::FindClusters()}} function.
+Runs the workflow as described in the
+\href{https://satijalab.org/seurat/articles/sctransform_vignette.html}{sctransform vignette}
+post \code{sctransform}. The number of clusters is tuned using the \code{cluster_res} parameter
+within the \code{\link[Seurat:FindClusters]{Seurat::FindClusters()}} function, and the chosen resolution positioned
+last in the dplyr pipe so as to set \code{seurat_identity} accordingly.
 }
 \details{
+https://satijalab.org/seurat/articles/sctransform_vignette.html
 https://satijalab.org/seurat/articles/integration_introduction.html#perform-an-integrated-analysis-1
 }
 \author{
