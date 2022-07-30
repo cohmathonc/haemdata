@@ -29,6 +29,11 @@ tar_option_set(
 # Load the R scripts & functions:
 for (file in list.files("R", full.names = TRUE)) source(file)
 
+# check that we're running on Apollo
+if (!(get_hostname() %in% c("ppxhpcacc01", "ppxhpcacc02"))) {
+    stop("This pipeline must be run on Apollo")
+}
+
 list(
     # make the package logo
     tar_target(logo, make_logo()),
