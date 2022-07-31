@@ -26,7 +26,7 @@ The pipeline version is specified by the \code{rnaseq_release} parameter in the 
 \details{
 Execution of the pipeline is independent of the package build script, allowing asynchronous development.
 If no \code{run_folder} exists, it will be created along with a \code{sample_sheet.csv} and \verb{run_\{ref_genome\}.sh},
-which is submitted via \code{sbatch}. A successful run is detected by the presence of a a multicqc report.
+which is submitted via \code{sbatch}. A successful run is detected by the presence of a a multiqc report.
 An existing run script wont be overwritten by this function so it must be deleted manually.
 }
 \author{
