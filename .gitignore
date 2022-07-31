@@ -10,5 +10,4 @@ run.Rout
 *.rds
 *.log
 
-
-
+.vscode/settings.json
