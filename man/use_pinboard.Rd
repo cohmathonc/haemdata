@@ -11,30 +11,29 @@ use_pinboard(
 }
 \arguments{
 \item{pin_board}{Indicate which pinboard to use. One of c('onedrive,
-'isilon'), Default: NULL}
+'devel'), Default: NULL}
 
-\item{haemdata_folder}{The full path of the Isilon folder holding Haemdata
+\item{haemdata_folder}{The full path of the folder for devel
 pins, Default: '/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata'}
 }
 \value{
-Nothing. Assigns the \code{pin_board} global variable accordingly
+Assigns the \code{pin_board} variable in the haemdata_env environment
 }
 \description{
 Sets up the pinboard to use for the current R session.
 }
 \details{
 Package releases always use the OneDrive pinboard with versioned pins.
-Pin versions can be retrieved from the \code{published_pins} variable.
-Development versions of the package use the Isilon pinboard with unversioned pins.
-Only the most recent pin is kept.
+Pin versions associated with each release can be retrieved with \code{data(published_pins)}.
+Development pins are published to the \code{haemdata_folder}, but are not versioned.
 }
 \examples{
 \dontrun{
 if (interactive()) {
-    # Use the OneDrive pinboard (default)
+    # Use the OneDrive pinboard
     use_pinboard("onedrive")
-    # Use the Isilon pinboard
-    use_pinboard("isilon")
+    # Use the Development pinboard
+    use_pinboard("devel")
 }
 }
 }

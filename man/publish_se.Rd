@@ -13,8 +13,8 @@ publish_se(summarised_experiment)
 the path to the published object
 }
 \description{
-Publishes a SummarisedExperiment to the Haemdata Teams channel and to the \code{MHO/haemdata} folder
-on the COH Isilon storage (in \code{.rda} format) along with an expression matrix
+Publishes a SummarisedExperiment to the current pinboard
+(in \code{.rda} format) along with an expression matrix
 (in \code{.csv} format). Files are named according to the SummarisedExperiment's
 \code{metadata$oject_name} variable
 }

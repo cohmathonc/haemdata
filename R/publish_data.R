@@ -4,8 +4,8 @@
 # --- Publishing versioned objects --- ####
 
 #' @title Publish a SummarisedExperiment
-#' @description Publishes a SummarisedExperiment to the Haemdata Teams channel and to the `MHO/haemdata` folder
-#' on the COH Isilon storage (in `.rda` format) along with an expression matrix
+#' @description Publishes a SummarisedExperiment to the current pinboard
+#' (in `.rda` format) along with an expression matrix
 #' (in `.csv` format). Files are named according to the SummarisedExperiment's
 #' `metadata$oject_name` variable
 #' @param summarised_experiment a SummarisedExperiment ready to publish
@@ -28,9 +28,9 @@ publish_se <- function(summarised_experiment) {
 
 #' Publish a Seurat object
 #'
-#' Publishes a Seurat object to the Haemdata Teams channel or to the `MHO/haemdata` folder
-#' on the COH Isilon storage (in `.rda` format) along with a ScanPy object (in `.h5ad` format).
-#' Files are named according to the Seurat object's `name` slot.
+#' Publishes a Seurat object to the current pinboard (in `.rda` format)
+#' along with a ScanPy object (in `.h5ad` format).
+#' Files are named according to the Seurat object's `object_name` slot. (see )
 #'
 #' @name publish_seurat
 #' @param seurat_object a Seurat object ready to publish
@@ -58,7 +58,7 @@ publish_seurat <- function(seurat_object) {
 #' Publish sample metadata
 #'
 #' Publishes a metadata table to the  Haemdata Teams channel or to the `MHO/haemdata`
-#' folder on Isilon storage in `.csv` format.
+#' folder on devel storage in `.csv` format.
 #'
 #' @name publish_metadata
 #' @param metadata a data.frame ready to publish

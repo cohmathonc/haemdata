@@ -1,30 +1,30 @@
 
-# Functions for getting data from the Heamdata pin_board
+# Functions for setting the pinboard and getting data from it
 #' @include haemdata.R
 
 # Setup the pinboard to use
-# Post data to OneDrive pin board (pinboard = "onedrive") or Isilon pin board (pinboard = "isilon")
-# haemdata_folder = Location for posting data files, if not OneDrive
+# Get data from the OneDrive pinboard (pinboard = "onedrive") or
+# development pin board (pinboard = "devel") in the folder specified by
+# `haemdata_folder``
 
 #' @title Setup the pinboard for use
 #' @description Sets up the pinboard to use for the current R session.
 #' @param pin_board Indicate which pinboard to use. One of c('onedrive,
-#' 'isilon'), Default: NULL
-#' @param haemdata_folder The full path of the Isilon folder holding Haemdata
+#' 'devel'), Default: NULL
+#' @param haemdata_folder The full path of the folder for devel
 #' pins, Default: '/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata'
-#' @return Nothing. Assigns the `pin_board` global variable accordingly
+#' @return Assigns the `pin_board` variable in the haemdata_env environment
 #' @details Package releases always use the OneDrive pinboard with versioned pins.
-#' Pin versions can be retrieved from the `published_pins` variable.
-#' Development versions of the package use the Isilon pinboard with unversioned pins.
-#' Only the most recent pin is kept.
+#' Pin versions associated with each release can be retrieved with `data(published_pins)`.
+#' Development pins are published to the `haemdata_folder`, but are not versioned.
 #' @author Denis O'Meally
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#'     # Use the OneDrive pinboard (default)
+#'     # Use the OneDrive pinboard
 #'     use_pinboard("onedrive")
-#'     # Use the Isilon pinboard
-#'     use_pinboard("isilon")
+#'     # Use the Development pinboard
+#'     use_pinboard("devel")
 #' }
 #' }
 #' @seealso
@@ -38,7 +38,7 @@ use_pinboard <- function(pin_board = NULL,
                          haemdata_folder = "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata") {
     # setup pin_board
     if (is.null(pin_board)) {
-        message("`pin_board` is NULL: set the pinboard to `onedrive` or `isilon`")
+        message("`pin_board` is NULL: set the pinboard to `onedrive` or `devel`")
         assign("pin_board", NULL, haemdata_env)
     } else if (pin_board == "onedrive") {
         # OneDrive pin_board
@@ -48,15 +48,20 @@ use_pinboard <- function(pin_board = NULL,
             versioned = TRUE
         )
         assign("pin_board", pin_board, envir = haemdata_env)
-    } else if (pin_board == "isilon") {
-        # Isilon pin_board
+    } else if (pin_board == "devel") {
+        # check that haemdata_folder is accessible
+        if (!dir.exists(haemdata_folder)) {
+            rlang::abort(glue::glue("'{haemdata_folder}' is not is not accessible.
+            Check the path"))
+        }
+        # devel pin_board
         pin_board <- pins::board_folder(
             haemdata_folder,
             versioned = FALSE
         )
         assign("pin_board", pin_board, envir = haemdata_env)
     } else {
-        stop("Please set the `pin_board` parameter to either `onedrive` or `isilon`")
+        stop("Please set the `pin_board` parameter to either `onedrive` or `devel`")
     }
 }
 

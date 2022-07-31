@@ -139,7 +139,7 @@ cbind(D,E) |>
     heatmap()
 
 
-    # Isilon board
+    # devel board
     MHO_haemdata <- pins::board_folder(
         "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata/",
         versioned = TRUE

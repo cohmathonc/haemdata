@@ -7,7 +7,7 @@
 rnaseq_release <- "3.7"
 # Which pinboard to use?
 library(haemdata)
-use_pinboard("isilon")
+use_pinboard("devel")
 ###########################
 
 # Load packages required to define the pipeline:
@@ -15,8 +15,8 @@ library(targets)
 library(tarchetypes)
 # Set target options:
 tar_option_set(
-  #  packages = c("haemdata"), # packages that targets need to run
-   # imports = c("haemdata"), # packages that targets need to run
+    #  packages = c("haemdata"), # packages that targets need to run
+    # imports = c("haemdata"), # packages that targets need to run
     error = "continue", # continue or stop on error
     # format = "qs", # default storage format
     # # Set other options as needed.
@@ -235,7 +235,6 @@ list(
     tar_target(mmu_mrna_techrep_GENCODEm28_pins, publish_se(mmu_mrna_techrep_qc_se_flt)),
     tar_target(hsa_mrna_flt3_GENCODEm28_pins, publish_se(hsa_mrna_flt3_qc_se_flt)),
     tar_target(hsa_mrna_mds_GENCODEm28_pins, publish_se(hsa_mrna_mds_qc_se_flt)),
-
     tar_target(metadata_mmu_pins, publish_metadata(metadata_mmu)),
     tar_target(metadata_hsa_pins, publish_metadata(metadata_hsa)),
 
@@ -243,15 +242,19 @@ list(
     # single cell RNA-seq ------------------------------------------------------------------------
     # load data
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT, seurat_import_objects("GENCODEm28_HLT"),
-        resources = apollo_medium),
+        resources = apollo_medium
+    ),
     tar_target(mmu_10x_2022_1_GRCm38_HLT, seurat_import_objects("GRCm38_HLT"),
-        resources = apollo_medium),
+        resources = apollo_medium
+    ),
 
     # # QC filter ---------------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_qc, seurat_perform_cell_qc(mmu_10x_2022_1_GENCODEm28_HLT),
-        resources = apollo_bigmem),
+        resources = apollo_bigmem
+    ),
     tar_target(mmu_10x_2022_1_GRCm38_HLT_qc, seurat_perform_cell_qc(mmu_10x_2022_1_GRCm38_HLT),
-        resources = apollo_bigmem),
+        resources = apollo_bigmem
+    ),
 
     # # # # Integrate cells using Reciprocal PCA -------------------------------------
     # #! FIXME some bug in batchtools that causes the following to fail, but works in an interactive session
@@ -278,31 +281,39 @@ list(
 
     # # # Integrate cells with SCTransform
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct, seurat_sctransform(mmu_10x_2022_1_GENCODEm28_HLT_qc),
-        resources = apollo_bigmem),
+        resources = apollo_bigmem
+    ),
     tar_target(mmu_10x_2022_1_GRCm38_HLT_sct, seurat_sctransform(mmu_10x_2022_1_GRCm38_HLT_qc),
-        resources = apollo_bigmem),
+        resources = apollo_bigmem
+    ),
     # # Make clusters  ---------------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust, seurat_annotate_clusters_and_umap(
-        mmu_10x_2022_1_GENCODEm28_HLT_sct),
-        resources = apollo_large),
+        mmu_10x_2022_1_GENCODEm28_HLT_sct
+    ),
+    resources = apollo_large
+    ),
     tar_target(mmu_10x_2022_1_GRCm38_HLT_sct_clust, seurat_annotate_clusters_and_umap(
-        mmu_10x_2022_1_GRCm38_HLT_sct),
-        resources = apollo_large),
+        mmu_10x_2022_1_GRCm38_HLT_sct
+    ),
+    resources = apollo_large
+    ),
     # # Annotate cell cycle ---------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc, seurat_annotate_cell_cycle(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust),
-        resources = apollo_medium),
+        resources = apollo_medium
+    ),
     tar_target(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc, seurat_annotate_cell_cycle(mmu_10x_2022_1_GRCm38_HLT_sct_clust),
-        resources = apollo_medium),
+        resources = apollo_medium
+    ),
 
 
-    #TODO # # Annotate cell type -----------------------------------------------------------
+    # TODO # # Annotate cell type -----------------------------------------------------------
 
     # Publish Seurat objects -----------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_pins, publish_seurat(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc)),
     tar_target(mmu_10x_2022_1_GRCm38_HLT_pins, publish_seurat(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc)),
 
     ######### Collect latest pin versions #########
-    #TODO make a function to prune pins not in a release
+    # TODO make a function to prune pins not in a release
     tar_target(
         latest_published_data,
         helpeRs::write_data("published_pins", rbind(

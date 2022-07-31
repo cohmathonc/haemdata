@@ -13,9 +13,9 @@ publish_seurat(seurat_object)
 the path to the published object
 }
 \description{
-Publishes a Seurat object to the Haemdata Teams channel or to the \code{MHO/haemdata} folder
-on the COH Isilon storage (in \code{.rda} format) along with a ScanPy object (in \code{.h5ad} format).
-Files are named according to the Seurat object's \code{name} slot.
+Publishes a Seurat object to the current pinboard (in \code{.rda} format)
+along with a ScanPy object (in \code{.h5ad} format).
+Files are named according to the Seurat object's \code{object_name} slot. (see )
 }
 \author{
 Denis O'Meally
