@@ -338,7 +338,7 @@ qc_filter_se <- function(summarised_experiment, mapping_threshold = 5) {
 
     # Check that the summarised_experiment is from a qc run
     if (!S4Vectors::metadata(summarised_experiment)["workflow"] == "qc") {
-        stop("The summarised_experiment is not from a qc run")
+        stop("The summarised_experiment is not from a qc run and so no count of uniquely mapping reads is available.")
     }
     col_pc_mapped <- grepl("uniquely_mapped_percent", colnames(SummarizedExperiment::colData(summarised_experiment)))
     object_name <- S4Vectors::metadata(summarised_experiment)["object_name"]
