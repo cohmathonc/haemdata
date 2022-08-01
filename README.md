@@ -22,9 +22,11 @@ You can install the default version of Haemdata from the package website with:
 ``` r
 if (!require("remotes", quietly = TRUE)) install.packages("remotes")
 if (!require("pak", quietly = TRUE)) install.packages("pak")
-install_github(c("drejom/helpeRs", "mojaveazure/seurat-disk"))
-pak::pak(c('future.batchtools', 'janitor', 'Microsoft365R', 'PCAtools', 'pins', 'qs', 'readr', 're
-    adxl', 'S4Vectors', 'SummarizedExperiment', 'targets'))
+install_github(c("drejom/helpeRs", "mojaveazure/seurat-disk", "satijalab/sctransform@develop"))
+pak::pak(c('SeuratObject', 'Seurat', 'hdf5r', 'future', 'future.batchtools',
+'janitor', 'Microsoft365R', 'PCAtools',
+'pins', 'qs', 'readr', 'readxl', 'S4Vectors', 'SummarizedExperiment',
+'targets', 'tidybulk','rtracklayer','parallelly','OUTRIDER','clustifyr'))
 install_version("haemdata", repos = "http://cgt.coh.org/MHO", dependencies = TRUE)
 ```
 
