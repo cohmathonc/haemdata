@@ -7,7 +7,10 @@
 # Assign the pinboard to the haemdata_env environment
 
 #' @title Setup the pinboard for use
-#' @description Sets up the pinboard to use for the current R session.
+#' @description Sets up the pinboard to use for the current R session. Rather
+#' than issuing this command each session, you can add the line
+#' `if (require(haemdata)) haemdata::use_pinboard("onedrive")` to your project folder
+#' [`.Rprofile`](https://support.rstudio.com/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf) file.
 #' @param pin_board Indicate which pinboard to use. One of c('onedrive,
 #' 'devel'), Default: NULL
 #' @param haemdata_folder The full path of the folder for devel
