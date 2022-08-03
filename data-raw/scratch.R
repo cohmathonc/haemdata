@@ -229,3 +229,112 @@ x <- x |>
         dims = 1:2,
         seed.use = 3
     ) 
+
+
+
+
+packages<-c("Seurat", "targets")
+lapply(packages, require, character.only = TRUE)
+targets::tar_load(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc)
+
+DimPlot(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc, reduction = "umap")
+
+DimPlot(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc, reduction = "umap", group.by = "tissue")
+
+DimPlot(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc, reduction = "umap", group.by = "ckit")
+
+DimPlot(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc, reduction = "umap", group.by = "Phase")
+
+#Imports:
+w <- renv::dependencies("./R/access_data.R")
+
+
+#Imports:
+x <- renv::dependencies("R")
+
+x |>
+    dplyr::pull("Package") |>
+    unique() |>
+    paste(collapse = ", ")
+#Suggests:
+y <- renv::dependencies("scripts")
+
+y |>
+    dplyr::pull("Package") |>
+    unique() |>
+    paste(collapse = ", ")
+
+
+# Combined
+z <- renv::dependencies(c("R", "scripts"))
+
+z |>
+    dplyr::pull("Package") |>
+    unique() |>
+    paste(collapse = ", ")
+
+
+
+
+
+#####
+Imports: 
+    digest,
+    dplyr,
+    future,
+    future.apply,
+    ggplot2,
+    glmGamPoi,
+    glue,
+    helpeRs,
+    janitor,
+    magrittr,
+    Microsoft365R,
+    PCAtools,
+    pins,
+    readr,
+    rlang (>= 0.4.11),
+    S4Vectors,
+    sctransform,
+    Seurat,
+    stats,
+    stringr,
+    SummarizedExperiment,
+    tibble,
+    tidyr,
+    utils
+Suggests:
+dplyr, glue, haemdata, Microsoft365R, pins, rlang, readr, stringr, Seurat, clustifyr, future.apply, ggplot2, Matrix, rtracklayer, BiocParallel, ggsci, grid, helpeRs, janitor, OUTRIDER, parallelly, PCAtools, S4Vectors, SummarizedExperiment, tibble, tidyr, utils, future, future.batchtools, targets, readxl, SeuratDisk, hexSticker, magick, usethis
+
+    BiocParallel,
+    clustifyr,
+    forcats,
+    future.batchtools,
+    ggsci,
+    gtools,
+    gtsummary,
+    hdf5r,
+    hexSticker,
+    knitr,
+    magick,
+    Matrix,
+    naniar,
+    OUTRIDER,
+    parallelly,
+    plyr,
+    qs,
+    rcompanion,
+    readxl,
+    rmarkdown,
+    rtracklayer,
+    SeuratDisk,
+    SeuratObject,
+    targets,
+    tidybulk,
+    usethis
+VignetteBuilder: 
+    knitr
+Remotes:
+    drejom/helpeRs,
+    mojaveazure/seurat-disk,
+    satijalab/sctransform@develop

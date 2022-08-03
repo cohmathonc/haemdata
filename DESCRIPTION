@@ -22,9 +22,7 @@ Imports:
     glue,
     magrittr,
     Microsoft365R,
-    pins,
-    rlang,
-    SummarizedExperiment
+    pins
 Suggests:
     BiocParallel,
     clustifyr,
@@ -33,8 +31,8 @@ Suggests:
     future.batchtools,
     ggsci,
     grid,
-    helpeRs,
     hdf5r,
+    helpeRs,
     hexSticker,
     janitor,
     magick,
@@ -44,6 +42,7 @@ Suggests:
     PCAtools,
     readr,
     readxl,
+    rlang,
     rtracklayer,
     S4Vectors,
     sctransform,
@@ -51,6 +50,7 @@ Suggests:
     SeuratDisk,
     SeuratObject,
     stringr,
+    SummarizedExperiment,
     targets,
     tibble,
     tidyr,
@@ -78,4 +78,3 @@ Collate:
     'seurat_annotate_type.R'
     'seurat_integrate_scTransform.R'
     'summarised_experiments.R'
-    'utils-tidy-eval.R'

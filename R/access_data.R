@@ -33,9 +33,8 @@
 #' @export
 #' @importFrom pins board_ms365 board_folder
 #' @importFrom Microsoft365R get_team
-use_pinboard <- function(
-    pin_board = NULL,
-    haemdata_folder = "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata") {
+use_pinboard <- function(pin_board = NULL,
+                         haemdata_folder = "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata") {
     # setup pin_board
     if (is.null(pin_board)) {
         message("`pin_board` is NULL: set the pinboard to `onedrive` or `devel`")
@@ -50,14 +49,15 @@ use_pinboard <- function(
     } else if (pin_board == "devel") {
         # check that haemdata_folder is accessible
         if (!dir.exists(haemdata_folder)) {
-            rlang::abort(glue::glue("'{haemdata_folder}' is not is not accessible.
+            stop(glue::glue("'{haemdata_folder}' is not is not accessible.
             Check the path"))
         }
         # devel pin_board
         assign("pin_board",
             pins::board_folder(
                 haemdata_folder,
-                versioned = FALSE),
+                versioned = FALSE
+            ),
             envir = haemdata_env
         )
     } else {
@@ -92,7 +92,7 @@ get_latest_pin_version <- function(pin_name) {
     if (is.null(pin_name)) {
         stop("`pin_name` is NULL")
     } else if (is.null(haemdata::haemdata_env$pin_board)) {
-        rlang::inform(haemdata::haemdata_env$pin_board_msg, .frequency = "always")
+        stop(haemdata::haemdata_env$pin_board_msg)
     } else {
         haemdata::haemdata_env$pin_board |>
             pins::pin_versions(pin_name) |>
@@ -120,7 +120,7 @@ get_latest_pin_version <- function(pin_name) {
 #' @importFrom pins pin_read
 get_pin <- function(pin_name, version = NULL) {
     if (is.null(haemdata::haemdata_env$pin_board)) {
-        rlang::inform(haemdata::haemdata_env$pin_board_msg, .frequency = "always")
+        stop(haemdata::haemdata_env$pin_board_msg)
     } else {
         available_pins <- get_pin_list()
         if (pin_name %in% available_pins) {
@@ -156,7 +156,7 @@ get_pin <- function(pin_name, version = NULL) {
 #' @importFrom pins pin_list
 get_pin_list <- function() {
     if (is.null(haemdata::haemdata_env$pin_board)) {
-        rlang::inform(haemdata::haemdata_env$pin_board_msg, .frequency = "always")
+        stop(haemdata::haemdata_env$pin_board_msg)
     } else {
         haemdata::haemdata_env$pin_board |>
             pins::pin_list()

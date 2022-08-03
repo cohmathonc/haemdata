@@ -59,7 +59,7 @@ publish_seurat <- function(seurat_object) {
 #' @export
 publish_metadata <- function(metadata) {
     if (is.null(haemdata::haemdata_env$pin_board)) {
-        rlang::inform(haemdata::haemdata_env$pin_board_msg, .frequency = "always")
+        stop(haemdata::haemdata_env$pin_board_msg)
     } else {
         print(haemdata::haemdata_env$pin_board_msg)
         # extract name
@@ -90,7 +90,7 @@ publish_metadata <- function(metadata) {
 # write a SummarisedExperiment pin, with name, description, and metadata
 write_se_pin <- function(summarised_experiment) {
     if (is.null(haemdata::haemdata_env$pin_board)) {
-        rlang::inform(haemdata::haemdata_env$pin_board_msg, .frequency = "always")
+        stop(haemdata::haemdata_env$pin_board_msg)
     } else {
         name <- summarised_experiment@metadata$object_name
 
@@ -114,7 +114,7 @@ write_se_pin <- function(summarised_experiment) {
 # calls make_tpm_matrix() with defaults for the expression matrix
 write_se2tpm_pin <- function(summarised_experiment) {
     if (is.null(haemdata::haemdata_env$pin_board)) {
-        rlang::inform(haemdata::haemdata_env$pin_board_msg, .frequency = "always")
+        stop(haemdata::haemdata_env$pin_board_msg)
     } else {
         name <- summarised_experiment@metadata$object_name
 
@@ -140,7 +140,7 @@ write_se2tpm_pin <- function(summarised_experiment) {
 #'
 write_seurat_h5ad_pin <- function(seurat_object) {
     if (is.null(haemdata::haemdata_env$pin_board)) {
-        rlang::inform(haemdata::haemdata_env$pin_board_msg, .frequency = "always")
+        stop(haemdata::haemdata_env$pin_board_msg)
     } else {
         tmp <- tempdir()
 
@@ -182,9 +182,8 @@ write_seurat_h5ad_pin <- function(seurat_object) {
 #'
 write_seurat_pin <- function(seurat_object) {
     if (is.null(haemdata::haemdata_env$pin_board)) {
-        rlang::inform(haemdata::haemdata_env$pin_board_msg, .frequency = "always")
+        stop(haemdata::haemdata_env$pin_board_msg)
     } else {
-
         name <- Seurat::Misc(seurat_object)[["name"]]
 
         description <- glue::glue(
