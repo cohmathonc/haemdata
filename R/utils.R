@@ -1,10 +1,5 @@
 # Utility functions for the package
 
-# cross platform hostname
-get_hostname <- function() {
-    return(as.character(Sys.info()["nodename"]))
-}
-
 # package logo -----------------------------------------------------------
 #' Make the package logo
 #'

@@ -2,10 +2,9 @@
 # Functions for setting the pinboard and getting data from it
 #' @include haemdata.R
 
-# Setup the pinboard to use
-# Get data from the OneDrive pinboard (pinboard = "onedrive") or
-# development pin board (pinboard = "devel") in the folder specified by
-# `haemdata_folder``
+# Setup the pinboard for use in the current R session
+# Get data from either the OneDrive or development pin board
+# Assign the pinboard to the haemdata_env environment
 
 #' @title Setup the pinboard for use
 #' @description Sets up the pinboard to use for the current R session.
@@ -34,20 +33,20 @@
 #' @export
 #' @importFrom pins board_ms365 board_folder
 #' @importFrom Microsoft365R get_team
-use_pinboard <- function(pin_board = NULL,
-                         haemdata_folder = "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata") {
+use_pinboard <- function(
+    pin_board = NULL,
+    haemdata_folder = "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata") {
     # setup pin_board
     if (is.null(pin_board)) {
         message("`pin_board` is NULL: set the pinboard to `onedrive` or `devel`")
         assign("pin_board", NULL, haemdata_env)
     } else if (pin_board == "onedrive") {
         # OneDrive pin_board
-        pin_board <- pins::board_ms365(
+        assign("pin_board", pins::board_ms365(
             drive = Microsoft365R::get_team("PSON AML State-Transition")$get_drive(),
             path = "haemdata",
             versioned = TRUE
-        )
-        assign("pin_board", pin_board, envir = haemdata_env)
+        ), envir = haemdata_env)
     } else if (pin_board == "devel") {
         # check that haemdata_folder is accessible
         if (!dir.exists(haemdata_folder)) {
@@ -55,11 +54,12 @@ use_pinboard <- function(pin_board = NULL,
             Check the path"))
         }
         # devel pin_board
-        pin_board <- pins::board_folder(
-            haemdata_folder,
-            versioned = FALSE
+        assign("pin_board",
+            pins::board_folder(
+                haemdata_folder,
+                versioned = FALSE),
+            envir = haemdata_env
         )
-        assign("pin_board", pin_board, envir = haemdata_env)
     } else {
         stop("Please set the `pin_board` parameter to either `onedrive` or `devel`")
     }
@@ -89,10 +89,12 @@ use_pinboard <- function(pin_board = NULL,
 #' @importFrom pins pin_versions
 #' @importFrom dplyr pull first
 get_latest_pin_version <- function(pin_name) {
-    if (is.null(haemdata_env$pin_board)) {
-        rlang::inform(haemdata_env$pin_board_msg, .frequency = "always")
+    if (is.null(pin_name)) {
+        stop("`pin_name` is NULL")
+    } else if (is.null(haemdata::haemdata_env$pin_board)) {
+        rlang::inform(haemdata::haemdata_env$pin_board_msg, .frequency = "always")
     } else {
-        haemdata_env$pin_board |>
+        haemdata::haemdata_env$pin_board |>
             pins::pin_versions(pin_name) |>
             dplyr::pull(version) |>
             dplyr::first()
@@ -117,8 +119,8 @@ get_latest_pin_version <- function(pin_name) {
 #' @export
 #' @importFrom pins pin_read
 get_pin <- function(pin_name, version = NULL) {
-    if (is.null(haemdata_env$pin_board)) {
-        rlang::inform(haemdata_env$pin_board_msg, .frequency = "always")
+    if (is.null(haemdata::haemdata_env$pin_board)) {
+        rlang::inform(haemdata::haemdata_env$pin_board_msg, .frequency = "always")
     } else {
         available_pins <- get_pin_list()
         if (pin_name %in% available_pins) {
@@ -127,7 +129,7 @@ get_pin <- function(pin_name, version = NULL) {
             }
             hash <- gsub(".*-", "", version)
 
-            pins::pin_read(haemdata_env$pin_board, pin_name, version = version, hash = hash)
+            pins::pin_read(haemdata::haemdata_env$pin_board, pin_name, version = version, hash = hash)
         } else {
             stop("Pin not found in pin_board; use get_pin_list() to see available pins")
         }
@@ -153,10 +155,10 @@ get_pin <- function(pin_name, version = NULL) {
 #' @export
 #' @importFrom pins pin_list
 get_pin_list <- function() {
-    if (is.null(haemdata_env$pin_board)) {
-        rlang::inform(haemdata_env$pin_board_msg, .frequency = "always")
+    if (is.null(haemdata::haemdata_env$pin_board)) {
+        rlang::inform(haemdata::haemdata_env$pin_board_msg, .frequency = "always")
     } else {
-        haemdata_env$pin_board |>
+        haemdata::haemdata_env$pin_board |>
             pins::pin_list()
     }
 }

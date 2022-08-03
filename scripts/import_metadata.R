@@ -75,15 +75,6 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
     return(metadata)
 }
 
-utils::globalVariables(c(
-    "basepairs", "batch", "Batch", "dob", "fastq_1", "fastq_2",
-    "Filename", "gene_id", "gene_name", "gene_type", "genotype",
-    "Genotype", "ID", "library_id", "library_strategy", "Mouse", "mouse_id", "newname",
-    "Newname", "project", "Sample", "sample_id", "Sample_ID", "sample_name",
-    "Sample_Name", "sex", "Sex", "strandedness", "TGen_Sample_Name",
-    "timepoint", "TimePoint", "tissue", "treatment", "Treatment",
-    "V1", "V2"
-))
 # ├ AML.mRNA.2016 
 parse_metadata_AML.mRNA.2016 <- function() {
     project <- "AML.mRNA.2016"

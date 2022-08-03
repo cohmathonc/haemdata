@@ -83,10 +83,7 @@ RoxygenNote: 7.1.2
 Collate: 
     'haemdata.R'
     'access_data.R'
-    'apollo_HPC.R'
     'data.R'
-    'import_metadata.R'
-    'publish_data.R'
     'run_nfcore.R'
     'seurat.R'
     'seurat_annotate_clusters_and_umap.R'
