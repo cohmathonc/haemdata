@@ -8,23 +8,23 @@ vignette: >
 ---
 
 ## fastq-screen
-Raw data are screened for contaminaiton against a panel of reference genomes
+Raw data are screened for contamination against a panel of reference genomes
 that includes mouse, human, yeast, rDNA, *E. coli* and some common laboratory
 reagents. For each cohort, a MultiQC report details the `fastq-screen` results.
 
 ## nf-core pipelines
 To assess the quality of the sequencing libraries, we used the default parameters
-of the nf-core RNASeq pipeline [PMID: 32055031; doi: 10.5281/zenodo.1400710]. Briefly,
-trimmed reads were mapped to the GRCm38 reference using STAR [PMID: 23104886] and
+of the nf-core RNASeq pipeline [PMID: 32055031](doi: 10.5281/zenodo.1400710). Briefly,
+trimmed reads were mapped to the GRCm38 reference using STAR [PMID: 23104886](https://doi.org/10.1093/bioinformatics/bts635) and
 abundance of transcripts from the Ensembl annotation was estimated using Salmon
-[PMID: 28263959]. Each library was subjected to extensive quality control,
+[PMID: 28263959](https://doi.org/10.1038/nmeth.4197). Each library was subjected to extensive quality control,
 including estimation of library complexity, sequence quality, read length and depth,
 among other metrics detailed in the pipeline repository (https://nf-co.re/rnaseq).
 Pseudocounts were merged into a matrix of counts per million per gene for each sample
-using the tximport R package [PMID: 26925227].
+using the tximport R package [PMID: 26925227](https://doi.org/10.12688/f1000research.7563.2).
 
-## Availibility
+## Availability
 The preprocessing pipeliens produce a multitude of in ancillary reports and files
-available in the `MHO` folder. Currenlty these data are difficult to access programatically. 
-In a future release, they'll be accessable in the `colData` slot of
+available in the `MHO` folder. Currently these data are difficult to access programmatically. 
+In a future release, they'll be accessible in the `colData` slot of
 the `SummarizedExperiment` objects produced.
