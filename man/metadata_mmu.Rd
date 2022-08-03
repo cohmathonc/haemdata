@@ -5,7 +5,7 @@
 \alias{metadata_mmu}
 \title{Minimal metadata for mouse samples}
 \source{
-\code{\link[=make_metadata_mmu]{make_metadata_mmu()}}
+\href{https://github.com/drejom/haemdata/blob/cf03cf0a3eb420a8ee6276c7ec0a9186a55c0e2b/scripts/import_metadata.R#L24}{\code{make_metadata_mmu()}}
 }
 \description{
 \tabular{ll}{
@@ -27,7 +27,8 @@
 }
 }
 \details{
-The \code{\link[=make_metadata_mmu]{make_metadata_mmu()}} function assembles the metadata for all RNAseq libraries from AML and CML mice.
+The \href{https://github.com/drejom/haemdata/blob/cf03cf0a3eb420a8ee6276c7ec0a9186a55c0e2b/scripts/import_metadata.R#L24}{\code{make_metadata_mmu()}}
+function assembles the metadata for all RNAseq libraries from AML and CML mice.
 Minimal metadata fields include sample, fastq_1, fastq_2, strandedness,
 mouse_id, tissue, weeks, timepoint, batch, treatment, genotype, sex, dob, project.
 
