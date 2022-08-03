@@ -17,57 +17,45 @@ BugReports: https://github.com/drejom/haemdata/issues
 Depends: 
     R (>= 4.1)
 Imports: 
-    digest,
     dplyr,
+    ggplot2,
+    glue,
+    magrittr,
+    Microsoft365R,
+    pins,
+    rlang,
+    SummarizedExperiment
+Suggests:
+    BiocParallel,
+    clustifyr,
     future,
     future.apply,
     future.batchtools,
-    ggplot2,
-    glmGamPoi,
-    glue,
-    hdf5r,
+    ggsci,
+    grid,
     helpeRs,
+    hdf5r,
+    hexSticker,
     janitor,
-    magrittr,
-    Microsoft365R,
+    magick,
+    Matrix,
+    OUTRIDER,
+    parallelly,
     PCAtools,
-    pins,
-    qs,
     readr,
     readxl,
-    rlang (>= 0.4.11),
+    rtracklayer,
     S4Vectors,
     sctransform,
     Seurat,
     SeuratDisk,
     SeuratObject,
-    stats,
     stringr,
-    SummarizedExperiment,
     targets,
     tibble,
     tidyr,
+    usethis,
     utils
-Suggests:
-    BiocParallel,
-    clustifyr,
-    forcats,
-    ggsci,
-    gtools,
-    gtsummary,
-    hexSticker,
-    knitr,
-    magick,
-    Matrix,
-    naniar,
-    OUTRIDER,
-    parallelly,
-    plyr,
-    rcompanion,
-    rmarkdown,
-    rtracklayer,
-    tidybulk,
-    usethis
 VignetteBuilder: 
     knitr
 Remotes:
@@ -88,8 +76,6 @@ Collate:
     'seurat.R'
     'seurat_annotate_clusters_and_umap.R'
     'seurat_annotate_type.R'
-    'seurat_integrate_RPCA.R'
     'seurat_integrate_scTransform.R'
     'summarised_experiments.R'
     'utils-tidy-eval.R'
-    'utils.R'

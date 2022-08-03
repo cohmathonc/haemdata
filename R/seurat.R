@@ -118,13 +118,11 @@ rotate_umap <- function(seurat_object, x = FALSE, y = FALSE) {
 #' @param cellranger_folder string, path to the cellranger folder. Default
 #' is `/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/cellranger`
 #' @return a list of Seurat objects
-#' @import hdf5r
 #' @author Denis O'Meally
-
+#' @export
 # Make Seurat objects
-seurat_import_objects <- function(
-    path_regex,
-    cellranger_folder = "/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/cellranger") {
+seurat_import_objects <- function(path_regex,
+                                  cellranger_folder = "/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/cellranger") {
     # get a list of ChrY genes from GTF file
     # Parse GTF: https://www.biostars.org/p/140471/
 
@@ -253,7 +251,8 @@ seurat_perform_cell_qc <- function(raw_seurat_objects) {
 
             # filter on mt and ribo reads, and cells with at least 200 genes ----------
             x <- subset(x, subset = nFeature_RNA > 200 & percent_mt < 20 & percent_ribo > 5)
-        }, future.seed = TRUE)
+        }, future.seed = TRUE
+    )
 
     seurat_object <- merge(
         x = filtered_seurat_objects[[1]],
@@ -268,7 +267,7 @@ seurat_perform_cell_qc <- function(raw_seurat_objects) {
         perl = TRUE
     )
     description <- glue::glue(
-        "A haemdata Seurat object created using the SCTransform v2 integration method. See {package_url}/reference/{name}.html for more information." 
+        "A haemdata Seurat object created using the SCTransform v2 integration method. See {haemdata_env$package_url}/reference/{name}.html for more information."
     )
     Seurat::Misc(seurat_object, slot = "description") <- description
     Seurat::Misc(seurat_object, slot = "name") <- name
