@@ -16,7 +16,22 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(haemdata)
+library(Seurat)
+```
+
+```{r}
 use_pinboard("onedrive")
+
+seurat_object <- get_pin("mmu_10x_2022_1_GENCODEm28_HLT.rds")
+
+# Seurat::DimPlot(seurat_object, reduction = "umap", group.by = "cell_type")
+Seurat::DimPlot(seurat_object, reduction = "umap", group.by = "seurat_clusters")
+
+Seurat::DimPlot(seurat_object, reduction = "umap", group.by = "tissue")
+
+Seurat::DimPlot(seurat_object, reduction = "umap", group.by = "ckit")
+
+Seurat::DimPlot(seurat_object, reduction = "umap", group.by = "Phase")
 ```
 
 
