@@ -5,17 +5,16 @@
 ###### PIPELINE SETUP ######
 # nf-core pipeline version
 rnaseq_release <- "3.7"
-# Which pinboard to use?
-library(haemdata)
-use_pinboard("devel")
 ###########################
+# Load the R scripts & functions:
+for (file in list.files("scripts", full.names = TRUE)) source(file)
 
 # Load packages required to define the pipeline:
 library(targets)
 library(tarchetypes)
 # Set target options:
 tar_option_set(
-    #  packages = c("haemdata"), # packages that targets need to run
+    packages = c("haemdata", "tidyverse", "SummarizedExperiment"), # packages that targets need to run
     # imports = c("haemdata"), # packages that targets need to run
     error = "continue", # continue or stop on error
     # format = "qs", # default storage format
@@ -25,9 +24,6 @@ tar_option_set(
     # garbage_collection = TRUE,
     # memory = "transient"
 )
-
-# Load the R scripts & functions:
-for (file in list.files("R", full.names = TRUE)) source(file)
 
 # check that we're running on Apollo
 if (!(get_hostname() %in% c("ppxhpcacc01", "ppxhpcacc02"))) {
@@ -250,10 +246,10 @@ list(
 
     # # QC filter ---------------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_qc, seurat_perform_cell_qc(mmu_10x_2022_1_GENCODEm28_HLT),
-        resources = apollo_bigmem
+        resources = apollo_medium
     ),
     tar_target(mmu_10x_2022_1_GRCm38_HLT_qc, seurat_perform_cell_qc(mmu_10x_2022_1_GRCm38_HLT),
-        resources = apollo_bigmem
+        resources = apollo_medium
     ),
 
     # # # # Integrate cells using Reciprocal PCA -------------------------------------
@@ -317,7 +313,7 @@ list(
     tar_target(
         latest_published_data,
         helpeRs::write_data("published_pins", rbind(
-            # single cell RNA-seq
+            # 10X single cell RNA-seq
             mmu_10x_2022_1_GRCm38_HLT_pins,
             mmu_10x_2022_1_GENCODEm28_HLT_pins,
             # metadata
