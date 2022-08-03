@@ -11,3 +11,4 @@ run.Rout
 *.log
 
 .vscode/settings.json
+.Rprofile

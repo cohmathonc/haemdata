@@ -23,5 +23,6 @@
 ^build\.sh$
 ^CONTRIBUTING\.md$
 \.log$
+\.Rprofile$
 
 
