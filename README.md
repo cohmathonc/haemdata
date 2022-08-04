@@ -18,10 +18,10 @@ See [Getting started](http://cgt.coh.org/haemdata) for usage with examples, incl
 
 Installation is not *required* to use Haemdata, but installing the R package provides a number of useful helper functions that make working with these data more convenient within the R environment. Adding new data requires the package to be installed.
 
-You can install the default version of Haemdata from the package website with:
+You can install the default version of Haemdata from the package website if your are on campus or the VPN with:
 
 ``` r
-install.packages("haemdata", repos = "http://cgt.coh.org/MHO", dependencies = TRUE)
+install.packages("haemdata", repos = "http://cgt.coh.org/MHO")
 ```
 
 The latest release uses v3.7 of the nf-core/rnaseq pipeline, Cellranger v6.1.1 & `Seurat` v4.1.1 and `sctranscform` v0.3.3.
