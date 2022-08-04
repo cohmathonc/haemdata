@@ -18,7 +18,7 @@ See [Getting started](http://cgt.coh.org/haemdata) for usage with examples, incl
 
 Installation is not *required* to use Haemdata, but installing the R package provides a number of useful helper functions that make working with these data more convenient within the R environment. Adding new data requires the package to be installed.
 
-You can install the default version of Haemdata from the package website (campus or VPN connection required) with:
+You can install the default version of Haemdata from the package website (campus or VPN connection required):
 
 ``` r
 install.packages("haemdata", repos = "http://cgt.coh.org/MHO")
