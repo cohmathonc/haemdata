@@ -1,7 +1,8 @@
 #' Annotate mouse bone marrow cell type
 #'
-#' Use the [`clustifyr::clustify()`] function to label cell types according to expression
-#' profiles identified by Dolgalev & Tikhonova (2021) in a meta-analysis of five mouse bone marrow scRNAseq datasets.
+#' Use the [`clustifyr::clustify()`] function to label cell types according
+#' to expression profiles identified by Dolgalev & Tikhonova (2021) in a
+#' meta-analysis of five mouse bone marrow scRNAseq datasets.
 #'
 #' @name seurat_annotate_type
 #' @param seurat_object a list of seurat objects

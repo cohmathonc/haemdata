@@ -20,7 +20,10 @@ pins, Default: '/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata'}
 Assigns the \code{pin_board} variable in the haemdata_env environment
 }
 \description{
-Sets up the pinboard to use for the current R session.
+Sets up the pinboard to use for the current R session. Rather
+than issuing this command each session, you can add the line
+\code{if (require(haemdata)) haemdata::use_pinboard("onedrive")} to your project folder
+\href{https://support.rstudio.com/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf}{\code{.Rprofile}} file.
 }
 \details{
 Package releases always use the OneDrive pinboard with versioned pins.

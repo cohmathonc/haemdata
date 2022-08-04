@@ -7,7 +7,7 @@
 #' @description Publishes a SummarisedExperiment to the current pinboard
 #' (in `.rda` format) along with an expression matrix
 #' (in `.csv` format). Files are named according to the SummarisedExperiment's
-#' `metadata$oject_name` variable
+#' `metadata$project_name` variable
 #' @param summarised_experiment a SummarisedExperiment ready to publish
 #' @return the path to the published object
 #' @author Denis O'Meally

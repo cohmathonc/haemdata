@@ -16,8 +16,9 @@ seurat_annotate_type(seurat_object)
 a seurat object
 }
 \description{
-Use the \code{\link[clustifyr:clustify]{clustifyr::clustify()}} function to label cell types according to expression
-profiles identified by Dolgalev & Tikhonova (2021) in a meta-analysis of five mouse bone marrow scRNAseq datasets.
+Use the \code{\link[clustifyr:clustify]{clustifyr::clustify()}} function to label cell types according
+to expression profiles identified by Dolgalev & Tikhonova (2021) in a
+meta-analysis of five mouse bone marrow scRNAseq datasets.
 }
 \author{
 Denis O'Meally

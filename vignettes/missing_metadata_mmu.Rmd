@@ -53,7 +53,7 @@ sex_by_genotype <- metadata_mmu |>
 
 # Mice 
 `Haemdata` includes `r nrow(metadata_mmu)` RNAseq libraries from `r dplyr::n_distinct(metadata_mmu$mouse_id, na.rm = TRUE)` mice. Metadata
-are parsed by functions in [`parse_metadata.R`](https://github.com/drejom/haemdata/blob/main/R/parse_metadata.R) and collated by the [`make_metadata_mmu()`](../reference/make_metadata_mmu.html) function.
+are parsed by functions in [`import_metadata.R`](https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R) and collated by the `make_metadata_mmu()` function, sourced in the same document.
 
 ## Missingness
 ```{r echo=FALSE, img.width=8, message=FALSE}
