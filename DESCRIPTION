@@ -6,11 +6,11 @@ Authors@R:
     person("Denis", "O'Meally", , "domeally@coh.org", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7749-9506"))
 Description: Harmonised, preprocessed data from the COH PSON
-    State-transition projects at COH. Accessor functions published as the
-    R package `haemdata`, available from http://cgt.coh.org/haemdata.  A
-    COH account is required to access published resources; contact
-    [Russell Rockne](mailto:rrockne@coh.org) to be added to the
-    Sharepoint/Teams PSON group.
+    State-transition projects at COH. Preprocessing and accessor functions
+    published as the R package `haemdata`, available from
+    http://cgt.coh.org/haemdata. A COH account is required to access
+    published resources; contact [Russell Rockne](mailto:rrockne@coh.org)
+    to be added to the Sharepoint/Teams PSON group.
 License: file LICENSE
 URL: https://github.com/drejom/haemdata
 BugReports: https://github.com/drejom/haemdata/issues
@@ -34,6 +34,7 @@ Suggests:
     hdf5r,
     hexSticker,
     janitor,
+    knitr,
     magick,
     Matrix,
     OUTRIDER,
@@ -42,6 +43,7 @@ Suggests:
     readr,
     readxl,
     rlang,
+    rmarkdown,
     rtracklayer,
     S4Vectors,
     sctransform,
