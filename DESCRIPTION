@@ -32,7 +32,6 @@ Suggests:
     ggsci,
     grid,
     hdf5r,
-    helpeRs,
     hexSticker,
     janitor,
     magick,
@@ -47,7 +46,6 @@ Suggests:
     S4Vectors,
     sctransform,
     Seurat,
-    SeuratDisk,
     SeuratObject,
     stringr,
     SummarizedExperiment,
@@ -58,10 +56,6 @@ Suggests:
     utils
 VignetteBuilder: 
     knitr
-Remotes:
-    drejom/helpeRs,
-    mojaveazure/seurat-disk,
-    satijalab/sctransform@develop
 Encoding: UTF-8
 Language: en-AU
 LazyData: true

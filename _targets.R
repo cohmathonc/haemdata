@@ -312,7 +312,7 @@ list(
     # TODO make a function to prune pins not in a release
     tar_target(
         latest_published_data,
-        helpeRs::write_data("published_pins", rbind(
+        haemdata::write_data("published_pins", rbind(
             # 10X single cell RNA-seq
             mmu_10x_2022_1_GRCm38_HLT_pins,
             mmu_10x_2022_1_GENCODEm28_HLT_pins,
