@@ -28,3 +28,23 @@ The preprocessing pipeliens produce a multitude of in ancillary reports and file
 available in the `MHO` folder. Currently these data are difficult to access programmatically. 
 In a future release, they'll be accessible in the `colData` slot of
 the `SummarizedExperiment` objects produced.
+
+## Installation
+
+```
+Remotes:
+    mojaveazure/seurat-disk,
+    satijalab/sctransform@develop
+
+.Rbuildignore:
+
+^aml_datasets.Rmd$
+^genomes.Rmd$       
+^cml_datasets.Rmd$ 
+^mds_datasets.Rmd$ 
+^preprocessing.Rmd$
+^version_control\.Rmd$
+^missing_metadata_mmu\.Rmd$
+^scRNAseq\.Rmd$
+```
+
