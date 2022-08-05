@@ -620,7 +620,7 @@ merge_mrna <- function(summarised_experiment1, summarised_experiment2, drop = NU
     out_name <- paste(tolower(project), reference_genome, sep = "_")
 
     # write to the package data folder
-    haemdata::write_data(out_name, summarised_experiment)
+    write_data(out_name, summarised_experiment)
 
     # write a CSV to extdata
     tpm_matrix_csv <- haemdata::make_tpm_matrix(summarised_experiment, tpm = 1, samples = 5)
