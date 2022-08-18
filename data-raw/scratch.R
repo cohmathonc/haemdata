@@ -338,3 +338,17 @@ Remotes:
     drejom/helpeRs,
     mojaveazure/seurat-disk,
     satijalab/sctransform@develop
+
+
+    # if the summarised expt is from Kim et al, we need to trim down the rows to keep only those genes in
+    # the targeted panel, Supplementary Table 2 (83 genes)
+    if (!S4Vectors::metadata(summarised_experiment)["object_name"] == "hsa_mrna_kim_GENCODEr40_qc") {
+        message("Trimming summarised_experiment to 83 genes")
+        target_genes <- readxl::read_excel("data-raw/41598_2020_76933_MOESM8_ESM.xlsx", sheet = "TableS2") |> janitor::clean_names()
+
+        keep_genes <- (rowData(filtered_se)$gene_name %in% target_genes$gene_name)
+
+        filtered_se <- filtered_se[keep_genes, ]
+        assay(filtered_se, "counts") |> head()
+    }
+

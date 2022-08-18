@@ -1,4 +1,4 @@
-# Functions for importing metadata
+z# Functions for importing metadata
 
 #' Make minimal metadata for HSA
 #'
@@ -652,5 +652,28 @@ ega <- dplyr::left_join(
         ) |>
         dplyr::select(sample = ega_run_accession_id, fastq_1, fastq_2, strandedness, dplyr::everything(), project) |>
         dplyr::filter(library_strategy == "RNA-Seq")
+    return(sample_sheet)
+}
+
+# AML.PRJEB27973 Kim et al 2020 SciRep
+parse_metadata_AML.PRJEB27973 <- function() {
+    sample_sheet <- readr::read_csv(
+        "/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.PRJEB27973/samplesheet/samplesheet.csv",
+        show_col_types = FALSE) |>
+        tidyr::separate(sample_alias, into = c("genotype", "patient_id", "timepoint"), sep = "-") |>
+        dplyr::mutate(
+            project = "AML.PRJEB27973",
+            sample = sample,
+            patient_id = patient_id,
+            timepoint = timepoint,
+            batch = "PRJEB27973",
+            strandedness = "reverse",
+            sex = NA_character_,
+            dob = NA,
+            treatment = "",
+            genotype = genotype,
+            tissue = "BM"
+        ) |>
+        dplyr::select(sample, fastq_1, fastq_2, strandedness, patient_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project, everything())
     return(sample_sheet)
 }

@@ -1,6 +1,10 @@
 {
-    "cSpell.words": [
-        "Haemdata"
-    ],
-    "peacock.color": "#a60c68"
+    "peacock.color": "#a60c68",
+    "spellright.language": [],
+    "spellright.documentTypes": [
+        "latex",
+        "plaintext",
+        "markdown",
+        "r"
+    ]
 }

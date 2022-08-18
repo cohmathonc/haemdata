@@ -51,9 +51,11 @@ list(
     tar_target(sample_sheet_CML_2, parse_metadata_CML.mRNA.2022()),
     # AML scRNAseq
     tar_target(sample_sheet_2022_1, parse_metadata_AML.scRNAseq.2022()),
-    # FLT3 AML patients (COH Biobank) & MDS from EGAD00001003891
+    # Patient data, mRNAseq
+    # FLT3 AML patients (COH Biobank); MDS from EGAD00001003891; AML patients from PRJEB27973 
     tar_target(sample_sheet_2022_2, parse_metadata_AML.mRNA.HSA_FLT3.2022()),
     tar_target(sample_sheet_2022_3, parse_metadata_MDS.rnaseq.EGAD00001003891()),
+    tar_target(sample_sheet_2022_4, parse_metadata_AML.PRJEB27973()),
 
     # Make sample sheets for the nf-core/rnaseq pipeline as described in the manual:
     # https://nf-co.re/rnaseq/usage#samplesheet-input
@@ -109,6 +111,10 @@ list(
         run_nf_core_rnaseq("mmu_mrna_techrep", sample_sheet_techrep, "GENCODEm28_HLT"),
         format = "file"
     ),
+    tar_target(mmu_mrna_aml2016_qc,
+        run_nf_core_rnaseq("mmu_mrna_aml2016", sample_sheet_2016_1, "GENCODEm28_HLT"),
+        format = "file"
+    ),
     tar_target(hsa_mrna_flt3_qc,
         run_nf_core_rnaseq("hsa_mrna_flt3", sample_sheet_2022_2, "GENCODEr40"),
         format = "file"
@@ -117,11 +123,10 @@ list(
         run_nf_core_rnaseq("hsa_mrna_mds", sample_sheet_2022_3, "GENCODEr40"),
         format = "file"
     ),
-    tar_target(mmu_mrna_aml2016_qc,
-        run_nf_core_rnaseq("mmu_mrna_aml2016", sample_sheet_2016_1, "GENCODEm28_HLT"),
+    tar_target(hsa_mrna_kim_qc,
+        run_nf_core_rnaseq("hsa_mrna_kim", sample_sheet_2022_4, "GENCODEr40"),
         format = "file"
     ),
-
     # Salmon only
     tar_target(CML.mRNA_salmon,
         run_nf_core_rnaseq("mmu_mrna_cml", sample_sheet_CML, "GENCODEm28_HLT", qc = FALSE),
@@ -150,9 +155,10 @@ list(
     # TODO fix dates for bone marrow samples
     # TODO for all samples, use dates from https://github.com/drejom/haemdata/issues/6#issuecomment-1149191827
     tar_target(metadata_mmu, make_metadata_mmu(sample_sheet_2016_2022)),
-    # consolidate metadata across all human samples
+    # consolidate metadata across human samples
     tar_target(metadata_hsa, make_metadata_hsa(
-        dplyr::full_join(sample_sheet_2022_3, sample_sheet_2022_2)
+        dplyr::full_join(sample_sheet_2022_3, sample_sheet_2022_2) |>
+        dplyr::full_join(sample_sheet_2022_4)
     )),
 
     ###############################################################################################
@@ -202,6 +208,7 @@ list(
     # GENCODEr40
     tar_target(hsa_mrna_flt3_qc_se, annotate_se(get_rnaseq_se(hsa_mrna_flt3_qc), metadata_hsa, hsa_mrna_flt3_qc)),
     tar_target(hsa_mrna_mds_qc_se, annotate_se(get_rnaseq_se(hsa_mrna_mds_qc), metadata_hsa, hsa_mrna_mds_qc)),
+    tar_target(hsa_mrna_kim_qc_se, annotate_se(get_rnaseq_se(hsa_mrna_kim_qc), metadata_hsa, hsa_mrna_kim_qc)),
 
     ###############################################################################################
     # Drop samples that fail mapping threshold  -- only for SummarisedExperiments generated from qc runs
@@ -210,6 +217,8 @@ list(
     tar_target(mmu_mrna_techrep_qc_se_flt, qc_filter_se(mmu_mrna_techrep_qc_se)),
     tar_target(hsa_mrna_flt3_qc_se_flt, qc_filter_se(hsa_mrna_flt3_qc_se)),
     tar_target(hsa_mrna_mds_qc_se_flt, qc_filter_se(hsa_mrna_mds_qc_se)),
+    tar_target(hsa_mrna_kim_qc_se_flt, qc_filter_se(hsa_mrna_kim_qc_se)),
+
     ###############################################################################################
     ### find outliers
     # tar_target(mmu_mrna_2016_2022_qc_se_outliers, find_outliers_se(mmu_mrna_2016_2022_qc_se),
@@ -231,6 +240,7 @@ list(
     tar_target(mmu_mrna_techrep_GENCODEm28_pins, publish_se(mmu_mrna_techrep_qc_se_flt)),
     tar_target(hsa_mrna_flt3_GENCODEm28_pins, publish_se(hsa_mrna_flt3_qc_se_flt)),
     tar_target(hsa_mrna_mds_GENCODEm28_pins, publish_se(hsa_mrna_mds_qc_se_flt)),
+    tar_target(hsa_mrna_kim_GENCODEm28_pins, publish_se(hsa_mrna_kim_qc_se_flt)),
     tar_target(metadata_mmu_pins, publish_metadata(metadata_mmu)),
     tar_target(metadata_hsa_pins, publish_metadata(metadata_hsa)),
 
@@ -323,7 +333,8 @@ list(
             mmu_mrna_2016_2022_GENCODEm28_pins,
             mmu_mrna_techrep_GENCODEm28_pins,
             hsa_mrna_flt3_GENCODEm28_pins,
-            hsa_mrna_mds_GENCODEm28_pins
+            hsa_mrna_mds_GENCODEm28_pins,
+            hsa_mrna_kim_GENCODEm28_pins
         ))
     )
 )

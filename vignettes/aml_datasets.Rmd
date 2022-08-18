@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 # Mouse
 ```{r setup}
 library(haemdata)
-use_pinboard("onedrive")
+use_pinboard("devel")
 
 se <- get_pin("mmu_mrna_2016_2022_GENCODEm28_HLT_qc.rds")
 
@@ -45,16 +45,43 @@ plot_transgenes_se(se)
 
 # Human
 
+## COH Biobank FLT3 patients
+
 ```{r hsa_flt3}
 se <- get_pin("hsa_mrna_flt3_GENCODEr40_qc.rds")
 
-pca <- pca_se(se, col_by = "patient_id")
+# Add week_scaled column, where time is scaled for each patient
+SummarizedExperiment::colData(se) <- SummarizedExperiment::colData(se) |>
+    janitor::remove_constant() |>
+    dplyr::as_tibble() |>
+    dplyr::group_by(patient_id) |>
+    dplyr::mutate(weeks_scaled = as.vector(scale(weeks))) |>
+    dplyr::ungroup() |>
+    `rownames<-`(colnames(se)) |>
+    S4Vectors::DataFrame()
+
+pca <- pca_se(se, col_by = "weeks_scaled")
 ```
 
-```{r hsa_pca_plots}
+```{r hsa_flt3_pca_plots}
 pca$biplot
 pca$pairs_plot
 ```
-```{r hsa_pca_corr, fig.height=9, fig.width=8}
+```{r hsa_flt3_pca_corr, fig.height=9, fig.width=8}
+pca$correlation_plot
+```
+
+## [PRJEB27973](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJEB27973) Kim et al 2020 [SciRep](https://www.nature.com/articles/s41598-020-76933-2)
+```{r hsa_kim}
+se <- get_pin("hsa_mrna_kim_GENCODEr40_qc.rds")
+
+pca <- pca_se(se, col_by = "timepoint")
+```
+
+```{r hsa_kim_pca_plots}
+pca$biplot
+pca$pairs_plot
+```
+```{r hsa_kim_pca_corr, fig.height=9, fig.width=8}
 pca$correlation_plot
 ```
