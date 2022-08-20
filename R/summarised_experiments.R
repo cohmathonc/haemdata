@@ -408,17 +408,18 @@ plot_transgenes_se <- function(summarised_experiment, assay = "abundance", group
         dplyr::filter(stringr::str_detect(gene_id, "HSA_.*_gene")) |>
         tidyr::pivot_longer(!gene_id, names_to = "sample") |>
         dplyr::left_join(col_data, by = "sample") |>
-        ggplot2::ggplot(ggplot2::aes(y = log2(value + 0.1), x = weeks, group = mouse_id, col = eval(rlang::sym(group_by)))) +
+        ggplot2::ggplot(ggplot2::aes(y = log2(value + 0.1), x = sample_weeks, group = mouse_id, col = eval(rlang::sym(group_by)))) +
         ggplot2::geom_line(alpha = 0.3) +
         ggplot2::geom_point(alpha = 0.3) +
         ggplot2::geom_smooth(ggplot2::aes(group = eval(rlang::sym(group_by))), span = 0.4) +
         ggplot2::facet_wrap("gene_id") +
         ggplot2::ggtitle("Abundance of human transgenes") +
         ggplot2::ylab("log2(TPM)") +
-        ggplot2::xlab("time point") +
+        ggplot2::xlab("Weeks") +
         ggsci::scale_color_d3("category20") +
         ggplot2::theme_minimal() +
-        ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+        ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+            legend.title= element_blank())
 }
 
 #' @title Perform PCA on a SummarisedExperiment
@@ -477,7 +478,7 @@ pca_se <- function(summarised_experiment, assay = "abundance", col_by = NULL) {
     num_components <- min(PCAtools::findElbowPoint(p$variance), 10)
 
     corr_metadata <- sample_sheet |>
-        dplyr::select(-dplyr::contains(c("sample", "fastq_1", "fastq_2"))) |>
+        #dplyr::select(-c("sample", "fastq_1", "fastq_2")) |>
         janitor::remove_constant(na.rm = TRUE) |>
         colnames()
 
