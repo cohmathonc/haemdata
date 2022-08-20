@@ -19,8 +19,8 @@ library(haemdata)
 library(Seurat)
 ```
 
-```{r}
-use_pinboard("onedrive")
+```{r fig.height=7, fig.width=7}
+use_pinboard("devel")
 
 seurat_object <- get_pin("mmu_10x_2022_1_GENCODEm28_HLT.rds")
 
@@ -32,12 +32,9 @@ Seurat::DimPlot(seurat_object, reduction = "umap", group.by = "tissue")
 Seurat::DimPlot(seurat_object, reduction = "umap", group.by = "ckit")
 
 Seurat::DimPlot(seurat_object, reduction = "umap", group.by = "Phase")
+
+seurat_object@meta.data |> colnames()
 ```
 
-
-$cell_metadata[[1]]
- [1] "orig.ident"             "nCount_RNA"             "nFeature_RNA"           "ref_genome"             "tissue"                 "ckit"                   "percent_mt"             "percent_ribo"           "percent_hb"            
-[10] "percent_platelet"       "percent_xist"           "chrY_counts"            "percent_myh11"          "integrated_snn_res.0.4" "seurat_clusters"        "integrated_snn_res.0.6" "integrated_snn_res.0.8" "integrated_snn_res.1"  
-[19] "integrated_snn_res.1.2" "S.Score"                "G2M.Score"              "Phase"                 
 
 https://mojaveazure.github.io/seurat-disk/articles/convert-anndata.html

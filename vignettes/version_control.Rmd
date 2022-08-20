@@ -7,10 +7,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This package uses git tags to "stamp" different releases, useful for tracking both the 
+The package uses git tags to "stamp" different releases, useful for tracking both the 
 nf-core pipeline version and the genome reference used for a build. A release is made
 whenever new data are added, or when the pipeline or genome reference is updated.
 
-Currently the "latest" release points to a patchwork of nf-core/rnaseq pipeline versions 
-3.5 or 3.6 and the GRCm38_HLT reference. An upcoming release of the package uses 
-pipeline version 3.7 and the GENCODEm28_HLT reference - stay tuned.
+Currently the "latest" release uses nf-core/rnaseq pipeline version 
+3.7, Cellranger 6.1 and GENCODEr40, GENCODEm28_HLT & GRCm38_HLT references.

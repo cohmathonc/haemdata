@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 # Human
 ```{r setup}
 library(haemdata)
-use_pinboard("onedrive")
+use_pinboard("devel")
 
 se <- get_pin("hsa_mrna_mds_GENCODEr40_qc.rds")
 

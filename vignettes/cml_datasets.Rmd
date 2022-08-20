@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 # Mouse
 ```{r setup}
 library(haemdata)
-use_pinboard("onedrive")
+use_pinboard("devel")
 
 se <- get_pin("mmu_mrna_2016_2022_GENCODEm28_HLT_qc.rds")
 
