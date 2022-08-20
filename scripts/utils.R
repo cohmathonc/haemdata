@@ -47,5 +47,15 @@ make_logo <- function(url = NULL, text = NULL) {
 
     return(img)
 }
-
-
+# get a file from the PSON Teams folder and copy it to
+# the data-raw folder
+get_teams_file <- function(filename) {
+    drive <- Microsoft365R::get_team("PSON AML State-Transition")$get_drive()
+    drive$download_file(filename)
+    file.copy(
+        from = basename(filename),
+        to = "data-raw",
+        overwrite = TRUE
+    )
+    file.remove(basename(filename))
+}
