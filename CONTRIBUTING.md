@@ -5,7 +5,7 @@ agree to abide by our [code of conduct](CONDUCT.md).
 
 ## Getting Started
 
-* Make sure you have a [GitHub account](https://github.com/signup/free). If you are not familar with git and GitHub, take a look at <http://happygitwithr.com/> to get started.
+* Make sure you have a [GitHub account](https://github.com/signup/free). If you are not familiar with git and GitHub, take a look at <http://happygitwithr.com/> to get started.
 * [Submit a post for your issue](https://github.com/drejom/haemdata/issues/), assuming one does not already exist.
   * Clearly describe your issue, including steps to reproduce when it is a bug, or some justification for a proposed improvement.
 * [Fork](https://github.com/drejom/haemdata/#fork-destination-box) the repository on GitHub to make a copy of the repository on your account. Or use this line in your shell terminal:
