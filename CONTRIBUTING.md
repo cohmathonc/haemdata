@@ -1,45 +1,46 @@
-# Contributing to Haemdata
-We love your input and want to make contributing to this project as easy and transparent as possible, whether it's:
+# Contributing
 
-- Adding an Rmarkdown or Jupyter notebook
-- Reporting a bug
-- Discussing the current state of the code
-- Submitting a fix
-- Proposing new features
-- Becoming a maintainer
+We love pull requests from everyone. By participating in this project, you
+agree to abide by our [code of conduct](CONDUCT.md).
 
-## We Develop with Github
-We use github to host code, to track issues and feature requests, as well as accept pull requests.
+## Getting Started
 
-## Raw data remains at COH
-We don't store any raw, unprocessed genomic data in this repository.
+* Make sure you have a [GitHub account](https://github.com/signup/free). If you are not familar with git and GitHub, take a look at <http://happygitwithr.com/> to get started.
+* [Submit a post for your issue](https://github.com/drejom/haemdata/issues/), assuming one does not already exist.
+  * Clearly describe your issue, including steps to reproduce when it is a bug, or some justification for a proposed improvement.
+* [Fork](https://github.com/drejom/haemdata/#fork-destination-box) the repository on GitHub to make a copy of the repository on your account. Or use this line in your shell terminal:
 
-## We Use [Github Flow](https://docs.github.com/en/get-started/quickstart/github-flow), So All Code Changes Happen Through Pull Requests
-Pull requests are the best way to propose changes to the codebase (we use [Github Flow](https://docs.github.com/en/get-started/quickstart/github-flow)). We actively welcome your pull requests:
+    `git clone git@github.com:your-username/haemdata.git`
+    
 
-- Fork the repo and create your branch from `main`.
-- If you've added code that should be tested, add tests.
-- Ensure the test suite passes.
-- Make sure your code lints.
-- Issue that pull request!
+    
+## Making changes
 
-## Report bugs using Github's [issues](https://github.com/briandk/transcriptase-atom/issues)
-We use GitHub issues to track bugs, fixes and features. Reports can be made by [opening a new issue](); it's that easy!
+* Before you make a Pull Request, make sure you have discussed your proposed change in an issue post and that the team support your proposed change.
+* We recommend that you create a Git branch for each pull request (PR).
+* Look at the GH Actions status before and after making changes. The README 
+  contains an `R-CMD-CHECK` badge to indicate a successful build by the continuous integration services used by the package.
+* Edit the files, save often, and make commits of logical units, where each commit indicates one concept
+* Follow our [style guide](http://adv-r.had.co.nz/Style.html).
+* Make sure you write [good commit messages](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
+* We use `testthat`. Contributions with test cases included are easier to accept.
+* For user-facing changes, add a bullet to the top of NEWS.md below the current development version header describing the changes made followed by your GitHub username, and links to relevant issue(s)/PR(s).
+* Run _all_ the tests using `devtools::check()` to assure nothing else was accidentally broken.
+* If you need help or unsure about anything, post an update to [your issue](https://github.com/drejom/haemdata/issues/).
 
-**Great Bug Reports** tend to have:
+## Submitting your changes
 
-- A quick summary and/or background
-- Steps to reproduce
-  - Be specific!
-  - Give sample code if you can. [This stackoverflow question](http://stackoverflow.com/q/12488905/180626) includes sample code that *anyone* with a base R setup can run to reproduce the error
-- What you expected would happen
-- What actually happens
-- Notes (possibly including why you think this might be happening, or stuff you tried that didn't work)
+Push to your fork and [submit a pull request](https://github.com/drejom/haemdata/compare/).
 
-People *love* thorough bug reports.
+At this point you're waiting on us. We like to at least comment on pull requests within a few days (and, typically, one business day). We may suggest some changes or improvements or alternatives.
 
-## Use a Consistent Coding Style
-If you use the [`rbioc`](https://github.com/drejom/devcontainer_RbioC) development environment, `lintr` is already set up. 
+Some things you can do that will increase the chance that your pull request is accepted:
 
-## References
-This document was adapted from [Brian A. Danielak](https://github.com/briandk)'s CONTRIBUTING.md [template](https://gist.github.com/briandk/3d2e8b3ec8daf5a27a62). 
+* Engage in discussion on [your issue](https://github.com/drejom/haemdata/issues/).
+* Be familiar with the background literature cited in the [README](README.Rmd)
+* Write tests that pass `devtools::check()`.
+* Follow our [code style guide](http://adv-r.had.co.nz/Style.html).
+* Write a [good commit message](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
+
+
+
