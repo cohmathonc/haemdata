@@ -12,9 +12,8 @@ globalVariables(c(
     "percent_ribo", "timepoint_project", "value", "weeks",
     "width", "csv_pin", "csv_version", "Sample", "basepairs",
     "fastq_1", "fastq_2", "gene_id", "gene_name", "mouse_id",
-    "strandedness"
-))
-
+    "sample_weeks", "strandedness"
+    ))
 # setup package environment
 
 #' @title Package environment
@@ -36,8 +35,7 @@ haemdata_env$pin_board <- NULL
 haemdata_env$package_url <- "http://cgt.coh.org/haemdata"
 
 
-# utility functions
-# Utility functions for the target pipeline
+#### Utility functions for the target pipeline ----
 
 # cross platform hostname
 get_hostname <- function() {
@@ -71,3 +69,4 @@ write_data <- function(schemeName, data) {
     eval(parse(text = sprintf("save(%s, file = '%s', compress = 'xz')", varName, fileLocation)))
     return(paste0("data/", rdaFile))
 }
+
