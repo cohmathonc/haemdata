@@ -39,6 +39,7 @@ Suggests:
     Matrix,
     OUTRIDER,
     parallelly,
+    patchwork,
     PCAtools,
     readr,
     readxl,
