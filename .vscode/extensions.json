@@ -1,0 +1,14 @@
+{
+  // See http://go.microsoft.com/fwlink/?LinkId=827846
+  // for the documentation about the extensions.json format
+  "recommendations": [
+    "ban.spellright",
+    "2gua.rainbow-brackets",
+    "christian-kohler.path-intellisense",
+    "johnpapa.vscode-peacock",
+    "nextflow.nextflow",
+    "NicolasVuillamy.vscode-groovy-lint",
+    "redhat.vscode-yaml",
+    "REditorSupport.r"
+  ]
+}
