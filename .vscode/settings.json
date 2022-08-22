@@ -1,10 +1,13 @@
 {
     "peacock.color": "#a60c68",
-    "spellright.language": [],
+    "spellright.language": [
+        "en"
+    ],
     "spellright.documentTypes": [
         "latex",
         "plaintext",
         "markdown",
-        "r"
+        "r",
+        "rmd"
     ]
 }
