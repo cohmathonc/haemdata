@@ -1,6 +1,5 @@
 ---
 title: "AML datasets"
-output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{AML datasets}
   %\VignetteEngine{knitr::rmarkdown}
@@ -16,41 +15,172 @@ knitr::opts_chunk$set(
 )
 ```
 
+# {.tabset .tabset-fade}
 
-# Mouse
+## Mouse datasets {.tabset .tabset-fade}
+Note: Validation mice also avaialable via Haemdata/Ondrive. See [X]() for more details.
+
+First, we need to setup the pin-board and download the mouse datasets. 
+
 ```{r setup}
 library(haemdata)
 use_pinboard("devel")
 
-se <- get_pin("mmu_mrna_2016_2022_GENCODEm28_HLT_qc.rds")
+all_mice <- get_pin("mmu_mrna_2016_2022_GENCODEm28_HLT_qc.rds")
+```
 
-se <- subset(se,
-    select = grepl("AML", SummarizedExperiment::colData(se)$project)
+### 2016 mice
+```{r}
+se <- subset(all_mice,
+    select = grepl("2016", SummarizedExperiment::colData(all_mice)$batch)
 )
 
 pca <- pca_se(se)
 ```
 
-```{r pca_plots}
+```{r}
 pca$biplot
 pca$pairs_plot
 ```
-```{r pca_corr, fig.height=9, fig.width=8}
+```{r fig.height=9, fig.width=8}
 pca$correlation_plot
 ```
 
-```{r transgenes}
+```{r}
 plot_transgenes_se(se)
 ```
 
-# Human
+### 2018 mice
+```{r}
+se <- subset(all_mice,
+    select = grepl("AML.mRNA.2018.all_samples", SummarizedExperiment::colData(all_mice)$project)
+)
 
-## COH Biobank FLT3 patients
+pca <- pca_se(se)
+```
 
-```{r hsa_flt3}
+```{r }
+pca$biplot
+pca$pairs_plot
+```
+```{r fig.height=9, fig.width=8}
+pca$correlation_plot
+```
+
+```{r }
+plot_transgenes_se(se)
+```
+
+### Radiation mice
+```{r}
+se <- subset(all_mice,
+    select = grepl("AML.mRNA.2020", SummarizedExperiment::colData(all_mice)$project)
+)
+se <- subset(se,
+    select = grepl("PBMC", SummarizedExperiment::colData(se)$tissue)
+)
+
+pca <- pca_se(se)
+```
+
+```{r }
+pca$biplot
+pca$pairs_plot
+```
+
+```{r fig.height=9, fig.width=8}
+pca$correlation_plot
+```
+
+```{r }
+plot_transgenes_se(se)
+```
+
+### Chemo mice
+```{r}
+se <- subset(all_mice,
+    select = grepl("RxGroup", SummarizedExperiment::colData(all_mice)$project)
+)
+
+pca <- pca_se(se)
+```
+
+```{r }
+pca$biplot
+pca$pairs_plot
+```
+
+```{r fig.height=9, fig.width=8}
+pca$correlation_plot
+```
+
+```{r }
+plot_transgenes_se(se)
+```
+
+### scRNAseq mice
+```{r}
+se <- subset(all_mice,
+    select = grepl("AML.scRNAseq.2022", SummarizedExperiment::colData(all_mice)$project)
+)
+
+pca <- pca_se(se)
+```
+
+```{r }
+pca$biplot
+pca$pairs_plot
+```
+
+```{r fig.height=9, fig.width=8}
+pca$correlation_plot
+```
+
+```{r }
+plot_transgenes_se(se)
+```
+
+### Bone marrow
+```{r}
+se <- subset(all_mice,
+    select = ("BM" == SummarizedExperiment::colData(all_mice)$tissue)
+)
+
+pca <- pca_se(se)
+```
+
+```{r }
+pca$biplot
+pca$pairs_plot
+```
+
+```{r fig.height=9, fig.width=8}
+pca$correlation_plot
+```
+
+```{r }
+plot_transgenes_se(se)
+```
+
+## Human datasets {.tabset .tabset-fade}
+
+First, we need to setup the pin-board from which well retrieve the human datasets
+
+```{r}
+library(haemdata)
+use_pinboard("devel")
+```
+
+### COH patients 
+
+City of Hope Biobank FLT3 patients
+
+**Include some background info on these samples, IRB etc**
+
+```{r }
 se <- get_pin("hsa_mrna_flt3_GENCODEr40_qc.rds")
 
-# Add week_scaled column, where time is scaled for each patient
+## Add week_scaled column, where time is scaled for each patient
 SummarizedExperiment::colData(se) <- SummarizedExperiment::colData(se) |>
     janitor::remove_constant() |>
     dplyr::as_tibble() |>
@@ -63,25 +193,29 @@ SummarizedExperiment::colData(se) <- SummarizedExperiment::colData(se) |>
 pca <- pca_se(se, col_by = "weeks_scaled")
 ```
 
-```{r hsa_flt3_pca_plots}
+```{r }
 pca$biplot
 pca$pairs_plot
 ```
-```{r hsa_flt3_pca_corr, fig.height=9, fig.width=8}
+```{r  fig.height=9, fig.width=8}
 pca$correlation_plot
 ```
 
-## [PRJEB27973](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJEB27973) Kim et al 2020 [SciRep](https://www.nature.com/articles/s41598-020-76933-2)
-```{r hsa_kim}
+### Relapse patients
+Kim et al 2020 *Sci Rep* [![DOI](https://zenodo.org/badge/DOI/10.1038/s41598-020-76933-2.svg)](https://doi.org/10.1038/s41598-020-76933-2)
+
+Bioproject: [PRJEB27973](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJEB27973)
+
+```{r }
 se <- get_pin("hsa_mrna_kim_GENCODEr40_qc.rds")
 
 pca <- pca_se(se, col_by = "timepoint")
 ```
 
-```{r hsa_kim_pca_plots}
+```{r }
 pca$biplot
 pca$pairs_plot
 ```
-```{r hsa_kim_pca_corr, fig.height=9, fig.width=8}
+```{r  fig.height=9, fig.width=8}
 pca$correlation_plot
 ```

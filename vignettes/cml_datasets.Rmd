@@ -15,8 +15,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+**Include some background info on these samples, treatments, experimental design**
 
-# Mouse
 ```{r setup}
 library(haemdata)
 use_pinboard("devel")
