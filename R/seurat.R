@@ -106,7 +106,7 @@ rotate_umap <- function(seurat_object, x = FALSE, y = FALSE) {
 #' Loads 10X Cellranger CellPlex h5 data, builds Seurat objects and adds the following metatdata columns:
 #' `percent_mt`, `percent_ribo`, `percent_hb`, `percent_platelet`, `percent_xist`, `chrY_counts`, `percent_myh11`.
 #'
-#' Data are read in from the "cellranger" directory `/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/cellranger`
+#' Data are read in from the "cellranger" directory `/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger`
 #' by searching for files named `sample_feature_bc_matrix.h5`. This can take some time, so after the 1st run,
 #' the paths are written to `data-raw/cellranger_h5_paths.txt` and read from there for subsequent runs.
 #' Similarly, sex chromosome genes are parsed from the GTF and cached in `inst/extdata`.
@@ -116,13 +116,13 @@ rotate_umap <- function(seurat_object, x = FALSE, y = FALSE) {
 #' @param path_regex string, optional, regex pattern to match in path. Use this to select different
 #' genome builds, eg "GRCm38".
 #' @param cellranger_folder string, path to the cellranger folder. Default
-#' is `/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/cellranger`
+#' is `/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger`
 #' @return a list of Seurat objects
 #' @author Denis O'Meally
 #' @export
 # Make Seurat objects
 seurat_import_objects <- function(path_regex,
-                                  cellranger_folder = "/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/cellranger") {
+                                  cellranger_folder = "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger") {
     # get a list of ChrY genes from GTF file
     # Parse GTF: https://www.biostars.org/p/140471/
 

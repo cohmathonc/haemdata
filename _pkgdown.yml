@@ -1,10 +1,10 @@
 URL: http://cgt.coh.org/haemdata/
-destination: /net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata-www
+destination: /net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata-www
 package: haemdata
 template:
   bootstrap: 5
   bootswatch: simplex
 navbar:
   structure:
-    left:  [intro, reference, articles, tutorials, news]
+    left: [intro, reference, articles, tutorials, news]
     right: [search, github]

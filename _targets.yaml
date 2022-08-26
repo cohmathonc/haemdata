@@ -1,4 +1,4 @@
 main:
   inherits: store
-  store: /net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata-nf-core-cache/_targets
-  workers: '50'
+  store: /net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata-nf-core-cache/_targets
+  workers: "50"

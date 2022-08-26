@@ -1,6 +1,6 @@
 
 # path for running nf-core pipelines, slurm templates, sbatch scripts, targets cache, logs, etc...
-nf_core_cache <- "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata-nf-core-cache"
+nf_core_cache <- "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata-nf-core-cache"
 # tar_config_set(store = glue::glue("{nf_core_cache}/_targets"))
 
 # tar_make_clustermq() configuration:

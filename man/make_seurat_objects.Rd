@@ -8,7 +8,7 @@
 seurat_import_objects(
   path_regex,
  
-    cellranger_folder = "/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/cellranger"
+    cellranger_folder = "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger"
 )
 }
 \arguments{
@@ -16,7 +16,7 @@ seurat_import_objects(
 genome builds, eg "GRCm38".}
 
 \item{cellranger_folder}{string, path to the cellranger folder. Default
-is \verb{/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/cellranger}}
+is \verb{/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger}}
 }
 \value{
 a list of Seurat objects
@@ -25,7 +25,7 @@ a list of Seurat objects
 Loads 10X Cellranger CellPlex h5 data, builds Seurat objects and adds the following metatdata columns:
 \code{percent_mt}, \code{percent_ribo}, \code{percent_hb}, \code{percent_platelet}, \code{percent_xist}, \code{chrY_counts}, \code{percent_myh11}.
 
-Data are read in from the "cellranger" directory \verb{/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/cellranger}
+Data are read in from the "cellranger" directory \verb{/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger}
 by searching for files named \code{sample_feature_bc_matrix.h5}. This can take some time, so after the 1st run,
 the paths are written to \code{data-raw/cellranger_h5_paths.txt} and read from there for subsequent runs.
 Similarly, sex chromosome genes are parsed from the GTF and cached in \code{inst/extdata}.

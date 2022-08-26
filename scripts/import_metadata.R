@@ -1,6 +1,6 @@
 # Functions for importing metadata
-#TODO Remove "dob" from the parse_metadata_* functions, as it's added
-#TODO in make_metadata_mmu()
+# TODO Remove "dob" from the parse_metadata_* functions, as it's added
+# TODO in make_metadata_mmu()
 #### metadata consolidation -----
 
 #' Make minimal metadata for HSA
@@ -43,8 +43,8 @@ make_metadata_hsa <- function(sample_sheet) {
 #' @author Denis O'Meally
 
 make_metadata_mmu <- function(sample_sheet_all_mice) {
-# targets::tar_load(sample_sheet_2016_2022)
-# sample_sheet_all_mice<-sample_sheet_2016_2022
+    # targets::tar_load(sample_sheet_2016_2022)
+    # sample_sheet_all_mice<-sample_sheet_2016_2022
     # Add dates/weeks
     # download the file "General/AML.Seq.Samples_dates.xlsx"
     get_teams_file("General/AML.Seq.Samples_dates.xlsx")
@@ -80,9 +80,10 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
             cols = c("T0", "T1", "T2", "T3", "T4", "T5", "T6"),
             values_to = "date", # new date column
             names_to = "timepoint", # the colnames that now become rows
-            values_drop_na = TRUE) |>
+            values_drop_na = TRUE
+        ) |>
         tibble::add_column(project = NA_character_) |>
-            clean_dates()
+        clean_dates()
 
     mice_2018 <- dates[21:35, 1:21] |>
         janitor::row_to_names(row_number = 1) |>
@@ -110,11 +111,12 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
                     values_to = "timepoint", # new date column
                     names_to = "week", # the colnames that now become rows
                     values_drop_na = TRUE
-                    )
+                )
         ) |>
         dplyr::mutate(timepoint = ifelse(timepoint < 0,
             paste0("T", abs(as.numeric(timepoint))),
-            paste0("W", timepoint))) |>
+            paste0("W", timepoint)
+        )) |>
         clean_dates()
 
     rad_mice <- dates[59:69, 1:14] |>
@@ -132,7 +134,7 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
         janitor::row_to_names(row_number = 1) |>
         dplyr::mutate(date = DOD) |>
         tibble::add_column(timepoint = "T0") |>
-            clean_dates()
+        clean_dates()
 
     # merge the dataframes
     x <- mouse_dates <- rbind(mice_2016, mice_2018, chemo_mice, rad_mice, scrna_mice) |>
@@ -142,13 +144,17 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
         dplyr::mutate(
             mouse_tp = glue::glue("{mouse_id}_{timepoint}"),
             # https://github.com/drejom/haemdata/issues/18
-            genotype = dplyr::case_when(mouse_id == "2700" ~ "CW",
-            TRUE ~ genotype),
+            genotype = dplyr::case_when(
+                mouse_id == "2700" ~ "CW",
+                TRUE ~ genotype
+            ),
             treatment = dplyr::case_when(
                 mouse_id == "2700" ~ "Ctrl",
-                TRUE ~ treatment)) |>
-            # remove the 'dob' column from the sample_sheet table as its not collected
-            # consistently across the parse_metadata_* functions
+                TRUE ~ treatment
+            )
+        ) |>
+        # remove the 'dob' column from the sample_sheet table as its not collected
+        # consistently across the parse_metadata_* functions
         dplyr::select(-c(dob))
 
     # consolidate sample metadata where possible
@@ -174,20 +180,20 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
         ) |>
         dplyr::ungroup() |>
         dplyr::select(-c(mouse_tp)) |>
-        #!FIXME short-term hack until we get sample_dates for CML samples
-        mutate(sample_weeks = ifelse(grepl("CML", project ), as.numeric(timepoint), as.numeric(sample_weeks)))
+        # !FIXME short-term hack until we get sample_dates for CML samples
+        mutate(sample_weeks = ifelse(grepl("CML", project), as.numeric(timepoint), as.numeric(sample_weeks)))
     return(sample_sheet)
-    }
+}
 
 #### mRNA -----
 
 # ├ AML.mRNA.2016
 parse_metadata_AML.mRNA.2016 <- function() {
     project <- "AML.mRNA.2016"
-    sample_sheet <- read.csv("/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.mRNA.2016/config/new_name_key.tsv", , sep = "\t") |>
+    sample_sheet <- read.csv("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.mRNA.2016/config/new_name_key.tsv", , sep = "\t") |>
         dplyr::mutate(
             project = project,
-            fastq_1 = paste0("/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.mRNA.2016/data/", newname, ".gz"),
+            fastq_1 = paste0("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.mRNA.2016/data/", newname, ".gz"),
             library_id = paste0("COHP_", ID),
             tissue = "PBMC",
             fastq_2 = "",
@@ -206,10 +212,10 @@ parse_metadata_AML.mRNA.2016 <- function() {
 # AML.mRNA.2018.all_samples
 parse_metadata_AML.mRNA.2018.all_samples <- function() {
     project <- "AML.mRNA.2018.all_samples"
-    sample_sheet <- read.csv("/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.mRNA.2018.all_samples/config/new_name_key.tsv", sep = "\t") |>
+    sample_sheet <- read.csv("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.mRNA.2018.all_samples/config/new_name_key.tsv", sep = "\t") |>
         dplyr::mutate(
             project = project,
-            fastq_1 = paste0("/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.mRNA.2018.all_samples/data/fastq/", Newname, ".gz"),
+            fastq_1 = paste0("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.mRNA.2018.all_samples/data/fastq/", Newname, ".gz"),
             library_id = paste0("COHP_", gsub(".*_|\\.fq", "", Newname)),
             tissue = "PBMC",
             fastq_2 = "",
@@ -245,15 +251,15 @@ parse_metadata_AML.mRNA.2020 <- function() {
     )
     fastqs <- data.frame(
         fastq_1 = system(
-            paste0("find '/net/isi-dcnl/ifs/user_data/ykuo/Seq/201124_TGen' -name '*.gz'"),
+            paste0("find '/net/nfs-irwrsrchnas01/labs/ykuo/Seq/201124_TGen' -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R1_", ., value = TRUE),
         fastq_2 = system(
-            paste0("find '/net/isi-dcnl/ifs/user_data/ykuo/Seq/201124_TGen' -name '*.gz'"),
+            paste0("find '/net/nfs-irwrsrchnas01/labs/ykuo/Seq/201124_TGen' -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R2_", ., value = TRUE)
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
-    sample_sheet <- read.csv("/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.mRNA.2020/config/rename_fastqs.tsv", sep = "\t", header = FALSE) |>
+    sample_sheet <- read.csv("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.mRNA.2020/config/rename_fastqs.tsv", sep = "\t", header = FALSE) |>
         tidyr::separate(V2, sep = "_", c("group", "mouse_id", "timepoint")) |>
         dplyr::mutate(
             project = project,
@@ -281,15 +287,15 @@ parse_metadata_AML.mRNA.2021.RxGroup1 <- function() {
     project <- "AML.mRNA.2021.RxGroup1"
     fastqs <- data.frame(
         fastq_1 = system(
-            paste0("find '/net/isi-dcnl/ifs/user_data/rrockne/Seq/210412_Tgen' -name '*.gz'"),
+            paste0("find '/net/nfs-irwrsrchnas01/labs/rrockne/Seq/210412_Tgen' -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R1_", ., value = TRUE),
         fastq_2 = system(
-            paste0("find '/net/isi-dcnl/ifs/user_data/rrockne/Seq/210412_Tgen' -name '*.gz'"),
+            paste0("find '/net/nfs-irwrsrchnas01/labs/rrockne/Seq/210412_Tgen' -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R2_", ., value = TRUE)
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
-    xls <- "/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.mRNA.2021.RxGroup1/config/run_summary_IGC-LZ-18757.xlsx"
+    xls <- "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.mRNA.2021.RxGroup1/config/run_summary_IGC-LZ-18757.xlsx"
     sample_sheet <- readxl::read_excel(xls) |>
         dplyr::mutate(
             project = project,
@@ -330,15 +336,15 @@ parse_metadata_AML.mRNA.2021.RxGroup2 <- function() {
     project <- "AML.mRNA.2021.RxGroup2"
     fastqs <- data.frame(
         fastq_1 = system(
-            paste0("find '/net/isi-dcnl/ifs/user_data/rrockne/Seq/210507_Tgen' -name '*.gz'"),
+            paste0("find '/net/nfs-irwrsrchnas01/labs/rrockne/Seq/210507_Tgen' -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R1_", ., value = TRUE),
         fastq_2 = system(
-            paste0("find '/net/isi-dcnl/ifs/user_data/rrockne/Seq/210507_Tgen' -name '*.gz'"),
+            paste0("find '/net/nfs-irwrsrchnas01/labs/rrockne/Seq/210507_Tgen' -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R2_", ., value = TRUE)
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
-    xls <- "/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.mRNA.2021.RxGroup2/config/sequencing summary_IGC-LZ-18862.xlsx"
+    xls <- "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.mRNA.2021.RxGroup2/config/sequencing summary_IGC-LZ-18862.xlsx"
     sample_sheet <- readxl::read_excel(xls) |>
         dplyr::mutate(
             project = project,
@@ -375,15 +381,15 @@ parse_metadata_AML.mRNA.2021.RxGroup2_pt2 <- function() {
     project <- "AML.mRNA.2021.RxGroup2_pt2"
     fastqs <- data.frame(
         fastq_1 = system(
-            paste0("find '/net/isi-dcnl/ifs/user_data/ykuo/Seq/210910_TGen' -name '*.gz'"),
+            paste0("find '/net/nfs-irwrsrchnas01/labs/ykuo/Seq/210910_TGen' -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R1_", ., value = TRUE),
         fastq_2 = system(
-            paste0("find '/net/isi-dcnl/ifs/user_data/ykuo/Seq/210910_TGen' -name '*.gz'"),
+            paste0("find '/net/nfs-irwrsrchnas01/labs/ykuo/Seq/210910_TGen' -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R2_", ., value = TRUE)
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
-    sample_sheet <- read.csv("/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.mRNA.2021.RxGroup2_pt2/config/rename_fastqs.tsv", sep = "\t", header = FALSE) |>
+    sample_sheet <- read.csv("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.mRNA.2021.RxGroup2_pt2/config/rename_fastqs.tsv", sep = "\t", header = FALSE) |>
         dplyr::filter(stringr::str_detect(V2, "_R1\\.")) |>
         dplyr::mutate(
             project = project,
@@ -420,11 +426,11 @@ parse_metadata_AML.mRNA.2022.RxGroup3 <- function() {
     project <- "AML.mRNA.2022.RxGroup3"
     fastqs <- data.frame(
         fastq_1 = system(
-            paste0("find '/net/isi-dcnl/ifs/user_data/ykuo/Seq/220415_IGC-LZ-20205' -name '*.gz'"),
+            paste0("find '/net/nfs-irwrsrchnas01/labs/ykuo/Seq/220415_IGC-LZ-20205' -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R1_", ., value = TRUE),
         fastq_2 = system(
-            paste0("find '/net/isi-dcnl/ifs/user_data/ykuo/Seq/220415_IGC-LZ-20205' -name '*.gz'"),
+            paste0("find '/net/nfs-irwrsrchnas01/labs/ykuo/Seq/220415_IGC-LZ-20205' -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R2_", ., value = TRUE)
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
@@ -478,22 +484,22 @@ parse_metadata_AML.mRNA.novaseq_validation.2020 <- function() {
     ## fastqs generated at COH
     # fastqs <- data.frame(
     #     fastq_1 = system(
-    #         paste0("find '/net/isi-dcnl/ifs/user_data/ykuo/Seq/200829' -name '*.gz'"),
+    #         paste0("find '/net/nfs-irwrsrchnas01/labs/ykuo/Seq/200829' -name '*.gz'"),
     #         intern = TRUE
     #     ) %>% grep("_R1_", ., value = TRUE),
     #     fastq_2 = system(
-    #         paste0("find '/net/isi-dcnl/ifs/user_data/ykuo/Seq/200829' -name '*.gz'"),
+    #         paste0("find '/net/nfs-irwrsrchnas01/labs/ykuo/Seq/200829' -name '*.gz'"),
     #         intern = TRUE
     #     ) %>% grep("_R2_", ., value = TRUE)
     # ) |> dplyr::mutate(library_id = paste0("IGCP_", substr(basename(fastq_1), 1, 5)))
     ## fastqs generated at TGen
     fastqs <- data.frame(
         fastq_1 = system(
-            paste0("find '/net/isi-dcnl/ifs/user_data/ykuo/Seq/200928_TGen' -name '*.gz'"),
+            paste0("find '/net/nfs-irwrsrchnas01/labs/ykuo/Seq/200928_TGen' -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R1_", ., value = TRUE),
         fastq_2 = system(
-            paste0("find '/net/isi-dcnl/ifs/user_data/ykuo/Seq/200928_TGen' -name '*.gz'"),
+            paste0("find '/net/nfs-irwrsrchnas01/labs/ykuo/Seq/200928_TGen' -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R2_", ., value = TRUE)
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
@@ -521,12 +527,12 @@ parse_metadata_AML.validation.2017 <- function() {
     project <- "AML.validation.2017"
     fastqs <- data.frame(
         fastq_1 = system(
-            paste0("find '/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.validation.2017/data/fastq' -name '*.gz'"),
+            paste0("find '/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.validation.2017/data/fastq' -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R1_", ., value = TRUE)
     ) |> dplyr::mutate(library_id = paste0("COHP_", substr(basename(fastq_1), 1, 5)))
 
-    xls <- "/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.validation.2017/data/validation_name_key.xlsx"
+    xls <- "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.validation.2017/data/validation_name_key.xlsx"
     sample_sheet <- readxl::read_excel(xls) |>
         dplyr::mutate(
             project = project,
@@ -551,11 +557,11 @@ parse_metadata_AML.scRNAseq.2022 <- function() {
     project <- "AML.scRNAseq.2022"
     fastqs <- data.frame(
         fastq_1 = system(
-            paste0("find '/net/isi-dcnl/ifs/user_data/rrockne/Seq/211210_IGC-LZ-19773' -name '*.gz'"),
+            paste0("find '/net/nfs-irwrsrchnas01/labs/rrockne/Seq/211210_IGC-LZ-19773' -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R1_", ., value = TRUE),
         fastq_2 = system(
-            paste0("find '/net/isi-dcnl/ifs/user_data/rrockne/Seq/211210_IGC-LZ-19773' -name '*.gz'"),
+            paste0("find '/net/nfs-irwrsrchnas01/labs/rrockne/Seq/211210_IGC-LZ-19773' -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R2_", ., value = TRUE)
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
@@ -568,7 +574,7 @@ parse_metadata_AML.scRNAseq.2022 <- function() {
         "4498", "Ctrl", "C", "M", "2021-03-03",
         "4502", "CM", "CHW", "M", "2021-03-03"
     )
-    xls <- "/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.scRNA.2022/bulkseq_targets/config/sequencing summary_IGC-LZ-19773.xlsx"
+    xls <- "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/bulkseq_targets/config/sequencing summary_IGC-LZ-19773.xlsx"
     sample_sheet <- readxl::read_excel(xls) |>
         dplyr::mutate(
             project = project,
@@ -594,16 +600,16 @@ parse_metadata_CML.mRNA.2021 <- function() {
     cohort <- "CML.mRNA.2021"
     fastqs <- data.frame(
         fastq_1 = system(
-            paste0("find /net/isi-dcnl/ifs/user_data/rrockne/Seq/210910_TGen /net/isi-dcnl/ifs/user_data/rrockne/Seq/210907_TGen -name '*.gz'"),
+            paste0("find /net/nfs-irwrsrchnas01/labs/rrockne/Seq/210910_TGen /net/nfs-irwrsrchnas01/labs/rrockne/Seq/210907_TGen -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R1_", ., value = TRUE),
         fastq_2 = system(
-            paste0("find /net/isi-dcnl/ifs/user_data/rrockne/Seq/210910_TGen /net/isi-dcnl/ifs/user_data/rrockne/Seq/210907_TGen -name '*.gz'"),
+            paste0("find /net/nfs-irwrsrchnas01/labs/rrockne/Seq/210910_TGen /net/nfs-irwrsrchnas01/labs/rrockne/Seq/210907_TGen -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R2_", ., value = TRUE)
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
 
-    xls <- "/net/isi-dcnl/ifs/user_data/rrockne/MHO/CML.mRNA.2021/config/Lianjun_IGC-LZ-19411.xlsx"
+    xls <- "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/CML.mRNA.2021/config/Lianjun_IGC-LZ-19411.xlsx"
     sample_sheet <- readxl::read_excel(xls) |>
         dplyr::mutate(
             project = cohort,
@@ -633,16 +639,16 @@ parse_metadata_CML.mRNA.2022 <- function() {
     project <- "CML.mRNA.2022"
     fastqs <- data.frame(
         fastq_1 = system(
-            paste0("find /net/isi-dcnl/ifs/user_data/gmarcucci/Seq/220210_IGC-LZ-19931 /net/isi-dcnl/ifs/user_data/gmarcucci/Seq/220202_IGC-LZ-19931 -name '*.gz'"),
+            paste0("find /net/nfs-irwrsrchnas01/labs/gmarcucci/Seq/220210_IGC-LZ-19931 /net/nfs-irwrsrchnas01/labs/gmarcucci/Seq/220202_IGC-LZ-19931 -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R1_", ., value = TRUE),
         fastq_2 = system(
-            paste0("find /net/isi-dcnl/ifs/user_data/gmarcucci/Seq/220210_IGC-LZ-19931 /net/isi-dcnl/ifs/user_data/gmarcucci/Seq/220202_IGC-LZ-19931 -name '*.gz'"),
+            paste0("find /net/nfs-irwrsrchnas01/labs/gmarcucci/Seq/220210_IGC-LZ-19931 /net/nfs-irwrsrchnas01/labs/gmarcucci/Seq/220202_IGC-LZ-19931 -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R2_", ., value = TRUE)
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
 
-    sample_sheet <- read.csv("/net/isi-dcnl/ifs/user_data/rrockne/MHO/CML.mRNA.2022/config/sample_sheet.csv") |>
+    sample_sheet <- read.csv("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/CML.mRNA.2022/config/sample_sheet.csv") |>
         dplyr::mutate(
             project = project,
             library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"),
@@ -671,11 +677,11 @@ parse_metadata_AML.mRNA.HSA_FLT3.2022 <- function() {
     project <- "AML.mRNA.HSA_FLT3.2022"
     fastqs <- data.frame(
         fastq_1 = system(
-            paste0("find /net/isi-dcnl/ifs/user_data/ykuo/Seq/220511_IGC-LZ-20342 -name '*.gz'"),
+            paste0("find /net/nfs-irwrsrchnas01/labs/ykuo/Seq/220511_IGC-LZ-20342 -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R1_", ., value = TRUE),
         fastq_2 = system(
-            paste0("find /net/isi-dcnl/ifs/user_data/ykuo/Seq/220511_IGC-LZ-20342 -name '*.gz'"),
+            paste0("find /net/nfs-irwrsrchnas01/labs/ykuo/Seq/220511_IGC-LZ-20342 -name '*.gz'"),
             intern = TRUE
         ) %>% grep("_R2_", ., value = TRUE)
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
@@ -719,10 +725,10 @@ parse_metadata_AML.mRNA.HSA_FLT3.2022 <- function() {
 parse_metadata_MDS.rnaseq.EGAD00001003891 <- function() {
     project <- "MDS.rnaseq.EGAD00001003891"
     fastqs <- data.frame(
-        fastq_1 = list.files("/net/isi-dcnl/ifs/user_data/rrockne/MHO/MDS.rnaseq.EGAD00001003891/data/fastq2/reads",
+        fastq_1 = list.files("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/MDS.rnaseq.EGAD00001003891/data/fastq2/reads",
             pattern = "1.fq.gz", full.names = TRUE
         ),
-        fastq_2 = list.files("/net/isi-dcnl/ifs/user_data/rrockne/MHO/MDS.rnaseq.EGAD00001003891/data/fastq2/reads",
+        fastq_2 = list.files("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/MDS.rnaseq.EGAD00001003891/data/fastq2/reads",
             pattern = "2.fq.gz", full.names = TRUE
         )
     ) |> dplyr::mutate(
@@ -784,7 +790,7 @@ parse_metadata_MDS.rnaseq.EGAD00001003891 <- function() {
 # AML.PRJEB27973 Kim et al 2020 SciRep
 parse_metadata_AML.PRJEB27973 <- function() {
     sample_sheet <- readr::read_csv(
-        "/net/isi-dcnl/ifs/user_data/rrockne/MHO/AML.PRJEB27973/samplesheet/samplesheet.csv",
+        "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.PRJEB27973/samplesheet/samplesheet.csv",
         show_col_types = FALSE
     ) |>
         tidyr::separate(sample_alias, into = c("genotype", "patient_id", "timepoint"), sep = "-") |>
@@ -833,7 +839,7 @@ parse_metadata_AML.miRNA.2018 <- function() {
     assay <- "microRNA"
     tissue <- "PBMC"
     fastq_paths <- list.files(
-        path = "/net/isi-dcnl/ifs/user_data/ykuo/Seq/AML2018_new_samples/2018_Aug_miRNA/original_fastq",
+        path = "/net/nfs-irwrsrchnas01/labs/ykuo/Seq/AML2018_new_samples/2018_Aug_miRNA/original_fastq",
         pattern = ".fastq", full.names = TRUE
     ) |>
         dplyr::as_tibble() |>
@@ -863,7 +869,7 @@ parse_metadata_AML.miRNA.2020 <- function() {
     batch <- "2020_U"
     tissue <- "PBMC"
     sample_sheet <- list.files(
-        path = "/net/isi-dcnl/ifs/user_data/ykuo/Seq/210211_miRNA",
+        path = "/net/nfs-irwrsrchnas01/labs/ykuo/Seq/210211_miRNA",
         pattern = ".fastq", full.names = TRUE
     ) |>
         dplyr::as_tibble() |>
@@ -895,7 +901,7 @@ parse_metadata_AML.miRNA.2021.RxGroup1 <- function() {
     tissue <- "PBMC"
     batch <- "2021_G"
     sample_sheet <- list.files(
-        path = "/net/isi-dcnl/ifs/user_data/rrockne/Seq/210429_B",
+        path = "/net/nfs-irwrsrchnas01/labs/rrockne/Seq/210429_B",
         pattern = ".fastq", full.names = TRUE
     ) |>
         dplyr::as_tibble() |>
@@ -925,7 +931,7 @@ parse_metadata_AML.miRNA.2021.RxGroups1and2 <- function() {
     tissue <- "PBMC"
     batch <- "2021_H"
     sample_sheet <- list.files(
-        path = "/net/isi-dcnl/ifs/user_data/rrockne/Seq/210528_A",
+        path = "/net/nfs-irwrsrchnas01/labs/rrockne/Seq/210528_A",
         pattern = ".fastq", full.names = TRUE
     ) |>
         dplyr::as_tibble() |>
@@ -960,7 +966,7 @@ parse_metadata_AML.miRNA.2021.RxGroup2_pt2 <- function() {
     tissue <- "PBMC"
     batch <- "2021_I"
     sample_sheet <- list.files(
-        path = "/net/isi-dcnl/ifs/user_data/ykuo/Seq/210907",
+        path = "/net/nfs-irwrsrchnas01/labs/ykuo/Seq/210907",
         pattern = ".fastq", full.names = TRUE
     ) |>
         dplyr::as_tibble() |>
@@ -991,7 +997,7 @@ parse_metadata_AML.miRNA.2022.RxGroup3 <- function() {
     tissue <- "PBMC"
     batch <- "2022_D"
     fastq_paths <- list.files(
-        path = "/net/isi-dcnl/ifs/user_data/ykuo/Seq/220620_IGC-LZ-20205",
+        path = "/net/nfs-irwrsrchnas01/labs/ykuo/Seq/220620_IGC-LZ-20205",
         pattern = ".fastq", full.names = TRUE
     ) |>
         dplyr::as_tibble() |>

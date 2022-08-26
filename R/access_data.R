@@ -16,7 +16,7 @@
 #' file in your project folder.
 #' @param pin_board Indicate which pinboard to use. One of `c('onedrive, 'devel')`, Default: `NULL`
 #' @param haemdata_folder The full path of the folder for devel
-#' pins, Default: `/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata`
+#' pins, Default: `/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata`
 #' @return Assigns the `pin_board` variable in the `haemdata_env` environment
 #' @details Package releases always use the OneDrive pinboard with versioned pins.
 #' Pin versions associated with each release can be retrieved with `data(published_pins)`.
@@ -39,7 +39,7 @@
 #' @importFrom pins board_ms365 board_folder
 #' @importFrom Microsoft365R get_team
 use_pinboard <- function(pin_board = NULL,
-                         haemdata_folder = "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata") {
+                         haemdata_folder = "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata") {
     # setup pin_board
     if (is.null(pin_board)) {
         message("`pin_board` is NULL: set the pinboard to `onedrive` or `devel`")

@@ -6,7 +6,7 @@
 \usage{
 use_pinboard(
   pin_board = NULL,
-  haemdata_folder = "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata"
+  haemdata_folder = "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata"
 )
 }
 \arguments{
@@ -14,7 +14,7 @@ use_pinboard(
 'devel'), Default: NULL}
 
 \item{haemdata_folder}{The full path of the folder for devel
-pins, Default: '/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata'}
+pins, Default: '/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata'}
 }
 \value{
 Assigns the \code{pin_board} variable in the haemdata_env environment

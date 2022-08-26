@@ -11,7 +11,7 @@ dat |>
     dplyr::filter(is.na(mouse_id))
 
 # get QC data
-dat <- read.csv("/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata/nextflow/AML.mRNA.2016/nfcore-rnaseq-v3.7_GENCODEm28_HLT/multiqc/star_salmon/multiqc_data/multiqc_general_stats.txt", sep = "\t") |>
+dat <- read.csv("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata/nextflow/AML.mRNA.2016/nfcore-rnaseq-v3.7_GENCODEm28_HLT/multiqc/star_salmon/multiqc_data/multiqc_general_stats.txt", sep = "\t") |>
     dplyr::select(!Sample)
 
 # remove invariant columns - ie, where min=max
@@ -47,7 +47,7 @@ colnames(data.new) <- gsub(".*generalstats\\.", "", colnames(data.new))
 
 ## try the same, but with human data - do we get the same columns? Nearly - 23 vs 20
 # get QC data
-dat <- read.csv("/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata/nextflow/AML.mRNA.HSA_FLT3.2022/nfcore-rnaseq-v3.7_GENCODEr40/multiqc/star_salmon/multiqc_data/multiqc_general_stats.txt", sep = "\t") |>
+dat <- read.csv("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata/nextflow/AML.mRNA.HSA_FLT3.2022/nfcore-rnaseq-v3.7_GENCODEr40/multiqc/star_salmon/multiqc_data/multiqc_general_stats.txt", sep = "\t") |>
     dplyr::mutate(sample = gsub("_1$|_2$", "", Sample)) |>
     dplyr::group_by(sample) %>%
     dplyr::mutate(
@@ -89,7 +89,7 @@ colnames(data.new) <- gsub(".*generalstats\\.", "", colnames(data.new))
 ## SCONE
 library(scone)
 
-dat <- read.csv("/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata/nextflow/AML.mRNA.HSA_FLT3.2022/nfcore-rnaseq-v3.7_GENCODEr40/multiqc/star_salmon/multiqc_data/multiqc_general_stats.txt", sep = "\t") |>
+dat <- read.csv("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata/nextflow/AML.mRNA.HSA_FLT3.2022/nfcore-rnaseq-v3.7_GENCODEr40/multiqc/star_salmon/multiqc_data/multiqc_general_stats.txt", sep = "\t") |>
     dplyr::mutate(sample = gsub("_1$|_2$", "", Sample)) |>
     dplyr::group_by(sample) %>%
     dplyr::mutate(
@@ -141,7 +141,7 @@ cbind(D,E) |>
 
     # devel board
     MHO_haemdata <- pins::board_folder(
-        "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata/",
+        "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata/",
         versioned = TRUE
     )
     data(published_pins)
@@ -201,7 +201,7 @@ stringr::str_extract(test, "(?<= , )(\\d+.?(\\d+)?)")
 
 library(rjson)
 
-json <- "/net/isi-dcnl/ifs/user_data/rrockne/MHO/haemdata-nf-core-cache/MDS.rnaseq.EGAD00001003891/nfcore-rnaseq-v3.7_GENCODEr40/multiqc/star_salmon/multiqc_data/multiqc_data.json"
+json <- "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata-nf-core-cache/MDS.rnaseq.EGAD00001003891/nfcore-rnaseq-v3.7_GENCODEr40/multiqc/star_salmon/multiqc_data/multiqc_data.json"
 
 myData <- fromJSON(file = json)
 # Print the result.

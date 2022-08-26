@@ -16,16 +16,16 @@ devtools::check(error_on = "error", vignettes = FALSE)
 # Make a release on GitHub
 ## put fields in standard order and alphabetises dependencies
 use_tidy_description()
-#use_tidy_eval()
-#use_version()
+# use_tidy_eval()
+# use_version()
 
 # build the package
 tgz <- devtools::build(vignettes = FALSE)
 # Publish to cgt.coh.org
-drat::insertPackage(tgz, "/net/isi-dcnl/ifs/user_data/rrockne/MHO")
+drat::insertPackage(tgz, "/net/nfs-irwrsrchnas01/labs/rrockne/MHO")
 
 # install locally
-#devtools::install()
+# devtools::install()
 install.packages("haemdata", repo = "http://cgt.coh.org/MHO")
 
 # build the pkgdown site

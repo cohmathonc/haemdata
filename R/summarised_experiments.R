@@ -75,7 +75,7 @@ get_rnaseq_se <- function(multiqc_path, gtf = TRUE) {
         reference_genome = reference_genome,
         rnaseq_release = rnaseq_release,
         workflow = workflow,
-        multiqc_url = sub("/net/isi-dcnl/ifs/user_data/rrockne/", "http://cgt.coh.org/", multiqc_path),
+        multiqc_url = sub("/net/nfs-irwrsrchnas01/labs/rrockne/", "http://cgt.coh.org/", multiqc_path),
         qc_removed = NA_character_
     )
 
@@ -418,8 +418,10 @@ plot_transgenes_se <- function(summarised_experiment, assay = "abundance", group
         ggplot2::xlab("Weeks") +
         ggsci::scale_color_d3("category20") +
         ggplot2::theme_minimal() +
-        ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-            legend.title= element_blank())
+        ggplot2::theme(
+            axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+            legend.title = element_blank()
+        )
 }
 
 #' @title Perform PCA on a SummarisedExperiment
@@ -478,7 +480,7 @@ pca_se <- function(summarised_experiment, assay = "abundance", col_by = NULL) {
     num_components <- min(PCAtools::findElbowPoint(p$variance), 10)
 
     corr_metadata <- sample_sheet |>
-        #dplyr::select(-c("sample", "fastq_1", "fastq_2")) |>
+        # dplyr::select(-c("sample", "fastq_1", "fastq_2")) |>
         janitor::remove_constant(na.rm = TRUE) |>
         colnames()
 
