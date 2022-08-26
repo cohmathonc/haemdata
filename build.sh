@@ -4,7 +4,7 @@
 #srun -c2 --mem 80G -J build_haemdata-Rpkg 
 /opt/singularity/3.7.0/bin/singularity exec \
     --cleanenv -H $HOME/.singularity/home:/home/$USER \
-    /opt/singularity-images/kmorris/rbioc_3.14.006.sif \
+    /opt/singularity-images/rbioc/rbioc_3.14.006.sif \
     R CMD BATCH build.R  > /dev/null 2>&1 &
 
 # Alternately, run the pipeline in a persistent background process:

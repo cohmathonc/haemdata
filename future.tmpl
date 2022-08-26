@@ -47,5 +47,5 @@ export DEBUGME=<%= Sys.getenv("DEBUGME") %>
 ## we merge R output with stdout from SLURM, which gets then logged via --output option
 /opt/singularity/3.7.0/bin/singularity exec \
     --cleanenv -H $HOME/.singularity/home:/home/$USER \
-    /opt/singularity-images/kmorris/rbioc_3.14.006.sif \
+    /opt/singularity-images/rbioc/rbioc_3.14.006.sif \
     Rscript -e 'batchtools::doJobCollection("<%= uri %>")'
