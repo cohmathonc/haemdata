@@ -26,7 +26,7 @@ tar_option_set(
 )
 
 # check that we're running on Apollo
-if (!(get_hostname() %in% c("ppxhpcacc01", "ppxhpcacc02"))) {
+if (!file.exists(nf_core_cache)) {
     stop("This pipeline must be run on Apollo")
 }
 
@@ -52,7 +52,7 @@ list(
     # AML scRNAseq
     tar_target(sample_sheet_2022_1, parse_metadata_AML.scRNAseq.2022()),
     # Patient data, mRNAseq
-    # FLT3 AML patients (COH Biobank); MDS from EGAD00001003891; AML patients from PRJEB27973 
+    # FLT3 AML patients (COH Biobank); MDS from EGAD00001003891; AML patients from PRJEB27973
     tar_target(sample_sheet_2022_2, parse_metadata_AML.mRNA.HSA_FLT3.2022()),
     tar_target(sample_sheet_2022_3, parse_metadata_MDS.rnaseq.EGAD00001003891()),
     tar_target(sample_sheet_2022_4, parse_metadata_AML.PRJEB27973()),
