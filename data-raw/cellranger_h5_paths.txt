@@ -29,8 +29,8 @@
 /net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger/GRCm38_HLT_lib8/outs/per_sample_outs/4498_BM/count/sample_feature_bc_matrix.h5
 /net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger/GRCm38_HLT_lib7/outs/per_sample_outs/4502_PB/count/sample_feature_bc_matrix.h5
 /net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger/GRCm38_HLT_lib7/outs/per_sample_outs/4498_PB/count/sample_feature_bc_matrix.h5
-/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger/GENCODEm28_HLT_lib8/outs/per_sample_outs/4502_PB/count/sample_feature_bc_matrix.h5
-/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger/GENCODEm28_HLT_lib8/outs/per_sample_outs/4498_PB/count/sample_feature_bc_matrix.h5
+/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger/GENCODEm28_HLT_lib8/outs/per_sample_outs/4502_BM/count/sample_feature_bc_matrix.h5
+/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger/GENCODEm28_HLT_lib8/outs/per_sample_outs/4498_BM/count/sample_feature_bc_matrix.h5
 /net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger/GENCODEm28_HLT_lib9/outs/per_sample_outs/4498_BM_ckit/count/sample_feature_bc_matrix.h5
 /net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger/GENCODEm28_HLT_lib9/outs/per_sample_outs/4502_BM_ckit/count/sample_feature_bc_matrix.h5
 /net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger/GENCODEm28_HLT_lib9/outs/per_sample_outs/4502_PB_ckit/count/sample_feature_bc_matrix.h5
