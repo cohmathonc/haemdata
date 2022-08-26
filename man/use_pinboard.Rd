@@ -10,20 +10,22 @@ use_pinboard(
 )
 }
 \arguments{
-\item{pin_board}{Indicate which pinboard to use. One of c('onedrive,
-'devel'), Default: NULL}
+\item{pin_board}{Indicate which pinboard to use. One of \verb{c('onedrive, 'devel')}, Default: \code{NULL}}
 
 \item{haemdata_folder}{The full path of the folder for devel
-pins, Default: '/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata'}
+pins, Default: \verb{/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata}}
 }
 \value{
-Assigns the \code{pin_board} variable in the haemdata_env environment
+Assigns the \code{pin_board} variable in the \code{haemdata_env} environment
 }
 \description{
 Sets up the pinboard to use for the current R session. Rather
 than issuing this command each session, you can add the line
-\code{if (require(haemdata)) haemdata::use_pinboard("onedrive")} to your project folder
-\href{https://support.rstudio.com/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf}{\code{.Rprofile}} file.
+
+\code{if (require(haemdata)) haemdata::use_pinboard("onedrive")}
+
+to the \href{https://support.rstudio.com/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf}{\code{.Rprofile}}
+file in your project folder.
 }
 \details{
 Package releases always use the OneDrive pinboard with versioned pins.
