@@ -11,6 +11,7 @@ navbar:
 reference:
 - title: Available data
   contents:
+  - published_pins
   - matches("metadata")
   - has_keyword("datasets")
 - title: Accessing data 

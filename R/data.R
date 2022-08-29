@@ -74,7 +74,7 @@ NULL
 #' @name published_pins
 #' @docType data
 #' @usage data(published_pins)
-#' @examples published_pins
+#' @examples published_pins |> knitr::kable()
 NULL
 # # hsa_mrna_mds_GENCODEr40_qc -----------------------------------------------------
 # se <- get_pin("hsa_mrna_mds_GENCODEr40_qc.rds")
