@@ -12,7 +12,7 @@ The package provides harmonised, preprocessed genomic data (mRNA, 10X, miRNA) fr
 To build the `SummarizedExperiments` and expression matrices, raw sequence reads were processed using nf-core pipelines, poorly mapped samples were removed and outlying samples flagged using [`OUTRIDER`](https://doi.org/10.1016/j.ajhg.2018.10.025). Single-cell RNAseq was preprocessed with 10X Cellranger and annotated `Seurat` and `Scanpy` objects produced with Seurat. Sample metadata was collated from a range of supplied excel sheets. Package [functions](http://cgt.coh.org/haemdata/reference/index.html) assist in visualising and sub-setting `SummarizedExperiment` and `Seurat` objects and should facilitate most types of analyses. If something is incorrect or lacking, please [contribute](http://cgt.coh.org/haemdata/CONTRIBUTING.html) a solution or raise an [issue](https://github.com/drejom/haemdata/issues).
 
 ## Documentation
-See [Getting started](http://cgt.coh.org/haemdata) for usage with examples, including exporting CSV tables for analysis with Matlab, for instance. 
+See [Getting started](http://cgt.coh.org/haemdata/articles/haemdata.html) for usage with examples, including exporting CSV tables for analysis with Matlab, for instance. See the [notebooks](notebooks) for more comprehensive analyses. 
 
 ## Installation
 
