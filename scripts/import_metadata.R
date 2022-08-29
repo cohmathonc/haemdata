@@ -152,9 +152,9 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
                 mouse_id == "2700" ~ "Ctrl",
                 TRUE ~ treatment
             ),
-        # remove the 'dob' column from the sample_sheet table as its not collected
-        # consistently across the parse_metadata_* functions, and add in new columsn to
-        # update:
+            # remove the 'dob' column from the sample_sheet table as its not collected
+            # consistently across the parse_metadata_* functions, and add in new columsn to
+            # update:
             dob = as.Date(NA),
             dod = as.Date(NA),
             sample_date = as.Date(NA)
@@ -180,29 +180,29 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
             dplyr::across(dplyr::starts_with("age"), round, 1)
         ) |>
         dplyr::ungroup() |>
-            dplyr::select(-c(mouse_tp)) |>
-            # !FIXME short-term hack until we get sample_dates for CML samples
-            dplyr::mutate(sample_weeks = ifelse(grepl("CML", project), as.numeric(timepoint), as.numeric(sample_weeks)))|>
-            # !FIXME short-term hack until we get all sample data for CML samples
-            # Emailed from Dandan Zhao, 2022-8-5
-            dplyr::rows_update(tibble::tribble(
-                    ~mouse_id, ~genotype, ~sex, ~dob,
-                    "476", "tTA+/-, BCR-ABL+/-", "M", "9/12/2020",
-                    "477", "tTA+/-, BCR-ABL+/-", "F", "9/12/2020",
-                    "480", "tTA+/-, BCR-ABL+/-", "M", "9/12/2020",
-                    "482", "tTA+/-, BCR-ABL+/-", "F", "9/12/2020",
-                    "483", "tTA+/-, BCR-ABL+/-", "F", "9/12/2020",
-                    "484", "tTA+/-, BCR-ABL+/-", "M", "9/12/2020",
-                    "488", "tTA+/-, BCR-ABL+/-", "F", "9/18/2020",
-                    "489", "tTA+/-, BCR-ABL+/-", "F", "9/18/2020",
-                    "490", "tTA+/-, BCR-ABL+/-", "M", "10/2/2020",
-                    "502", "tTA+/-, BCR-ABL+/-", "M", "10/21/2020",
-                    "507", "tTA+/-, BCR-ABL+/-", "F", "10/21/2020",
-                    "508", "tTA+/-, BCR-ABL+/-", "F", "10/21/2020",
-                    "512", "tTA+/-, BCR-ABL+/-", "M", "10/23/2020",
-                    "541", "tTA+/-, BCR-ABL+/-", "F", "12/1/2020",
-                    "545", "tTA+/-, BCR-ABL+/-", "F", "12/8/2020"
-                ) |> dplyr::mutate(dob = as.Date(as.Date(dob, "%m/%d/%Y"), "%Y-%m-%d")),by = "mouse_id")
+        dplyr::select(-c(mouse_tp)) |>
+        # !FIXME short-term hack until we get sample_dates for CML samples
+        dplyr::mutate(sample_weeks = ifelse(grepl("CML", project), as.numeric(timepoint), as.numeric(sample_weeks))) |>
+        # !FIXME short-term hack until we get all sample data for CML samples
+        # Emailed from Dandan Zhao, 2022-8-5
+        dplyr::rows_update(tibble::tribble(
+            ~mouse_id, ~genotype, ~sex, ~dob,
+            "476", "tTA+/-, BCR-ABL+/-", "M", "9/12/2020",
+            "477", "tTA+/-, BCR-ABL+/-", "F", "9/12/2020",
+            "480", "tTA+/-, BCR-ABL+/-", "M", "9/12/2020",
+            "482", "tTA+/-, BCR-ABL+/-", "F", "9/12/2020",
+            "483", "tTA+/-, BCR-ABL+/-", "F", "9/12/2020",
+            "484", "tTA+/-, BCR-ABL+/-", "M", "9/12/2020",
+            "488", "tTA+/-, BCR-ABL+/-", "F", "9/18/2020",
+            "489", "tTA+/-, BCR-ABL+/-", "F", "9/18/2020",
+            "490", "tTA+/-, BCR-ABL+/-", "M", "10/2/2020",
+            "502", "tTA+/-, BCR-ABL+/-", "M", "10/21/2020",
+            "507", "tTA+/-, BCR-ABL+/-", "F", "10/21/2020",
+            "508", "tTA+/-, BCR-ABL+/-", "F", "10/21/2020",
+            "512", "tTA+/-, BCR-ABL+/-", "M", "10/23/2020",
+            "541", "tTA+/-, BCR-ABL+/-", "F", "12/1/2020",
+            "545", "tTA+/-, BCR-ABL+/-", "F", "12/8/2020"
+        ) |> dplyr::mutate(dob = as.Date(as.Date(dob, "%m/%d/%Y"), "%Y-%m-%d")), by = "mouse_id")
     return(sample_sheet)
 }
 
@@ -339,7 +339,7 @@ parse_metadata_AML.mRNA.2021.RxGroup1 <- function() {
             ),
         ) |>
         dplyr::left_join(fastqs)
-    xls_cm <- "/home/domeally/workspaces/haemdata/data-raw/CM mice chemo Rx survival.xlsx"
+    xls_cm <- "data-raw/CM mice chemo Rx survival.xlsx"
     sample_sheet <- dplyr::left_join(sample_sheet, readxl::read_excel(xls_cm) |>
         dplyr::select(
             mouse_id = ID,
@@ -385,7 +385,7 @@ parse_metadata_AML.mRNA.2021.RxGroup2 <- function() {
             timepoint = sub("BM", NA_character_, timepoint)
         ) |>
         dplyr::left_join(fastqs)
-    xls_cm <- "/home/domeally/workspaces/haemdata/data-raw/CM mice chemo Rx survival.xlsx"
+    xls_cm <- "data-raw/CM mice chemo Rx survival.xlsx"
     sample_sheet <- dplyr::left_join(sample_sheet, readxl::read_excel(xls_cm) |>
         dplyr::select(
             mouse_id = ID,
@@ -430,7 +430,7 @@ parse_metadata_AML.mRNA.2021.RxGroup2_pt2 <- function() {
         ) |>
         dplyr::select(-V1) |>
         dplyr::left_join(fastqs)
-    xls_cm <- "/home/domeally/workspaces/haemdata/data-raw/CM mice chemo Rx survival.xlsx"
+    xls_cm <- "data-raw/CM mice chemo Rx survival.xlsx"
     sample_sheet <- dplyr::left_join(sample_sheet, readxl::read_excel(xls_cm) |>
         dplyr::select(
             mouse_id = ID,
@@ -487,7 +487,7 @@ parse_metadata_AML.mRNA.2022.RxGroup3 <- function() {
             timepoint = gsub("BM", NA, timepoint)
         ) |>
         dplyr::left_join(fastqs)
-    xls_cm <- "/home/domeally/workspaces/haemdata/data-raw/CM mice chemo Rx survival.xlsx"
+    xls_cm <- "data-raw/CM mice chemo Rx survival.xlsx"
     sample_sheet <- dplyr::left_join(sample_sheet, readxl::read_excel(xls_cm) |>
         dplyr::select(
             mouse_id = ID,
