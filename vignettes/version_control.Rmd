@@ -1,10 +1,5 @@
 ---
 title: "Version control"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Version control}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 The package uses git tags to "stamp" different releases, useful for tracking both the 

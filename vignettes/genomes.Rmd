@@ -1,10 +1,5 @@
 ---
 title: "Reference genomes"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Reference genomes}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 Various references are used throughout the project:
