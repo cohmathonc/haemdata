@@ -46,9 +46,10 @@ list(
     tar_target(sample_sheet_2021_2, parse_metadata_AML.mRNA.2021.RxGroup2()),
     tar_target(sample_sheet_2021_3, parse_metadata_AML.mRNA.2021.RxGroup2_pt2()),
     tar_target(sample_sheet_2021_4, parse_metadata_AML.mRNA.2022.RxGroup3()),
-    # CML
+    # CML  
     tar_target(sample_sheet_CML_1, parse_metadata_CML.mRNA.2021()),
     tar_target(sample_sheet_CML_2, parse_metadata_CML.mRNA.2022()),
+    tar_target(sample_sheet_CML_3, parse_metadata_CML.mRNA.2022_pt2()),
     # AML scRNAseq
     tar_target(sample_sheet_2022_1, parse_metadata_AML.scRNAseq.2022()),
     # Patient data, mRNAseq
@@ -115,6 +116,10 @@ list(
         run_nf_core_rnaseq("mmu_mrna_aml2016", sample_sheet_2016_1, "GENCODEm28_HLT"),
         format = "file"
     ),
+    tar_target(mmu_mrna_cml3_qc,
+        run_nf_core_rnaseq("mmu_mrna_cml3_qc", sample_sheet_CML_3, "GENCODEm28_HLT"),
+        format = "file"
+    ),
     tar_target(hsa_mrna_flt3_qc,
         run_nf_core_rnaseq("hsa_mrna_flt3", sample_sheet_2022_2, "GENCODEr40"),
         format = "file"
@@ -154,7 +159,7 @@ list(
     # consolidate metadata across all mice samples
     # TODO fix dates for bone marrow samples
     # TODO for all samples, use dates from https://github.com/drejom/haemdata/issues/6#issuecomment-1149191827
-    tar_target(metadata_mmu, make_metadata_mmu(sample_sheet_2016_2022)),
+    tar_target(metadata_mmu, make_metadata_mmu(rbind(sample_sheet_2016_2022, sample_sheet_CML_3))),
     # consolidate metadata across human samples
     tar_target(metadata_hsa, make_metadata_hsa(
         dplyr::full_join(sample_sheet_2022_3, sample_sheet_2022_2) |>

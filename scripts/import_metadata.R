@@ -151,18 +151,19 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
             treatment = dplyr::case_when(
                 mouse_id == "2700" ~ "Ctrl",
                 TRUE ~ treatment
-            )
-        ) |>
+            ),
         # remove the 'dob' column from the sample_sheet table as its not collected
-        # consistently across the parse_metadata_* functions
-        dplyr::select(-c(dob))
-
+        # consistently across the parse_metadata_* functions, and add in new columsn to
+        # update:
+            dob = as.Date(NA),
+            dod = as.Date(NA),
+            sample_date = as.Date(NA)
+        )
     # consolidate sample metadata where possible
-    # using tidyr::fill() to fill in missing values
-    sample_sheet <- left_join(y, x) |>
+    # using dplyr::rows_update() & tidyr::fill() to fill in missing values
+    sample_sheet <- dplyr::rows_update(y, x, by = "mouse_tp", unmatched = "ignore") |>
         dplyr::group_by(mouse_id) |>
-        dplyr::arrange("genotype", "sex", "dob", "dod") |>
-        tidyr::fill(c("genotype", "sex", "dob", "dod"), .direction = "down") |>
+        tidyr::fill(c("treatment", "genotype", "sex", "dob", "dod"), .direction = "downup") |>
         # Use "dod" for "sample_date" for some samples
         dplyr::mutate(
             sample_date = dplyr::case_when(
@@ -179,9 +180,29 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
             dplyr::across(dplyr::starts_with("age"), round, 1)
         ) |>
         dplyr::ungroup() |>
-        dplyr::select(-c(mouse_tp)) |>
-        # !FIXME short-term hack until we get sample_dates for CML samples
-        mutate(sample_weeks = ifelse(grepl("CML", project), as.numeric(timepoint), as.numeric(sample_weeks)))
+            dplyr::select(-c(mouse_tp)) |>
+            # !FIXME short-term hack until we get sample_dates for CML samples
+            dplyr::mutate(sample_weeks = ifelse(grepl("CML", project), as.numeric(timepoint), as.numeric(sample_weeks)))|>
+            # !FIXME short-term hack until we get all sample data for CML samples
+            # Emailed from Dandan Zhao, 2022-8-5
+            dplyr::rows_update(tibble::tribble(
+                    ~mouse_id, ~genotype, ~sex, ~dob,
+                    "476", "tTA+/-, BCR-ABL+/-", "M", "9/12/2020",
+                    "477", "tTA+/-, BCR-ABL+/-", "F", "9/12/2020",
+                    "480", "tTA+/-, BCR-ABL+/-", "M", "9/12/2020",
+                    "482", "tTA+/-, BCR-ABL+/-", "F", "9/12/2020",
+                    "483", "tTA+/-, BCR-ABL+/-", "F", "9/12/2020",
+                    "484", "tTA+/-, BCR-ABL+/-", "M", "9/12/2020",
+                    "488", "tTA+/-, BCR-ABL+/-", "F", "9/18/2020",
+                    "489", "tTA+/-, BCR-ABL+/-", "F", "9/18/2020",
+                    "490", "tTA+/-, BCR-ABL+/-", "M", "10/2/2020",
+                    "502", "tTA+/-, BCR-ABL+/-", "M", "10/21/2020",
+                    "507", "tTA+/-, BCR-ABL+/-", "F", "10/21/2020",
+                    "508", "tTA+/-, BCR-ABL+/-", "F", "10/21/2020",
+                    "512", "tTA+/-, BCR-ABL+/-", "M", "10/23/2020",
+                    "541", "tTA+/-, BCR-ABL+/-", "F", "12/1/2020",
+                    "545", "tTA+/-, BCR-ABL+/-", "F", "12/8/2020"
+                ) |> dplyr::mutate(dob = as.Date(as.Date(dob, "%m/%d/%Y"), "%Y-%m-%d")),by = "mouse_id")
     return(sample_sheet)
 }
 
@@ -665,6 +686,37 @@ parse_metadata_CML.mRNA.2022 <- function() {
                 stringr::str_detect(mouse_id, regex("^502$|^511$|^512$|^513$|^507$|^508$|^505$|^510$|^514$")) ~ "TET_OFF_NIL_ON_D",
                 TRUE ~ "Ctrl"
             ),
+            genotype = NA_character_,
+            tissue = "PBMC"
+        ) |>
+        dplyr::left_join(fastqs) |>
+        dplyr::select(sample = library_id, fastq_1, fastq_2, strandedness, mouse_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project)
+    return(sample_sheet)
+}
+# CML.mRNA.2022_pt2
+parse_metadata_CML.mRNA.2022_pt2 <- function() {
+    fastqs <- data.frame(
+        fastq_1 = system(
+            paste0("find /net/nfs-irwrsrchnas01/labs/gmarcucci/Seq/220811_0471_IGC-LZ-20847 /net/nfs-irwrsrchnas01/labs/gmarcucci/Seq/220811_0472_IGC-LZ-20847 -name '*.gz'"),
+            intern = TRUE
+        ) %>% grep("_R1_", ., value = TRUE),
+        fastq_2 = system(
+            paste0("find /net/nfs-irwrsrchnas01/labs/gmarcucci/Seq/220811_0471_IGC-LZ-20847 /net/nfs-irwrsrchnas01/labs/gmarcucci/Seq/220811_0472_IGC-LZ-20847 -name '*.gz'"),
+            intern = TRUE
+        ) %>% grep("_R2_", ., value = TRUE)
+    ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
+
+    sample_sheet <- readxl::read_xlsx("/home/domeally/workspaces/haemdata/data-raw/sample summary_IGC--LZ-20847.xlsx") |>
+        dplyr::mutate(
+            project = "CML.mRNA.2022_pt2",
+            library_id = paste0("COHP_", gsub("^(\\d{5})_(\\d\\d?)_([MF])(\\d{3}\\d?)-(\\d.*)", "\\1", Sample_ID)),
+            mouse_id = gsub("^(\\d{5})_(\\d\\d?)_([MF])(\\d{3}\\d?)-(\\d.*)", "\\4", Sample_ID),
+            timepoint = gsub("^(\\d{5})_(\\d\\d?)_([MF])(\\d{3}\\d?)-(\\d.*)", "\\5", Sample_ID),
+            batch = "2022_B",
+            strandedness = "reverse",
+            sex = gsub("^(\\d{5})_(\\d\\d?)_([MF])(\\d{3}\\d?)-(\\d.*)", "\\3", Sample_ID),
+            dob = NA,
+            treatment = NA_character_,
             genotype = NA_character_,
             tissue = "PBMC"
         ) |>
