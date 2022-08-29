@@ -300,9 +300,8 @@ seurat_annotate_cell_cycle <- function(seurat_object) {
     # https://ucdavis-bioinformatics-training.github.io/2019-single-cell-RNA-sequencing-Workshop-UCD_UCSF/scrnaseq_analysis/scRNA_Workshop-PART1.html
     # But its a bit hacky and overly complex.
 
-    # ############################################################################
-    # ### This is the recommended way to convert to mouse ids, but ensembl is down at time of testing
-    # # Basic function to convert human to mouse gene names
+    # This is the recommended way to convert to mouse ids, but ensembl is down at time of testing
+    # Basic function to convert human to mouse gene names
     # convert_human_gene_list <- function(x) {
     #     # https://www.r-bloggers.com/2016/10/converting-mouse-to-human-gene-names-with-biomart-package/
 
