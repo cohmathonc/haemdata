@@ -5,14 +5,14 @@
 \alias{metadata_mmu}
 \title{Minimal metadata for mouse samples}
 \source{
-\href{https://github.com/drejom/haemdata/blob/cf03cf0a3eb420a8ee6276c7ec0a9186a55c0e2b/scripts/import_metadata.R#L24}{\code{make_metadata_mmu()}}
+\href{https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24}{\code{make_metadata_mmu()}}
 }
 \description{
 \tabular{ll}{
     \tab Description \cr
-   \code{sample} \tab Integrative Genomics Core \code{library_id} with the format \code{COHP_XXXXX}. \code{sample} is not unique as some libraries are split across multiple sequencing runs. We use this identifier to match sequence reads, QC metrics, raw counts and metadata, for each sample. Concatenate \code{mouse_id}, \code{tissue} and \code{timepoint} to create a unique identifier for each sample. \cr
+   \code{sample} \tab Integrative Genomics Core \code{library_id} with the format \code{COHP_XXXXX}. \code{sample} is not unique as some libraries are split across multiple sequencing runs. This identifier is used to match sequence reads, QC metrics, raw counts and metadata, for each sample. \cr
    \code{fastq_1} \tab Full path of fastq1, unique in the table \cr
-   \code{fastq_2} \tab Full path of fastq2, or blank for single-end reads \cr
+   \code{fastq_2} \tab Full path of fastq2, unique in the table, or blank for single-end reads \cr
    \code{strandedness} \tab Sequencing library protocol (\code{reverse} or \code{unstranded}) \cr
    \code{mouse_id} \tab A unique identifier for each mouse, a 3 or 4 digit number; database held by \href{mailto:YKuo@coh.org?subject=Question\%20about\%20AML\%20mice\%20from\%20PSON}{Kuo lab} for AML mice and \href{mailto:YKuo@coh.org?subject=Question\%20about\%20AML\%20mice\%20from\%20PSON}{Zhang lab} for CML. \cr
    \code{tissue} \tab Tissue type: \code{PBMC} peripheral blood mononuclear cells; \code{BM} bone marrow aspirant; \code{BM_CKIT} ckit+ flow sorted \code{BM} \cr
@@ -25,10 +25,10 @@
    \code{project} \tab Indicates which samples were processed together; a project may contain multiple \code{batches} \cr
    \code{dod} \tab Date of death of the mouse, YYYY-MM-DD \cr
    \code{sample_date} \tab Date the sample was collected, YYYY-MM-DD \cr
-   \code{sample_weeks} \tab Timepoint in weeks. Calculated as \code{sample_date - min(sample_date)} \cr
-   \code{age_at_start} \tab Age at start of the experiment, in weeks. Calculated as \code{min(sample_date) - dob} \cr
-   \code{age_at_sample} \tab Age at sample collection, in weeks. Calculated as \code{sample_date - dob} \cr
-   \code{age_at_end} \tab Age at end of of the experiment, in weeks. Calculated as \code{max(sample_date) - dob} \cr
+   \code{sample_weeks} \tab Timepoint in weeks (\code{sample_date - min(sample_date)}). Post treatment chemo samples begin at week 0, pretreatment samples < 0. \cr
+   \code{age_at_start} \tab Age at start of the experiment, in weeks (\code{min(sample_date) - dob}) \cr
+   \code{age_at_sample} \tab Age at sample collection, in weeks (\code{sample_date - dob}) \cr
+   \code{age_at_end} \tab Age at end of of the experiment, in weeks (\code{max(sample_date) - dob}) \cr
 }
 }
 \details{
