@@ -71,7 +71,5 @@ Collate:
     'data.R'
     'run_nfcore.R'
     'seurat.R'
-    'seurat_annotate_clusters_and_umap.R'
     'seurat_annotate_type.R'
-    'seurat_integrate_scTransform.R'
     'summarised_experiments.R'
