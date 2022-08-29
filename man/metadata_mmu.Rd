@@ -25,7 +25,7 @@
    \code{project} \tab Indicates which samples were processed together; a project may contain multiple \code{batches} \cr
    \code{dod} \tab Date of death of the mouse, YYYY-MM-DD \cr
    \code{sample_date} \tab Date the sample was collected, YYYY-MM-DD \cr
-   \code{sample_weeks} \tab Time point in weeks. Calculated as \code{sample_date - min(sample_date)} \cr
+   \code{sample_weeks} \tab Timepoint in weeks. Calculated as \code{sample_date - min(sample_date)} \cr
    \code{age_at_start} \tab Age at start of the experiment, in weeks. Calculated as \code{min(sample_date) - dob} \cr
    \code{age_at_sample} \tab Age at sample collection, in weeks. Calculated as \code{sample_date - dob} \cr
    \code{age_at_end} \tab Age at end of of the experiment, in weeks. Calculated as \code{max(sample_date) - dob} \cr
@@ -34,7 +34,7 @@
 \details{
 The \href{https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24}{\code{make_metadata_mmu()}}
 function assembles the metadata for all RNAseq libraries from AML and CML mice, by consolidating
-data scraped from multiple sequencing run sheets, directly from sequencing folders, emails, and so it.
+data scraped from multiple sequencing run sheets, directly from sequencing folders, emails, and so forth.
 The code is complex and ugly and undoubetly some errors will have made it through.
 
 Raise an \href{https://github.com/drejom/haemdata/issues}{issue on GitHub}
