@@ -5,9 +5,9 @@
 #'
 #'  |  | Description |
 #'  |---|---|
-#'  | `sample` | Integrative Genomics Core `library_id` with the format `COHP_XXXXX`. `sample` is not unique as some libraries are split across multiple sequencing runs. We use this identifier to match sequence reads, QC metrics, raw counts and metadata, for each sample. Concatenate `mouse_id`, `tissue` and `timepoint` to create a unique identifier for each sample. |
+#'  | `sample` | Integrative Genomics Core `library_id` with the format `COHP_XXXXX`. `sample` is not unique as some libraries are split across multiple sequencing runs. This identifier is used to match sequence reads, QC metrics, raw counts and metadata, for each sample. |
 #'  | `fastq_1` | Full path of fastq1, unique in the table |
-#'  | `fastq_2` | Full path of fastq2, or blank for single-end reads |
+#'  | `fastq_2` | Full path of fastq2, unique in the table, or blank for single-end reads |
 #'  | `strandedness` | Sequencing library protocol (`reverse` or `unstranded`) |
 #'  | `mouse_id` | A unique identifier for each mouse, a 3 or 4 digit number; database held by [Kuo lab](mailto:YKuo@coh.org?subject=Question%20about%20AML%20mice%20from%20PSON) for AML mice and [Zhang lab](mailto:YKuo@coh.org?subject=Question%20about%20AML%20mice%20from%20PSON) for CML. |
 #'  | `tissue` | Tissue type: `PBMC` peripheral blood mononuclear cells; `BM` bone marrow aspirant; `BM_CKIT` ckit+ flow sorted `BM` |
@@ -20,10 +20,10 @@
 #'  | `project` | Indicates which samples were processed together; a project may contain multiple `batches` |
 #'  | `dod` | Date of death of the mouse, YYYY-MM-DD |
 #'  | `sample_date` | Date the sample was collected, YYYY-MM-DD |
-#'  | `sample_weeks` | Timepoint in weeks. Calculated as `sample_date - min(sample_date)` |
-#'  | `age_at_start` | Age at start of the experiment, in weeks. Calculated as `min(sample_date) - dob` |
-#'  | `age_at_sample` | Age at sample collection, in weeks. Calculated as `sample_date - dob` |
-#'  | `age_at_end` | Age at end of of the experiment, in weeks. Calculated as `max(sample_date) - dob` |
+#'  | `sample_weeks` | Timepoint in weeks (`sample_date - min(sample_date)`). Post treatment chemo samples begin at week 0, pretreatment samples < 0. |
+#'  | `age_at_start` | Age at start of the experiment, in weeks (`min(sample_date) - dob`) |
+#'  | `age_at_sample` | Age at sample collection, in weeks (`sample_date - dob`) |
+#'  | `age_at_end` | Age at end of of the experiment, in weeks (`max(sample_date) - dob`) |
 #' 
 #' The [`make_metadata_mmu()`](https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24)
 #' function assembles the metadata for all RNAseq libraries from AML and CML mice, by consolidating
@@ -35,7 +35,7 @@
 #'
 #' @name metadata_mmu
 #' @docType data
-#' @source [`make_metadata_mmu()`](https://github.com/drejom/haemdata/blob/cf03cf0a3eb420a8ee6276c7ec0a9186a55c0e2b/scripts/import_metadata.R#L24)
+#' @source [`make_metadata_mmu()`](https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24)
 #' @author Denis O'Meally
 NULL
 
