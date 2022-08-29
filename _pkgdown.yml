@@ -8,3 +8,26 @@ navbar:
   structure:
     left: [intro, reference, articles, tutorials, news]
     right: [search, github]
+reference:
+- title: Available data
+  contents:
+  - matches("metadata")
+  - has_keyword("datasets")
+- title: Accessing data 
+  contents:
+  - matches("pin")
+- title: SummarisedExperiment functions
+- contents:
+  - ends_with("_se")
+  - make_tpm_matrix
+  - merge_mrna
+- title: Suerat functions
+- contents:
+  - starts_with("seurat_")
+  - rotate_umap
+  - make_seurat_objects
+  - find_elbow
+- title: Other functions
+- contents:
+  - run_nf_core_rnaseq
+  - write_data

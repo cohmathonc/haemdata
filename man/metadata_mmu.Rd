@@ -10,27 +10,32 @@
 \description{
 \tabular{ll}{
     \tab Description \cr
-   \code{sample} \tab Integrative Genomics Core \code{library_id} with the format \code{COHP_XXXXX}. We use this unique identifier to match sequence reads, QC metrics, raw counts and metadata, for each sample \cr
-   \code{fastq_1} \tab Full path of fastq1 \cr
+   \code{sample} \tab Integrative Genomics Core \code{library_id} with the format \code{COHP_XXXXX}. \code{sample} is not unique as some libraries are split across multiple sequencing runs. We use this identifier to match sequence reads, QC metrics, raw counts and metadata, for each sample. Concatenate \code{mouse_id}, \code{tissue} and \code{timepoint} to create a unique identifier for each sample. \cr
+   \code{fastq_1} \tab Full path of fastq1, unique in the table \cr
    \code{fastq_2} \tab Full path of fastq2, or blank for single-end reads \cr
    \code{strandedness} \tab Sequencing library protocol (\code{reverse} or \code{unstranded}) \cr
-   \code{mouse_id} \tab A unique identifier for each mouse, a 3 or 4 digit number; database held by Kuo lab \cr
+   \code{mouse_id} \tab A unique identifier for each mouse, a 3 or 4 digit number; database held by \href{mailto:YKuo@coh.org?subject=Question\%20about\%20AML\%20mice\%20from\%20PSON}{Kuo lab} for AML mice and \href{mailto:YKuo@coh.org?subject=Question\%20about\%20AML\%20mice\%20from\%20PSON}{Zhang lab} for CML. \cr
    \code{tissue} \tab Tissue type: \code{PBMC} peripheral blood mononuclear cells; \code{BM} bone marrow aspirant; \code{BM_CKIT} ckit+ flow sorted \code{BM} \cr
-   \code{weeks} \tab Timepoint in weeks \cr
    \code{timepoint} \tab Timepoint label; formatting is inconsistent across cohorts \cr
    \code{batch} \tab Sequencing groups \cr
    \code{treatment} \tab Experimental treatment group \cr
-   \code{genotype} \tab Mouse genotype \cr
-   \code{sex} \tab Sex of the mouse \cr
-   \code{dob} \tab Date of birth of the mouse \cr
+   \code{genotype} \tab Mouse genotype, given in JAX Lab notation \cr
+   \code{sex} \tab Sex, \code{M} or \code{F} \cr
+   \code{dob} \tab Date of birth of the mouse, YYYY-MM-DD \cr
    \code{project} \tab Indicates which samples were processed together; a project may contain multiple \code{batches} \cr
+   \code{dod} \tab Date of death of the mouse, YYYY-MM-DD \cr
+   \code{sample_date} \tab Date the sample was collected, YYYY-MM-DD \cr
+   \code{sample_weeks} \tab Time point in weeks. Calculated as \code{sample_date - min(sample_date)} \cr
+   \code{age_at_start} \tab Age at start of the experiment, in weeks. Calculated as \code{min(sample_date) - dob} \cr
+   \code{age_at_sample} \tab Age at sample collection, in weeks. Calculated as \code{sample_date - dob} \cr
+   \code{age_at_end} \tab Age at end of of the experiment, in weeks. Calculated as \code{max(sample_date) - dob} \cr
 }
 }
 \details{
-The \href{https://github.com/drejom/haemdata/blob/cf03cf0a3eb420a8ee6276c7ec0a9186a55c0e2b/scripts/import_metadata.R#L24}{\code{make_metadata_mmu()}}
-function assembles the metadata for all RNAseq libraries from AML and CML mice.
-Minimal metadata fields include sample, fastq_1, fastq_2, strandedness,
-mouse_id, tissue, weeks, timepoint, batch, treatment, genotype, sex, dob, project.
+The \href{https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24}{\code{make_metadata_mmu()}}
+function assembles the metadata for all RNAseq libraries from AML and CML mice, by consolidating
+data scraped from multiple sequencing run sheets, directly from sequencing folders, emails, and so it.
+The code is complex and ugly and undoubetly some errors will have made it through.
 
 Raise an \href{https://github.com/drejom/haemdata/issues}{issue on GitHub}
 to report erroneous or missing records.
