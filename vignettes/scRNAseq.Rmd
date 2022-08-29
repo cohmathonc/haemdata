@@ -1,9 +1,5 @@
 ---
 title: "scRNAseq"
-vignette: >
-  %\VignetteIndexEntry{scRNAseq}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
@@ -186,9 +182,9 @@ sc_qc_plot_per_sample(seurat_object)
 
 ### Per sample UMAP
 ```{r }
-pal <- DiscretePalette_scCustomize(num_colors = 30, palette = "ditto_seq")
+pal <- scCustomize::DiscretePalette_scCustomize(num_colors = 30, palette = "ditto_seq")
 scCustomize::DimPlot_scCustom(seurat_object, reduction = "umap", group.by = "orig.ident", colors_use = pal) |>
-    dim_plot_mod() + ggplot2::guides(color = guide_legend(ncol = 1))
+    dim_plot_mod() + ggplot2::guides(color = ggplot2::guide_legend(ncol = 2))
 ```
 
 ### Per cell QC metrics
