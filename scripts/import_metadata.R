@@ -43,9 +43,7 @@ make_metadata_hsa <- function(sample_sheet) {
 #' @author Denis O'Meally
 
 make_metadata_mmu <- function(sample_sheet_all_mice) {
-    # targets::tar_load(sample_sheet_2016_2022)
-    # sample_sheet_all_mice<-sample_sheet_2016_2022
-    # Add dates/weeks
+    # AML- add dates/weeks
     # download the file "General/AML.Seq.Samples_dates.xlsx"
     get_teams_file("General/AML.Seq.Samples_dates.xlsx")
 
@@ -137,10 +135,10 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
         clean_dates()
 
     # merge the dataframes
-    x <- mouse_dates <- rbind(mice_2016, mice_2018, chemo_mice, rad_mice, scrna_mice) |>
+    aml_mice_dates <- mouse_dates <- rbind(mice_2016, mice_2018, chemo_mice, rad_mice, scrna_mice) |>
         dplyr::mutate(mouse_tp = glue::glue("{mouse_id}_{timepoint}"))
 
-    y <- sample_sheet_all_mice |>
+     all_mice <- sample_sheet_all_mice |>
         dplyr::mutate(
             mouse_tp = glue::glue("{mouse_id}_{timepoint}"),
             # https://github.com/drejom/haemdata/issues/18
@@ -159,9 +157,37 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
             dod = as.Date(NA),
             sample_date = as.Date(NA)
         )
+
+    # CML metadta
+    # download the file "General/Copy of mmu_metadata_CML.xlsx"
+    get_teams_file("General/Copy of mmu_metadata_CML.xlsx")
+
+    # read in the worksheets
+    cml_metadata <- left_join(
+        # Samples
+        readxl::read_excel("data-raw/Copy of mmu_metadata_CML.xlsx",
+            sheet = "CML samples", col_types = "text"
+        ) |>
+            dplyr::group_by(mouse_id) |>
+            dplyr::mutate(start_date = as.Date(as.numeric(sample_date), origin = "1899-12-30")) |>
+            tidyr::fill(start_date) |>
+            dplyr::mutate(sample_date = ((7 * as.numeric(timepoint)) + start_date)),
+        # Mice
+        readxl::read_excel("data-raw/Copy of mmu_metadata_CML.xlsx",
+            sheet = "CML mice", col_types = "text"
+        ) |>
+            dplyr::mutate(
+                dob = as.Date(as.numeric(dob), origin = "1899-12-30"),
+                dod = as.Date(as.numeric(dod), origin = "1899-12-30")
+            )) |>
+        dplyr::mutate(
+            mouse_tp = glue::glue("{mouse_id}_{timepoint}")) |>
+            dplyr::select(-c(start_date, `...1`))
+
     # consolidate sample metadata where possible
     # using dplyr::rows_update() & tidyr::fill() to fill in missing values
-    sample_sheet <- dplyr::rows_update(y, x, by = "mouse_tp", unmatched = "ignore") |>
+    sample_sheet <- dplyr::rows_update(all_mice, aml_mice_dates, by = "mouse_tp", unmatched = "ignore") |>
+        dplyr::rows_update(cml_metadata, by = "mouse_tp", unmatched = "ignore") |>
         dplyr::group_by(mouse_id) |>
         tidyr::fill(c("treatment", "genotype", "sex", "dob", "dod"), .direction = "downup") |>
         # Use "dod" for "sample_date" for some samples
@@ -180,29 +206,9 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
             dplyr::across(dplyr::starts_with("age"), round, 1)
         ) |>
         dplyr::ungroup() |>
-        dplyr::select(-c(mouse_tp)) |>
-        # !FIXME short-term hack until we get sample_dates for CML samples
-        dplyr::mutate(sample_weeks = ifelse(grepl("CML", project), as.numeric(timepoint), as.numeric(sample_weeks))) |>
-        # !FIXME short-term hack until we get all sample data for CML samples
-        # Emailed from Dandan Zhao, 2022-8-5
-        dplyr::rows_update(tibble::tribble(
-            ~mouse_id, ~genotype, ~sex, ~dob,
-            "476", "tTA+/-, BCR-ABL+/-", "M", "9/12/2020",
-            "477", "tTA+/-, BCR-ABL+/-", "F", "9/12/2020",
-            "480", "tTA+/-, BCR-ABL+/-", "M", "9/12/2020",
-            "482", "tTA+/-, BCR-ABL+/-", "F", "9/12/2020",
-            "483", "tTA+/-, BCR-ABL+/-", "F", "9/12/2020",
-            "484", "tTA+/-, BCR-ABL+/-", "M", "9/12/2020",
-            "488", "tTA+/-, BCR-ABL+/-", "F", "9/18/2020",
-            "489", "tTA+/-, BCR-ABL+/-", "F", "9/18/2020",
-            "490", "tTA+/-, BCR-ABL+/-", "M", "10/2/2020",
-            "502", "tTA+/-, BCR-ABL+/-", "M", "10/21/2020",
-            "507", "tTA+/-, BCR-ABL+/-", "F", "10/21/2020",
-            "508", "tTA+/-, BCR-ABL+/-", "F", "10/21/2020",
-            "512", "tTA+/-, BCR-ABL+/-", "M", "10/23/2020",
-            "541", "tTA+/-, BCR-ABL+/-", "F", "12/1/2020",
-            "545", "tTA+/-, BCR-ABL+/-", "F", "12/8/2020"
-        ) |> dplyr::mutate(dob = as.Date(as.Date(dob, "%m/%d/%Y"), "%Y-%m-%d")), by = "mouse_id")
+        dplyr::select(-c(mouse_tp))
+        ## CML metadata
+
     return(sample_sheet)
 }
 
