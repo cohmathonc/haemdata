@@ -1,6 +1,9 @@
 ---
 title: "Preprocessing"
 ---
+To build the `SummarizedExperiments` and expression matrices, raw sequence reads were processed using nf-core pipelines, poorly mapped samples were removed and outlying samples flagged using [`OUTRIDER`](https://doi.org/10.1016/j.ajhg.2018.10.025). Single-cell RNAseq was preprocessed with 10X Cellranger and annotated `Seurat` and `Scanpy` objects produced with Seurat. Sample metadata was collated from a range of supplied excel sheets. Package [functions](http://cgt.coh.org/haemdata/reference/index.html) assist in visualising and sub-setting `SummarizedExperiment` and `Seurat` objects and should facilitate most types of analyses. If something is incorrect or lacking, please [contribute](http://cgt.coh.org/haemdata/CONTRIBUTING.html) a solution or raise an [issue](https://github.com/drejom/haemdata/issues).
+
+## Targets 
 
 ## fastq-screen
 Raw data are screened for contamination against a panel of reference genomes
@@ -27,19 +30,13 @@ the `SummarizedExperiment` objects produced.
 ## Installation
 
 ```
-Remotes:
-    mojaveazure/seurat-disk,
-    satijalab/sctransform@develop
-
-.Rbuildignore:
-
 ^aml_datasets.Rmd$
 ^genomes.Rmd$       
 ^cml_datasets.Rmd$ 
 ^mds_datasets.Rmd$ 
 ^preprocessing.Rmd$
 ^version_control\.Rmd$
-^missing_metadata_mmu\.Rmd$
+^missing_metadata\.Rmd$
 ^scRNAseq\.Rmd$
 ```
 
