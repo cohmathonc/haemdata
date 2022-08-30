@@ -46,7 +46,7 @@ list(
     tar_target(sample_sheet_2021_2, parse_metadata_AML.mRNA.2021.RxGroup2()),
     tar_target(sample_sheet_2021_3, parse_metadata_AML.mRNA.2021.RxGroup2_pt2()),
     tar_target(sample_sheet_2021_4, parse_metadata_AML.mRNA.2022.RxGroup3()),
-    # CML  
+    # CML
     tar_target(sample_sheet_CML_1, parse_metadata_CML.mRNA.2021()),
     tar_target(sample_sheet_CML_2, parse_metadata_CML.mRNA.2022()),
     tar_target(sample_sheet_CML_3, parse_metadata_CML.mRNA.2022_pt2()),
@@ -341,5 +341,6 @@ list(
             hsa_mrna_mds_GENCODEm28_pins,
             hsa_mrna_kim_GENCODEm28_pins
         ))
-    )
+    ),
+    tar_target(built_package, build_package(), resources = apollo_bigmem)
 )

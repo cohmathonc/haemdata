@@ -13,9 +13,7 @@ get_hostname <- function() {
 #' @param text the name on the sticker
 #' @return a hex sticker
 #' @export
-
-# Hex sticker
-# https://nelson-gon.github.io/12/06/2020/hex-sticker-creation-r/
+#' @source https://nelson-gon.github.io/12/06/2020/hex-sticker-creation-r/
 make_logo <- function(url = NULL, text = NULL) {
     if (is.null(url)) {
         img <- magick::image_read("https://www.maxpixel.net/static/photo/2x/Blood-Group-0-Blood-Rh-factor-Positive-2781421.jpg")
@@ -58,4 +56,34 @@ get_teams_file <- function(filename) {
         overwrite = TRUE
     )
     file.remove(basename(filename))
+}
+
+# build and install the package -------------------------------------------
+build_package <- function() {
+
+    # # make the logo
+    # # make_logo(url, text)
+    # # Check the package
+    # devtools::check(error_on = "error", vignettes = FALSE)
+
+    # # Make a release on GitHub
+    # ## put fields in standard order and alphabetises dependencies
+    # usethis::use_tidy_description()
+    # # use_tidy_eval()
+    # # use_version()
+
+    # # build the package
+    # tgz <- devtools::build(vignettes = FALSE)
+    # # Publish to cgt.coh.org
+    # drat::insertPackage(tgz, "/net/nfs-irwrsrchnas01/labs/rrockne/MHO")
+
+    # # install locally
+    # # devtools::install()
+    # install.packages("haemdata", repo = "http://cgt.coh.org/MHO")
+
+    # # build the pkgdown site
+    # pkgdown::clean_site()
+    # devtools::document()
+
+    pkgdown::build_site()
 }
