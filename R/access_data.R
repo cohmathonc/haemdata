@@ -47,7 +47,7 @@ use_pinboard <- function(pin_board = NULL,
     } else if (pin_board == "onedrive") {
         # OneDrive pin_board
         assign("pin_board", pins::board_ms365(
-            drive = Microsoft365R::get_team("PSON AML State-Transition")$get_drive(),
+            drive = Microsoft365R::get_team("PSON AML State-Transition", auth_type = "device_code")$get_drive(),
             path = "haemdata",
             versioned = TRUE
         ), envir = haemdata_env)
