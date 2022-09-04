@@ -59,31 +59,30 @@ get_teams_file <- function(filename) {
 }
 
 # build and install the package -------------------------------------------
-build_package <- function() {
+build_package <- function(latest_published_data) {
 
-    # # make the logo
-    # # make_logo(url, text)
-    # # Check the package
-    # devtools::check(error_on = "error", vignettes = FALSE)
+    # Check the package
+    devtools::check(error_on = "error", vignettes = FALSE)
 
-    # # Make a release on GitHub
-    # ## put fields in standard order and alphabetises dependencies
-    # usethis::use_tidy_description()
-    # # use_tidy_eval()
-    # # use_version()
+    # Make a release on GitHub
+    ## put fields in standard order and alphabetises dependencies
+    usethis::use_tidy_description()
+    # use_tidy_eval()
+    # usethis::use_version("dev")
+    # usethis::use_dev_version("minor")
 
-    # # build the package
-    # tgz <- devtools::build(vignettes = FALSE)
-    # # Publish to cgt.coh.org
-    # drat::insertPackage(tgz, "/net/nfs-irwrsrchnas01/labs/rrockne/MHO")
+    # build the package
+    tgz <- devtools::build(vignettes = FALSE)
+    # Publish to cgt.coh.org
+    drat::insertPackage(tgz, "/net/nfs-irwrsrchnas01/labs/rrockne/MHO")
 
-    # # install locally
-    # # devtools::install()
-    # install.packages("haemdata", repo = "http://cgt.coh.org/MHO")
+    # install locally
+    # devtools::install()
+    install.packages("haemdata", repo = "http://cgt.coh.org/MHO")
 
-    # # build the pkgdown site
-    # pkgdown::clean_site()
-    # devtools::document()
+    # build the pkgdown site
+    pkgdown::clean_site()
+    devtools::document()
 
     pkgdown::build_site()
 }
