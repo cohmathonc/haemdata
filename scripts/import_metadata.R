@@ -217,7 +217,7 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
 # ├ AML.mRNA.2016
 parse_metadata_AML.mRNA.2016 <- function() {
     project <- "AML.mRNA.2016"
-    sample_sheet <- read.csv("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.mRNA.2016/config/new_name_key.tsv", , sep = "\t") |>
+    sample_sheet <- read.csv("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.mRNA.2016/config/new_name_key.tsv", sep = "\t") |>
         dplyr::mutate(
             project = project,
             fastq_1 = paste0("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.mRNA.2016/data/", newname, ".gz"),
