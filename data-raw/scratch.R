@@ -1,3 +1,20 @@
+####pivoted metadata table
+library(haemdata)
+library(tidyverse)
+use_pinboard("haemdata")
+#metadata<-
+get_pin("metadata_mmu.csv") |> dplyr::filter(str_detect(project, "AML")) |>
+    select(sample, project, mouse_id, tissue, timepoint, sample_date) |>
+    mutate(across(where(is.factor), as.character)) |>
+    distinct() |>
+    arrange(mouse_id) |>
+    pivot_wider(names_from = timepoint, values_from = sample_date, values_fill = "" ) |>
+    write_csv("matadata_mmu_pivoted.csv") |>
+    openxlsx::write.xlsx("matadata_mmu_pivoted.xlsx", keepNA = TRUE)
+
+#####
+
+
 library(gtsummary)
 
 dat <- read.csv("inst/extdata/minimal_metadata_samples.csv")
@@ -80,11 +97,11 @@ data.new <-
 dim(data.new)
 
 colnames(data.new) <- gsub(".*generalstats\\.", "", colnames(data.new))
-[1] "samtools.mapped_passed"                 "biotype_counts.percent_rRNA"            "dupradar.dupRadar_intercept"            "picard.PERCENT_DUPLICATION"            
- [5] "qualimap.5_3_bias"                      "rseqc.proper_pairs_percent"             "salmon.percent_mapped"                  "salmon.num_mapped"                     
- [9] "samtools.error_rate"                    "samtools.non_primary_alignments"        "samtools.reads_properly_paired_percent" "samtools.reads_MQ0_percent"            
-[13] "star.uniquely_mapped_percent"           "star.uniquely_mapped"                   "fastqc_raw.percent_fails"               "fastqc_trimmed.percent_duplicates"     
-[17] "fastqc_trimmed.percent_gc"              "fastqc_trimmed.avg_sequence_length"     "fastqc_trimmed.percent_fails"           "fastqc_trimmed.total_sequences"     
+[1] "samtools.mapped_passed"                 "biotype_counts.percent_rRNA"            "dupradar.dupRadar_intercept"            "picard.PERCENT_DUPLICATION"
+ [5] "qualimap.5_3_bias"                      "rseqc.proper_pairs_percent"             "salmon.percent_mapped"                  "salmon.num_mapped"
+ [9] "samtools.error_rate"                    "samtools.non_primary_alignments"        "samtools.reads_properly_paired_percent" "samtools.reads_MQ0_percent"
+[13] "star.uniquely_mapped_percent"           "star.uniquely_mapped"                   "fastqc_raw.percent_fails"               "fastqc_trimmed.percent_duplicates"
+[17] "fastqc_trimmed.percent_gc"              "fastqc_trimmed.avg_sequence_length"     "fastqc_trimmed.percent_fails"           "fastqc_trimmed.total_sequences"
 
 ## SCONE
 library(scone)
@@ -98,7 +115,7 @@ dat <- read.csv("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata/nextflow/AML.m
     dplyr::filter(!grepl("_1$|_2$", Sample)) |>
     dplyr::ungroup() |>
     janitor::remove_constant(na.rm = TRUE) |>
-    dplyr::select(!c(Sample)) 
+    dplyr::select(!c(Sample))
 
 
 AML.mRNA.HSA_FLT3.2022_metadata <- left_join(dat, metadata_mmu) |>
@@ -146,12 +163,12 @@ cbind(D,E) |>
     )
     data(published_pins)
     board <- MHO_haemdata
-    
-    
+
+
     name <- published_pins[1,1]
 
     pin_versions(board, name)
-    
+
     version <- published_pins[1, 2]
     hash <- gsub(".*-", "", version)
 
@@ -228,7 +245,7 @@ x <- x |>
         reduction = "pca",
         dims = 1:2,
         seed.use = 3
-    ) 
+    )
 
 
 
@@ -278,7 +295,7 @@ z |>
 
 
 #####
-Imports: 
+Imports:
     digest,
     dplyr,
     future,
@@ -332,7 +349,7 @@ dplyr, glue, haemdata, Microsoft365R, pins, rlang, readr, stringr, Seurat, clust
     targets,
     tidybulk,
     usethis
-VignetteBuilder: 
+VignetteBuilder:
     knitr
 Remotes:
     drejom/helpeRs,
