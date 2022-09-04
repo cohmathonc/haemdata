@@ -568,23 +568,21 @@ make_tpm_matrix <- function(summarised_experiment, drop = NULL, tpm = 1, samples
 #' Merge a pair of `SummarisedExperiments`
 #'
 #' Takes a pair of `SummarisedExperiments` produced by [get_rnaseq_se()],
-#' and merges them into a single `SummarisedExperiment`
+#' and merges them into a single `SummarisedExperiment`. If the colData differs, we
+#' takes the union of both. Metadata is checked for consistency, and the merge 
+#' will not proceed 
 #'
-#' @name merge_mrna
-#' @param summarised_experiment1, name of a `SummarisedExperiment` object to merge
-#' @param summarised_experiment2, name of the other `SummarisedExperiment` object to merge
-#' @param drop a vector of sample names to remove from the merged `SummarisedExperiment`
+#' @name merge_mrna_se
+#' @param se1, name of a `SummarisedExperiment` object to merge
+#' @param se2, name of the other `SummarisedExperiment` object to merge
 #' @return a `SummarisedExperiment` object
 #' @author Denis O'Meally
 #' @export
-merge_mrna <- function(summarised_experiment1, summarised_experiment2, drop = NULL) {
+merge_mrna_se <- function(se1, se2) {
 
-    # metadata1 <- S4Vectors::metadata(cml_mrna_2021_m38)
-    # metadata2 <- S4Vectors::metadata(cml_mrna_2022_m38)
-    # drop <- c("F545.7", "X490.17")
-
-    metadata1 <- S4Vectors::metadata(summarised_experiment1)
-    metadata2 <- S4Vectors::metadata(summarised_experiment2)
+#metadata
+    metadata1 <- S4Vectors::metadata(se1)
+    metadata2 <- S4Vectors::metadata(se2)
 
     # Check the $reference_genome version matches
     identical(
@@ -593,55 +591,61 @@ merge_mrna <- function(summarised_experiment1, summarised_experiment2, drop = NU
     )
     reference_genome <- metadata1$reference_genome
 
-    # Check the pipeline version matches
-    #    identical(metadata1$pipeline, metadata2$pipeline)
-    pipeline <- metadata1$pipeline
-
-    # Check the project name matches
+    # Check the rnaseq_release version matches
     identical(
-        stringr::str_match(metadata1$project, "$*(.*_.*?)_")[, 2],
-        stringr::str_match(metadata2$project, "$*(.*_.*?)_")[, 2]
+        metadata1$rnaseq_release,
+        metadata2$rnaseq_release)
+    rnaseq_release <- metadata1$rnaseq_release
+
+    # Check the workflow  matches
+    identical(
+        metadata1$workflow,
+        metadata2$workflow
     )
-    project <- stringr::str_match(metadata1$project, "$*(.*_.*?)_")[, 2]
+    workflow <- metadata1$workflow
 
     # update the metadata
-    metadata <- list(
-        project = project,
+    new_metadata <- list(
+        object_name = glue::glue("{metadata1$object_name}_+_{metadata2$object_name}"),
         reference_genome = reference_genome,
-        pipeline = pipeline,
-        date = date()
+        rnaseq_release = rnaseq_release,
+        workflow = workflow,
+        multiqc_url = c(metadata1[["multiqc_url"]], metadata2[["multiqc_url"]]),
+        qc_removed = c(metadata1[["qc_removed"]], metadata2[["qc_removed"]])
     )
 
-    # merge the datasets
-    summarised_experiment <- cbind(summarised_experiment1, summarised_experiment2)
-    S4Vectors::metadata(summarised_experiment) <- metadata
-
-    # remove samples that failed QC
-    summarised_experiment[, !(colnames(summarised_experiment) %in% drop)]
-
-    # name the output
-    out_name <- paste(tolower(project), reference_genome, sep = "_")
-
-    # write to the package data folder
-    write_data(out_name, summarised_experiment)
-
-    # write a CSV to extdata
-    tpm_matrix_csv <- haemdata::make_tpm_matrix(summarised_experiment, tpm = 1, samples = 5)
-
-    # publish to Teams
-    team <- Microsoft365R::get_team("PSON AML State-Transition")
-    channel <- team$get_channel("haemdata")
-    channel$send_message(paste0("New dataset available for ", out_name, ": ", basename(tpm_matrix_csv)),
-        attachments = tpm_matrix_csv
+    # check the rowdata matches
+        identical(
+            S4Vectors::mcols(se1),
+            S4Vectors::mcols(se2)
+        )
+    # keep only the colData columns common to both
+    common_cols <- intersect(
+        colnames(SummarizedExperiment::colData(se1)),
+        colnames(SummarizedExperiment::colData(se2))
     )
 
-    # PINS https://pins.rstudio.com/reference/board_ms365.html
-    # # A board in a SharePoint Online document library
-    # sp <- Microsoft365R::get_sharepoint_site("PSON AML State-Transition")
-    # chan_folder <- chan$get_folder()
-    # board <- pins::board_ms365(chan_folder, "haemdata")
+    coldata1 <- SummarizedExperiment::colData(se1) |>
+        dplyr::as_tibble() |>
+        dplyr::select(dplyr::all_of(common_cols)) |>
+            `rownames<-`(colnames(se1)) |>
+            S4Vectors::DataFrame()
 
-    return(summarised_experiment)
+    coldata2 <- SummarizedExperiment::colData(se2) |>
+        dplyr::as_tibble() |>
+        dplyr::select(dplyr::all_of(common_cols)) |>
+        `rownames<-`(colnames(se2)) |>
+        S4Vectors::DataFrame()
+
+    #replace the coldata
+    SummarizedExperiment::colData(se1) <- coldata1
+    SummarizedExperiment::colData(se2) <- coldata2
+
+        # merge the datasets
+    se <- SummarizedExperiment::cbind(se1, se2)
+    S4Vectors::metadata(se) <- new_metadata
+
+    return(se)
 }
 
 #' nf-core/rnaseq to SummarisedExperiment
