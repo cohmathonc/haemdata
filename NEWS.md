@@ -1,5 +1,7 @@
-# haemdata 0.0.0.9001
 
+# haemdata 0.0.0.9004
+* Make `auth_type = "device_code"` the default for MS365R
+* added CML mRNA 2022 part 2 (71 samples)
 * updated vignettes with figs and examples for mRNAseq & scRNAseq
 * Added sample dates from PSON Teams channel (`General|AML.Seq.Samples_dates.xlsx`), along with computed columns `sample_weeks`, `age_at_end`, `age_at_start`, `age_at_sample`
 * Added `R-CMD-CHK` GitHub Action for CI testing
