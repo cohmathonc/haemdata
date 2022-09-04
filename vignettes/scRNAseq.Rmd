@@ -95,9 +95,10 @@ sc_qc_plot_per_sample <- function(seurat_object) {
         high_cutoff_UMI = 50000,
         colors_use = pal,
         x_axis_label = "UMIs per Cell",
-        y_axis_label = "Genes per Cell") +
-            theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1)) +
-            labs(title = "Cells by Sample ID")
+        y_axis_label = "Genes per Cell"
+    ) +
+        theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1)) +
+        labs(title = "Cells by Sample ID")
     n2 <- scCustomize::QC_Plot_UMIvsGene(
         seurat_object,
         meta_gradient_name = "percent_mt",
@@ -105,9 +106,10 @@ sc_qc_plot_per_sample <- function(seurat_object) {
         high_cutoff_gene = 5500,
         high_cutoff_UMI = 45000,
         x_axis_label = "UMIs per Cell",
-        y_axis_label = "Genes per Cell") +
-            theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-            labs(title = "Cells by % mtDNA")
+        y_axis_label = "Genes per Cell"
+    ) +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+        labs(title = "Cells by % mtDNA")
 
     upper <- patchwork::wrap_plots(n1, n2, nrow = 1)
 
@@ -140,7 +142,7 @@ sc_qc_plot_group_by <- function(seurat_object, group_by) {
     d1 <- Seurat::DimPlot(seurat_object, reduction = "umap", group.by = {{ group_by }}, cols = pal) |>
         dim_plot_mod()
     my_theme <- ggplot2::theme(plot.title = element_blank(), legend.position = "none", axis.text.y = element_text(size = 9))
-    p1 <- scCustomize::Plot_Median_Genes(seurat_object, group_by = {{ group_by }}, colors_use = pal)  + my_theme
+    p1 <- scCustomize::Plot_Median_Genes(seurat_object, group_by = {{ group_by }}, colors_use = pal) + my_theme
     p2 <- scCustomize::Plot_Median_UMIs(seurat_object, group_by = {{ group_by }}, colors_use = pal) + my_theme
     p3 <- scCustomize::Plot_Median_Other(seurat_object, median_var = "percent_mt", group_by = {{ group_by }}, colors_use = pal) + my_theme
     p4 <- scCustomize::Plot_Median_Other(seurat_object, median_var = "percent_ribo", group_by = {{ group_by }}, colors_use = pal) + my_theme

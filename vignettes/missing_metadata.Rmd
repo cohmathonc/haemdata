@@ -51,7 +51,7 @@ are parsed by functions in [`import_metadata.R`](https://github.com/drejom/haemd
 ## Missingness
 ```{r echo=FALSE, img.width=8, message=FALSE}
 naniar::gg_miss_fct(metadata_mmu, project) +
-ggplot2::scale_fill_gradient(limits = c(0, 10), na.value = "#56B1F7")
+    ggplot2::scale_fill_gradient(limits = c(0, 10), na.value = "#56B1F7")
 ```
 
 Metadata have been parsed from many sources in various formats and undoubtedly require close inspection and correction. Please [report any

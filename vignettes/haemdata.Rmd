@@ -2,43 +2,52 @@
 title: "Getting started"
 ---
 
-Haemdata provides a simple interface to the genomic data for the PSON AML State-transition project at COH, and a complete record of how it was processed from fastq or h5 (10X) to gene expression estimates.
+Haemdata provides a simple interface to genomic data for the PSON AML State-transition project at COH, and a complete record of how it was processed from fastq or h5 (10X) to gene expression estimates.
 
-Haemdata uses the [Rstudio `pins`](https://pins.rstudio.com/) package to publish R objects and other data to Microsoft OneDrive, making it easy to retrieve from any computer with internet access. Pins are version controlled, which means you can easily track changes between updates, re-run analyses on historical data, and undo mistakes.
-
+Haemdata uses the Rstudio [`{pins}`](https://pins.rstudio.com/) package to publish R objects and other data to Microsoft OneDrive, making it easy to retrieve from any computer with internet access. Pins are version controlled, which means you can easily track changes between updates, re-run analyses on historical data, and undo mistakes.
 If you have an account on the [HPRCC](http://hprcc.coh.org/), you can skip the hassle of installation by using [RStudio Server for Bioconductor](http://hprcc.coh.org/user-guide/rbioc/) on the cluster. 
 
 Otherwise, to use the Haemdata package, you need to install it. Some dependencies will be installed automatically, which can take a while.
-
 ```{r eval = FALSE}
 install.packages("haemdata", repos = "http://cgt.coh.org/MHO")
 ```
 
 Next, load libraries and choose the `onedrive` pinboard. You can also access pins from [Python](https://www.rstudio.com/blog/pins-for-python/), or directly through [Microsoft Teams](https://cityofhope.sharepoint.com/:f:/r/sites/PSONAMLState-Transition/Shared%20Documents/haemdata?csf=1&web=1&e=VE7cQ2), [OneDrive](https://cityofhope.sharepoint.com/:f:/r/sites/PSONAMLState-Transition/Shared%20Documents/haemdata?csf=1&web=1&e=xjS3YH) or [Sharepoint](https://cityofhope.sharepoint.com/:f:/r/sites/PSONAMLState-Transition/Shared%20Documents/haemdata?csf=1&web=1&e=NR0BHT). 
-
 ```{r}
 library("haemdata")
 use_pinboard("onedrive")
 ```
-The first time you run the package, you will be prompted to authenticate with your COH credentials. If running on the HPC cluster, you'll be prompted to login in a new browser tab, but the address will not load. You need to manually swap out the part that says `localhost` for the name of the node your RStudio instance is running on, and reload the URL. Alternately you can use [CLI for Microsoft 365](https://pnp.github.io/cli-microsoft365/) to authenticate your account.
 
-Next, see what pins are available:
+The first time you run the package, you'll be prompted to authenticate with your COH credentials and a device token. Follow the instructions in the console to complete the authentication process. 
 
+```{code}
+Creating Microsoft Graph login for default tenant
+To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code QQ72FRU3D to authenticate.
+Waiting for device code in browser...
+Press Esc/Ctrl + C to abort
+Authentication complete.
+```
+
+Once you've logged in, see what pins are available:
 ```{r}
 get_pin_list() |> head()
 ```
 
 Load the mouse metadata and get some statistics on the collection:
-
 ```{r}
 x <- get_pin("metadata_mmu.csv")
 # Number of mice in the collection
-x$mouse_id |> unique() |> length()
+x$mouse_id |>
+    unique() |>
+    length()
 # Number of tissue samples
 x[c("mouse_id", "tissue", "timepoint")] |>
-    unique() |> nrow()
+    unique() |>
+    nrow()
 # Number of sequencing libraries
-x$fastq_1 |> unique() |> length()
+x$fastq_1 |>
+    unique() |>
+    length()
 ```
 
-See the package [notebooks](notebooks) for more examples.
+See the Articles menu above for more examples.

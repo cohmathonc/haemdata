@@ -162,7 +162,7 @@ plot_transgenes_se(se)
 
 First, we need to setup the pin-board from which well retrieve the human datasets
 
-```{r}
+```{r, eval=FALSE}
 library(haemdata)
 use_pinboard("devel")
 ```

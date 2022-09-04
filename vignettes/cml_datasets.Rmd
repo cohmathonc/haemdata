@@ -9,19 +9,24 @@ knitr::opts_chunk$set(
     warning = FALSE,
     message = FALSE
 )
+
 ```
 
 **Include some background info on these samples, treatments, experimental design**
 
 ```{r setup}
 library(haemdata)
+library(magrittr)
+library(SummarizedExperiment)
+
 use_pinboard("devel")
 
-se <- get_pin("mmu_mrna_2016_2022_GENCODEm28_HLT_qc.rds")
+se1 <- get_pin("mmu_mrna_2016_2022_GENCODEm28_HLT_qc.rds") %>%
+    subset(select = grepl("CML", SummarizedExperiment::colData(.)$project))
 
-se <- subset(se,
-    select = grepl("CML", SummarizedExperiment::colData(se)$project)
-)
+se2 <- get_pin("mmu_mrna_cml3_qc_GENCODEm28_HLT_qc.rds")
+
+se <- merge_mrna_se(se1, se2)
 
 pca <- pca_se(se)
 ```
