@@ -192,8 +192,11 @@ list(
     tar_target(mmu_mrna_techrep_qc_se, annotate_se(
         get_rnaseq_se(mmu_mrna_techrep_qc), metadata_mmu, mmu_mrna_techrep_qc
     )),
+    tar_target(mmu_mrna_cml3_qc_se, annotate_se(
+        get_rnaseq_se(mmu_mrna_cml3_qc), metadata_mmu, mmu_mrna_cml3_qc
+    )),
 
-    # GRCm38_HLT
+    # GRCm38_HLT 
     tar_target(mmu_mrna_2016_2022_GRCm38_HLT_salmon_se, annotate_se(
         get_rnaseq_se(mmu_mrna_2016_2022_GRCm38_HLT_salmon), metadata_mmu, mmu_mrna_2016_2022_GRCm38_HLT_salmon
     )),
@@ -220,6 +223,7 @@ list(
     tar_target(mmu_mrna_aml2016_qc_se_flt, qc_filter_se(mmu_mrna_aml2016_qc_se)),
     tar_target(mmu_mrna_2016_2022_qc_se_flt, qc_filter_se(mmu_mrna_2016_2022_qc_se)),
     tar_target(mmu_mrna_techrep_qc_se_flt, qc_filter_se(mmu_mrna_techrep_qc_se)),
+    tar_target(mmu_mrna_cml3_qc_se_flt, qc_filter_se(mmu_mrna_cml3_qc_se)),
     tar_target(hsa_mrna_flt3_qc_se_flt, qc_filter_se(hsa_mrna_flt3_qc_se)),
     tar_target(hsa_mrna_mds_qc_se_flt, qc_filter_se(hsa_mrna_mds_qc_se)),
     tar_target(hsa_mrna_kim_qc_se_flt, qc_filter_se(hsa_mrna_kim_qc_se)),
@@ -243,6 +247,7 @@ list(
     # save SummarisedExperiments to disk
     tar_target(mmu_mrna_2016_2022_GENCODEm28_pins, publish_se(mmu_mrna_2016_2022_qc_se_flt)),
     tar_target(mmu_mrna_techrep_GENCODEm28_pins, publish_se(mmu_mrna_techrep_qc_se_flt)),
+    tar_target(mmu_mrna_cml3_GENCODEm28_pins, publish_se(mmu_mrna_cml3_qc_se_flt)),
     tar_target(hsa_mrna_flt3_GENCODEm28_pins, publish_se(hsa_mrna_flt3_qc_se_flt)),
     tar_target(hsa_mrna_mds_GENCODEm28_pins, publish_se(hsa_mrna_mds_qc_se_flt)),
     tar_target(hsa_mrna_kim_GENCODEm28_pins, publish_se(hsa_mrna_kim_qc_se_flt)),
@@ -337,10 +342,11 @@ list(
             # bulk RNAseq
             mmu_mrna_2016_2022_GENCODEm28_pins,
             mmu_mrna_techrep_GENCODEm28_pins,
+            mmu_mrna_cml3_GENCODEm28_pins,
             hsa_mrna_flt3_GENCODEm28_pins,
             hsa_mrna_mds_GENCODEm28_pins,
             hsa_mrna_kim_GENCODEm28_pins
         ))
-    ),
-    tar_target(built_package, build_package(), resources = apollo_bigmem)
+    )
+    #,    tar_target(built_package, build_package(latest_published_data), resources = apollo_bigmem)
 )
