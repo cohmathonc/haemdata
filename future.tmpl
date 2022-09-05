@@ -43,9 +43,16 @@ export DEBUGME=<%= Sys.getenv("DEBUGME") %>
 <%= sprintf("export OPENBLAS_NUM_THREADS=%i", resources$blas.threads) -%>
 <%= sprintf("export MKL_NUM_THREADS=%i", resources$blas.threads) -%>
 
+SLURM_BIND="/var/run/munge:/run/munge,/opt/apollo-setup/slurm-singularity/etc:/etc/slurm"
+export SINGULARITY_BIND="/labs,/opt/singularity,/opt/singularity-images/rbioc,${SLURM_BIND}"
+
 ## Run R:
 ## we merge R output with stdout from SLURM, which gets then logged via --output option
 /opt/singularity/3.7.0/bin/singularity exec \
-    --cleanenv -H $HOME/.singularity/home:/home/$USER \
-    /opt/singularity-images/rbioc/rbioc_3.14.006.sif \
+    --env R_LIBS_USER=~/R/bioc-3.15 \
+    --env R_LIBS_SITE=/opt/singularity-images/rbioc/rlibs/bioc-3.15 \
+    --cleanenv \
+    /opt/singularity-images/rbioc/vscode-rbioc_3.15.sif \
     Rscript -e 'batchtools::doJobCollection("<%= uri %>")'
+    
+    
