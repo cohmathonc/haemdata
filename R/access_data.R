@@ -102,7 +102,7 @@ get_latest_pin_version <- function(pin_name) {
         haemdata::haemdata_env$pin_board |>
             pins::pin_versions(pin_name) |>
             dplyr::pull(version) |>
-            dplyr::first()
+            dplyr::last()
     }
 }
 
