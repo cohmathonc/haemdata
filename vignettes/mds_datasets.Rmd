@@ -28,7 +28,7 @@ Shiozawa et al 2018 *Nat Commun* [![DOI](https://zenodo.org/badge/DOI/10.1038/s4
 
 ```{r setup}
 library(haemdata)
-use_pinboard("devel")
+use_pinboard("onedrive")
 
 se <- get_pin("hsa_mrna_mds_GENCODEr40_qc.rds")
 

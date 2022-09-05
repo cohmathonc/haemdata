@@ -163,7 +163,7 @@ sc_qc_plot_group_by <- function(seurat_object, group_by) {
 ## GENCODEm28_HLT reference genome {.tabset .tabset-fade}
 
 ```{r }
-use_pinboard("devel")
+use_pinboard("onedrive")
 
 seurat_object <- get_pin("mmu_10x_2022_1_GENCODEm28_HLT.rds")
 # Seurat::DimPlot(seurat_object, reduction = "umap", group.by = "cell_type")
