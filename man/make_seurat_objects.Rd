@@ -7,8 +7,7 @@
 \usage{
 seurat_import_objects(
   path_regex,
- 
-    cellranger_folder = "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger"
+  cellranger_folder = "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger"
 )
 }
 \arguments{
