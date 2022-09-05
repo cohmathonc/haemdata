@@ -347,6 +347,6 @@ list(
             hsa_mrna_mds_GENCODEm28_pins,
             hsa_mrna_kim_GENCODEm28_pins
         ))
-    )
-    #,    tar_target(built_package, build_package(latest_published_data), resources = apollo_bigmem)
+    ),
+            tar_target(built_package, build_package(latest_published_data), resources = apollo_bigmem)
 )
