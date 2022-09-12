@@ -4,9 +4,9 @@ title: "Reference genomes"
 
 Various references are used throughout the project:
 
-* GRCm38_HLT ([GRCm38](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.20/), Ensembl annotation version 81, July 2015)
-* GENCODEm28_HLT ([GRCm39](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/635/GCA_000001635.9_GRCm39/GCA_000001635.9_GRCm39_assembly_report.txt), Gencode annotation release 28, Dec 2021) 
-* GENCODEr40 ([GRCh38.p13](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.28_GRCh38.p13/GCA_000001405.28_GRCh38.p13_assembly_report.txt), Gencode annotation release 40, Apr 2022)
+* GRCm38_HLT ([GRCm38](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.20/), Ensembl release 81, July 2015)
+* GENCODEm28_HLT ([GRCm39](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/635/GCA_000001635.9_GRCm39/GCA_000001635.9_GRCm39_assembly_report.txt), Gencode annotation release 28/Ensembl release 105, Dec 2021) 
+* GENCODEr40 ([GRCh38.p13](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.28_GRCh38.p13/GCA_000001405.28_GRCh38.p13_assembly_report.txt), Gencode annotation release 40/Ensembl release 106, Apr 2022)
 
 ### GENCODEr40
 
