@@ -1,4 +1,7 @@
 
+
+# dev
+* add Howto.Rmd
 # haemdata 0.0.0.9004
 * Make `auth_type = "device_code"` the default for MS365R
 * added CML mRNA 2022 part 2 (71 samples)
