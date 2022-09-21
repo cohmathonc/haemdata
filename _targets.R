@@ -157,8 +157,6 @@ list(
     # Consolidate metadata -----------------------------------------------------
     ############################################################################
     # consolidate metadata across all mice samples
-    # TODO fix dates for bone marrow samples
-    # TODO for all samples, use dates from https://github.com/drejom/haemdata/issues/6#issuecomment-1149191827
     tar_target(metadata_mmu, make_metadata_mmu(rbind(sample_sheet_2016_2022, sample_sheet_CML_3))),
     # consolidate metadata across human samples
     tar_target(metadata_hsa, make_metadata_hsa(
