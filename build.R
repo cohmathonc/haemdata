@@ -15,7 +15,7 @@ devtools::check(error_on = "error", vignettes = FALSE)
 
 # Make a release on GitHub
 ## put fields in standard order and alphabetises dependencies
-use_tidy_description()
+usethis::use_tidy_description()
 # use_tidy_eval()
 # use_version()
 
@@ -31,5 +31,13 @@ install.packages("haemdata", repo = "http://cgt.coh.org/MHO")
 # build the pkgdown site
 pkgdown::clean_site()
 devtools::document()
-
 pkgdown::build_site()
+
+# Draft a release for GitHub
+usethis::use_github_release()
+
+
+
+devtools::document()
+pkgdown::build_reference()
+pkgdown::build_home()
