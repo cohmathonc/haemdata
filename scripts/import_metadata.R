@@ -235,7 +235,8 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
         dplyr::group_by(mouse_id) |>
         tidyr::fill(c("treatment", "genotype", "sex", "dob", "dod"), .direction = "downup") |>
         dplyr::mutate(
-            # add columns: sample_weeks, age_at_end, age_at_start, age_at_sample
+            # add columns: assay, sample_weeks, age_at_end, age_at_start, age_at_sample
+            assay = "mRNA",
             sample_weeks = difftime(sample_date, min(sample_date), units = "weeks"),
             age_at_end = difftime(max(sample_date), dob, units = "weeks"),
             age_at_start = difftime(min(sample_date), dob, units = "weeks"),
@@ -243,6 +244,19 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
             dplyr::across(dplyr::starts_with(c("age", "sample_weeks")), round, 1)
         ) |>
         dplyr::ungroup()
+
+        # add batch
+        use_pinboard("onedrive")
+        batch <- get_pin("metadata_mmu.csv", "20220904T234748Z-f5f2a") |>
+                dplyr::select("sample", "batch")
+        sample_sheet <- dplyr::left_join(sample_sheet, batch, by = "sample") |>
+            dplyr::select(
+                sample, fastq_1, fastq_2, strandedness, assay, mouse_id,
+                tissue, timepoint, project, batch, treatment, genotype, sex,
+                sample_date, dob, dod, sample_weeks, age_at_end, age_at_start,
+                age_at_sample
+            ) |>
+            dplyr::distinct()
 
     return(sample_sheet)
 }

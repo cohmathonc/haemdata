@@ -9,15 +9,16 @@
 #'  | `fastq_1` | Full path of fastq1, unique in the table |
 #'  | `fastq_2` | Full path of fastq2, unique in the table, or blank for single-end reads |
 #'  | `strandedness` | Sequencing library protocol (`reverse` or `unstranded`) |
-#'  | `mouse_id` | A unique identifier for each mouse, a 3 or 4 digit number; database held by [Kuo lab](mailto:YKuo@coh.org?subject=Question%20about%20AML%20mice%20from%20PSON) for AML mice and [Zhang lab](mailto:YKuo@coh.org?subject=Question%20about%20AML%20mice%20from%20PSON) for CML. |
+#'  | `assay` | one of `mRNA`, `miRNA`, `scRNA` |
+#'  | `mouse_id` | A unique 3 or 4 digit identifier for each mouse; database held by [Kuo lab](mailto:YKuo@coh.org?subject=Question%20about%20AML%20mice%20from%20PSON) for AML mice and [Zhang lab](mailto:YKuo@coh.org?subject=Question%20about%20AML%20mice%20from%20PSON) for CML. |
 #'  | `tissue` | Tissue type: `PBMC` peripheral blood mononuclear cells; `BM` bone marrow aspirant; `BM_CKIT` ckit+ flow sorted `BM` |
 #'  | `timepoint` | Timepoint label; formatting is inconsistent across cohorts |
-#'  | `batch` | Sequencing groups |
 #'  | `treatment` | Experimental treatment group |
-#'  | `genotype` | Mouse genotype, given in JAX Lab notation |
+#'  | `genotype` | Mouse genotype |
 #'  | `sex` | Sex, `M` or `F` |
 #'  | `dob` | Date of birth of the mouse, YYYY-MM-DD |
 #'  | `project` | Indicates which samples were processed together; a project may contain multiple `batches` |
+#'  | `batch` | Sequencing groups |
 #'  | `dod` | Date of death of the mouse, YYYY-MM-DD |
 #'  | `sample_date` | Date the sample was collected, YYYY-MM-DD |
 #'  | `sample_weeks` | Timepoint in weeks (`sample_date - min(sample_date)`). Post treatment chemo samples begin at week 0, pretreatment samples < 0. |
