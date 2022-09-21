@@ -22,7 +22,7 @@ col_data <- SummarizedExperiment::colData(se) |>
         as.data.frame() |>
         droplevels()
 
-SummarizedExperiment::assay(se, "abundance") |> 
+SummarizedExperiment::assay(se, "abundance") |>
         tibble::rownames_to_column("gene_id") |>
         dplyr::filter(stringr::str_detect(gene_id, gene_of_interest)) |>
         tidyr::pivot_longer(!gene_id, names_to = "sample") |>
@@ -39,7 +39,6 @@ SummarizedExperiment::assay(se, "abundance") |>
         ggplot2::theme_minimal() +
         ggplot2::theme(
             axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-            legend.title = element_blank()
+            legend.title = ggplot2::element_blank()
         )
-
 ```
