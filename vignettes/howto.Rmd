@@ -6,7 +6,7 @@ title: "How do I..."
 
 ## Plot *Kit* expression over time
 
-```{r}
+```{r, message = FALSE}
 library(haemdata)
 use_pinboard("devel")
 
