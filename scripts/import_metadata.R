@@ -43,127 +43,202 @@ make_metadata_hsa <- function(sample_sheet) {
 #' @author Denis O'Meally
 
 make_metadata_mmu <- function(sample_sheet_all_mice) {
-    # AML- add dates/weeks
-    # download the file "General/AML.Seq.Samples_dates.xlsx"
-    get_teams_file("General/AML.Seq.Samples_dates.xlsx")
 
-    # read in the worksheets
-    dates <- readxl::read_excel("data-raw/AML.Seq.Samples_dates.xlsx", sheet = "clean_dates", col_names = FALSE)
-    weeks <- readxl::read_excel("data-raw/AML.Seq.Samples_dates.xlsx", sheet = "weeks", col_names = FALSE)
-
-    # function to clean up the long form table
-    clean_dates <- function(long_df) {
-        long_df |>
-            dplyr::mutate(
-                # convert the excel date to an R date
-                DOD = as.Date(as.numeric(DOD), origin = "1899-12-30"),
-                DOB = as.Date(as.numeric(DOB), origin = "1899-12-30"),
-                date = as.Date(as.numeric(date), origin = "1899-12-30")
-            ) |>
-            dplyr::select(
-                mouse_id = ID,
-                treatment = Treatment,
-                genotype = Genotype,
-                dob = DOB,
-                dod = DOD,
-                sex = Sex,
-                timepoint,
-                sample_date = date
-            )
-    }
-
-    mice_2016 <- dates[2:18, 1:13] |>
-        janitor::row_to_names(row_number = 1) |>
-        tidyr::pivot_longer(
-            cols = c("T0", "T1", "T2", "T3", "T4", "T5", "T6"),
-            values_to = "date", # new date column
-            names_to = "timepoint", # the colnames that now become rows
-            values_drop_na = TRUE
-        ) |>
-        tibble::add_column(project = NA_character_) |>
-        clean_dates()
-
-    mice_2018 <- dates[21:35, 1:21] |>
-        janitor::row_to_names(row_number = 1) |>
-        tidyr::pivot_longer(
-            cols = c("T0", "T1", "T2", "T3", "T4", "T5", "T5p5", "T6", "T6p5", "T7", "T8", "T9", "T10"),
-            values_to = "date", # new date column
-            names_to = "timepoint", # the colnames that now become rows
-            values_drop_na = TRUE
-        ) |>
-        clean_dates()
-
-    chemo_mice <- dates[39:54, 1:42] |>
-        janitor::row_to_names(row_number = 1) |>
-        tidyr::pivot_longer(
-            cols = dplyr::starts_with("E"),
-            values_to = "date", # new date column
-            names_to = "week", # the colnames that now become rows
-            values_drop_na = TRUE
-        ) |>
-        dplyr::left_join(
-            weeks[39:54, 1:41] |>
-                janitor::row_to_names(row_number = 1) |>
-                tidyr::pivot_longer(
-                    cols = dplyr::starts_with("E"),
-                    values_to = "timepoint", # new date column
-                    names_to = "week", # the colnames that now become rows
-                    values_drop_na = TRUE
-                )
-        ) |>
-        dplyr::mutate(timepoint = ifelse(timepoint < 0,
-            paste0("T", abs(as.numeric(timepoint))),
-            paste0("W", timepoint)
-        )) |>
-        clean_dates()
-
-    rad_mice <- dates[59:69, 1:14] |>
-        janitor::row_to_names(row_number = 1) |>
-        dplyr::mutate(DOD = END) |>
-        tidyr::pivot_longer(
-            cols = c("T0", "T1", "T2", "T3", "T4", "T5", "T6", "T7", "END"),
-            values_to = "date", # new date column
-            names_to = "timepoint", # the colnames that now become rows
-            values_drop_na = TRUE
-        ) |>
-        clean_dates()
-
-    scrna_mice <- dates[72:78, 1:7] |>
-        janitor::row_to_names(row_number = 1) |>
-        dplyr::mutate(date = DOD) |>
-        tibble::add_column(timepoint = "T0") |>
-        clean_dates()
-
-    # merge the dataframes
-    aml_mice_dates <- mouse_dates <- rbind(mice_2016, mice_2018, chemo_mice, rad_mice, scrna_mice) |>
-        dplyr::mutate(mouse_tp = glue::glue("{mouse_id}_{timepoint}"))
-
-     all_mice <- sample_sheet_all_mice |>
+    all_mice <- sample_sheet_all_mice |>
         dplyr::mutate(
-            mouse_tp = glue::glue("{mouse_id}_{timepoint}"),
-            # https://github.com/drejom/haemdata/issues/18
-            genotype = dplyr::case_when(
-                mouse_id == "2700" ~ "CW",
-                TRUE ~ genotype
-            ),
-            treatment = dplyr::case_when(
-                mouse_id == "2700" ~ "Ctrl",
-                TRUE ~ treatment
-            ),
-            # remove the 'dob' column from the sample_sheet table as its not collected
-            # consistently across the parse_metadata_* functions, and add in new columsn to
-            # update:
+            # add in new columns to facilitate join() and update_rows():
+            mouse_tp = glue::glue("{mouse_id}_{timepoint}_{tissue}"),
             dob = as.Date(NA),
             dod = as.Date(NA),
             sample_date = as.Date(NA)
         )
 
-    # CML metadta
+
+    # AML sample and mouse metadata
+
+    # download the file 
+    get_teams_file("General/Copy of matadata_mmu_pivoted_AMLmice.YK.xlsx")
+
+    # read in the worksheets
+    wide_dates <- readxl::read_excel(
+        "data-raw/Copy of matadata_mmu_pivoted_AMLmice.YK.xlsx",
+        col_names = TRUE,
+        col_types = "text") |>
+        dplyr::select(-c("Helper", "cohp"))
+
+    missing_t6_t7_dates <- tidyr::pivot_longer(
+        data = wide_dates,
+        cols = !c("sample", "project", "mouse_id", "tissue"),
+        names_to = "timepoint",
+        values_to = "sample_date") |>
+        tidyr::drop_na("sample_date") |> 
+        dplyr::mutate(sample_date = as.Date(sample_date)) |> 
+        dplyr::arrange(mouse_id, sample_date) 
+
+    # T6 was left off the sheet sent to Ya-Huei, so we need to add it in separately
+    t6_t7_dates <- tibble::tribble(
+                                ~sample, ~mouse_id, ~tissue, ~timepoint,                    ~project, ~sample_date,
+                            "COHP_11843",     "2683",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                            "COHP_11844",     "2685",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                            "COHP_11845",     "2686",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                            "COHP_11846",     "2689",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                            "COHP_11847",     "2692",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                            "COHP_11848",     "2700",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                            "COHP_11849",     "2702",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                            "COHP_11850",     "2705",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                            "COHP_11851",     "2709",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                            "COHP_11852",     "2720",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                            "COHP_20898",     "3335",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                            "COHP_20978",     "3336",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                            "COHP_20919",     "3336",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                            "COHP_20922",     "3341",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                            "COHP_20923",     "3357",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                            "COHP_20882",     "3357",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                            "COHP_20982",     "3368",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                            "COHP_21001",     "3368",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                            "COHP_20965",     "3370",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                            "COHP_20985",     "3370",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                            "COHP_21006",     "3339",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                            "COHP_20986",     "3339",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                            "COHP_20907",     "3342",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                            "COHP_21008",     "3342",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                            "COHP_20970",     "3346",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                            "COHP_20910",     "3346",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                            "COHP_20950",     "3349",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                            "COHP_20971",     "3349",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                            "COHP_20972",     "3334",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                            "COHP_20993",     "3335",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                            "COHP_20894",     "3340",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                            "COHP_20915",     "3340",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                            "COHP_20916",     "3350",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                            "COHP_20956",     "3350",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                            "COHP_41243",     "3694",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41243",     "3694",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41244",     "3694",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41244",     "3694",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41251",     "3695",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41251",     "3695",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41252",     "3695",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41252",     "3695",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41259",     "3696",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41259",     "3696",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41260",     "3696",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41260",     "3696",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41267",     "3697",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41267",     "3697",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41268",     "3697",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41268",     "3697",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41275",     "3698",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41275",     "3698",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41276",     "3698",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41276",     "3698",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41283",     "3700",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41283",     "3700",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41284",     "3700",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41284",     "3700",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41291",     "3701",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41291",     "3701",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41292",     "3701",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41292",     "3701",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41299",     "3702",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41299",     "3702",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41300",     "3702",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41300",     "3702",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41307",     "3706",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41307",     "3706",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41308",     "3706",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41308",     "3706",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41315",     "3709",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41315",     "3709",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                            "COHP_41316",     "3709",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                            "COHP_41316",     "3709",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018"
+                            ) |>
+                    dplyr::mutate(sample_date = lubridate::mdy(sample_date))
+
+        aml_sample_metadata <- rbind(t6_t7_dates, missing_t6_t7_dates) |>
+            dplyr::mutate(mouse_tp = glue::glue("{mouse_id}_{timepoint}_{tissue}"))
+        # Get the per-mouse metadata for aml mice, emailed from Ya-Huei Kuo, 2022-9-2
+        
+        aml_mouse_metadata <- tibble::tribble(
+                                    ~mouse_id, ~treatment, ~genotype, ~sex,       ~dob,       ~dod,
+                                        "2683",     "Ctrl",      "WT",  "M",   "6/2/2015",  "2/23/2016",
+                                        "2684",       "CM",     "CHW",  "M",   "6/2/2015",  "1/19/2016",
+                                        "2685",       "CM",     "CHW",  "M",   "6/2/2015",  "2/23/2016",
+                                        "2686",       "CM",     "CHW",  "M",   "6/2/2015",  "2/23/2016",
+                                        "2689",     "Ctrl",      "CW",  "F",   "6/2/2015",  "2/23/2016",
+                                        "2690",       "CM",     "CHW",  "F",   "6/2/2015",  "12/2/2015",
+                                        "2692",     "Ctrl",      "CW",  "F",   "6/2/2015",  "2/23/2016",
+                                        "2700",     "Ctrl",      "CW",  "F",   "6/3/2015",  "2/23/2016",
+                                        "2702",     "Ctrl",      "CW",  "F",   "6/3/2015",  "2/23/2016",
+                                        "2705",     "Ctrl",      "HW",  "M",   "6/5/2015",  "2/23/2016",
+                                        "2708",       "CM",     "CHW",  "F",   "6/5/2015",  "12/2/2015",
+                                        "2709",       "CM",     "CHW",  "F",   "6/5/2015",  "2/23/2016",
+                                        "2718",       "CM",     "CHW",  "M",   "6/5/2015",  "2/24/2016",
+                                        "2719",       "CM",     "CHW",  "M",   "6/5/2015",  "12/2/2015",
+                                        "2720",     "Ctrl",      "HW",  "M",   "6/5/2015",  "2/23/2016",
+                                        "2731",       "CM",     "CHW",  "F",  "6/12/2015", "10/24/2015",
+                                        "3127",     "Ctrl",      "CW",  "M",   "4/1/2016",   "2/8/2017",
+                                        "3130",       "CM",     "CHW",  "F",   "4/1/2016", "11/11/2016",
+                                        "3131",       "CM",     "CHW",  "F",   "4/1/2016",  "12/1/2016",
+                                        "3200",       "CM",     "CHW",  "M",   "6/7/2016",   "1/4/2017",
+                                        "3202",     "Ctrl",      "WT",  "M",   "6/7/2016",   "2/8/2017",
+                                        "3334",       "CM",     "CHW",  "M", "10/31/2016",   "9/4/2017",
+                                        "3335",     "Ctrl",      "HW",  "M", "10/31/2016",  "11/1/2017",
+                                        "3336",       "CM",     "CHW",  "F",  "11/1/2016",  "10/6/2017",
+                                        "3338",       "CM",     "CHW",  "F",  "11/2/2016",   "7/3/2017",
+                                        "3339",     "Ctrl",      "CW",  "M", "10/29/2016",  "11/1/2017",
+                                        "3340",     "Ctrl",      "HW",  "M", "10/29/2016",  "11/1/2017",
+                                        "3341",       "CM",     "CHW",  "F", "10/29/2016",  "8/17/2017",
+                                        "3342",     "Ctrl",      "CW",  "M", "11/10/2016",  "11/1/2017",
+                                        "3346",     "Ctrl",      "CW",  "M", "11/12/2016",  "11/1/2017",
+                                        "3349",     "Ctrl",      "CW",  "F", "11/12/2016",  "11/1/2017",
+                                        "3350",     "Ctrl",      "WT",  "F", "11/12/2016",  "11/1/2017",
+                                        "3357",       "CM",     "CHW",  "F", "11/15/2016",  "10/6/2017",
+                                        "3368",       "CM",     "CHW",  "M",  "12/7/2016",  "11/1/2017",
+                                        "3370",       "CM",     "CHW",  "M",  "12/8/2016",  "11/1/2017",
+                                        "3694",     "Ctrl",      "WT",  "M",   "2/1/2018",  "8/16/2018",
+                                        "3695",     "Ctrl",      "WT",  "M",   "2/1/2018",  "8/16/2018",
+                                        "3696",     "Ctrl",      "WT",  "M",   "2/1/2018",  "8/16/2018",
+                                        "3697",      "3Gy",      "WT",  "F",   "2/1/2018",  "8/16/2018",
+                                        "3698",      "3Gy",      "WT",  "F",   "2/1/2018",  "8/16/2018",
+                                        "3700",      "3Gy",      "WT",  "F",   "2/1/2018",  "8/16/2018",
+                                        "3701",      "3Gy",      "WT",  "M",   "2/1/2018",  "8/16/2018",
+                                        "3702",      "3Gy",      "WT",  "M",   "2/1/2018",  "8/16/2018",
+                                        "3706",     "Ctrl",      "WT",  "F",   "2/1/2018",  "8/16/2018",
+                                        "3709",     "Ctrl",      "WT",  "F",   "2/1/2018",  "8/16/2018",
+                                        "4309",       "CM",     "CHW",  "F", "11/10/2019",  "9/29/2020",
+                                        "4311",     "Ctrl",      "CW",  "F", "11/10/2019",  "7/12/2021",
+                                        "4321",       "CM",     "CHW",  "F", "11/13/2019",  "7/17/2020",
+                                        "4324",       "CM",     "CHW",  "M", "11/13/2019",  "7/31/2020",
+                                        "4329",       "CM",     "CHW",  "F", "11/19/2019",   "9/9/2020",
+                                        "4419",       "CM",     "CHW",  "F",  "7/14/2020",   "4/2/2021",
+                                        "4433",       "CM",     "CHW",  "M",  "8/21/2020",  "4/19/2021",
+                                        "4436",       "CM",     "CHW",  "F",  "8/21/2020",  "3/21/2021",
+                                        "4443",       "CM",     "CHW",  "F",  "8/25/2020",  "5/26/2021",
+                                        "4498",     "Ctrl",      "CW",  "M",   "3/3/2021", "10/13/2021",
+                                        "4501",     "Ctrl",      "CW",  "F",   "3/3/2021",  "12/7/2021",
+                                        "4502",       "CM",     "CHW",  "M",   "3/3/2021", "10/13/2021",
+                                        "4506",       "CM",     "CHW",  "F",   "3/3/2021", "11/17/2021",
+                                        "4510",       "CM",     "CHW",  "F",  "3/11/2021",  "11/8/2021",
+                                        "4512",     "Ctrl",      "WT",  "M",  "3/25/2021",  "10/6/2021",
+                                        "4520",     "Ctrl",      "CW",  "F",   "4/9/2021",  "9/29/2021",
+                                        "4521",       "CM",     "CHW",  "M",  "4/26/2021",  "10/6/2021",
+                                        "4522",       "CM",     "CHW",  "F",  "4/26/2021",  "9/29/2021",
+                                        "4534",     "Ctrl",      "WT",  "F",  "5/22/2021",  "12/7/2021",
+                                        "4535",       "CM",     "CHW",  "F",  "5/22/2021",  "12/7/2021"
+                                    ) |>
+                    dplyr::mutate(
+                        dob = lubridate::mdy(dob),
+                        dod = lubridate::mdy(dod))
+
+    aml_mice <- dplyr::left_join(aml_sample_metadata, aml_mouse_metadata, by = "mouse_id")
+
+    # CML sample and mouse metadata
     # download the file "General/Copy of mmu_metadata_CML.xlsx"
     get_teams_file("General/Copy of mmu_metadata_CML.xlsx")
 
     # read in the worksheets
-    cml_metadata <- left_join(
+    cml_mice <- left_join(
         # Samples
         readxl::read_excel("data-raw/Copy of mmu_metadata_CML.xlsx",
             sheet = "CML samples", col_types = "text"
@@ -181,33 +256,32 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
                 dod = as.Date(as.numeric(dod), origin = "1899-12-30")
             )) |>
         dplyr::mutate(
-            mouse_tp = glue::glue("{mouse_id}_{timepoint}")) |>
+            mouse_tp = glue::glue("{mouse_id}_{timepoint}_{tissue}")) |>
             dplyr::select(-c(start_date, `...1`))
 
     # consolidate sample metadata where possible
     # using dplyr::rows_update() & tidyr::fill() to fill in missing values
-    sample_sheet <- dplyr::rows_update(all_mice, aml_mice_dates, by = "mouse_tp", unmatched = "ignore") |>
-        dplyr::rows_update(cml_metadata, by = "mouse_tp", unmatched = "ignore") |>
+    sample_sheet <- dplyr::rows_update(all_mice, aml_mice, by = "mouse_tp", unmatched = "ignore") |>
+        dplyr::rows_update(cml_mice, by = "mouse_tp", unmatched = "ignore") |>
         dplyr::group_by(mouse_id) |>
         tidyr::fill(c("treatment", "genotype", "sex", "dob", "dod"), .direction = "downup") |>
-        # Use "dod" for "sample_date" for some samples
         dplyr::mutate(
-            sample_date = dplyr::case_when(
-                tissue == "BM" ~ dod,
-                timepoint == "L" ~ dod,
-                timepoint == "END" ~ dod,
-                TRUE ~ sample_date
-            ),
+            # # Use "dod" for "sample_date" for some samples
+            # sample_date = dplyr::case_when(
+            #     tissue == "BM" ~ dod,
+            #     timepoint == "L" ~ dod,
+            #     timepoint == "END" ~ dod,
+            #     TRUE ~ sample_date
+            # ),
             # add columns: sample_weeks, age_at_end, age_at_start, age_at_sample
             sample_weeks = difftime(sample_date, min(sample_date), units = "weeks"),
             age_at_end = difftime(max(sample_date), dob, units = "weeks"),
             age_at_start = difftime(min(sample_date), dob, units = "weeks"),
             age_at_sample = difftime(sample_date, dob, units = "weeks"),
-            dplyr::across(dplyr::starts_with("age"), round, 1)
+            dplyr::across(dplyr::starts_with(c("age", "sample_weeks")), round, 1)
         ) |>
         dplyr::ungroup() |>
         dplyr::select(-c(mouse_tp))
-        ## CML metadata
 
     return(sample_sheet)
 }
