@@ -56,7 +56,7 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
 
     # AML sample and mouse metadata
 
-    # download the file 
+    # download the file
     get_teams_file("General/Copy of matadata_mmu_pivoted_AMLmice.YK.xlsx")
 
     # read in the worksheets
@@ -71,94 +71,77 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
         cols = !c("sample", "project", "mouse_id", "tissue"),
         names_to = "timepoint",
         values_to = "sample_date") |>
-        tidyr::drop_na("sample_date") |> 
-        dplyr::mutate(sample_date = as.Date(sample_date)) |> 
-        dplyr::arrange(mouse_id, sample_date) 
+        tidyr::drop_na("sample_date") |>
+            dplyr::mutate(sample_date = as.Date(sample_date)) |>
+            dplyr::arrange(mouse_id, sample_date) |>
+                dplyr::select("sample", "mouse_id", "tissue", "timepoint", "project", "sample_date")
 
     # T6 was left off the sheet sent to Ya-Huei, so we need to add it in separately
     t6_t7_dates <- tibble::tribble(
-                                ~sample, ~mouse_id, ~tissue, ~timepoint,                    ~project, ~sample_date,
-                            "COHP_11843",     "2683",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
-                            "COHP_11844",     "2685",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
-                            "COHP_11845",     "2686",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
-                            "COHP_11846",     "2689",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
-                            "COHP_11847",     "2692",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
-                            "COHP_11848",     "2700",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
-                            "COHP_11849",     "2702",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
-                            "COHP_11850",     "2705",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
-                            "COHP_11851",     "2709",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
-                            "COHP_11852",     "2720",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
-                            "COHP_20898",     "3335",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
-                            "COHP_20978",     "3336",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
-                            "COHP_20919",     "3336",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
-                            "COHP_20922",     "3341",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
-                            "COHP_20923",     "3357",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
-                            "COHP_20882",     "3357",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
-                            "COHP_20982",     "3368",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
-                            "COHP_21001",     "3368",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
-                            "COHP_20965",     "3370",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
-                            "COHP_20985",     "3370",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
-                            "COHP_21006",     "3339",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
-                            "COHP_20986",     "3339",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
-                            "COHP_20907",     "3342",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
-                            "COHP_21008",     "3342",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
-                            "COHP_20970",     "3346",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
-                            "COHP_20910",     "3346",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
-                            "COHP_20950",     "3349",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
-                            "COHP_20971",     "3349",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
-                            "COHP_20972",     "3334",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
-                            "COHP_20993",     "3335",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
-                            "COHP_20894",     "3340",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
-                            "COHP_20915",     "3340",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
-                            "COHP_20916",     "3350",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
-                            "COHP_20956",     "3350",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
-                            "COHP_41243",     "3694",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41243",     "3694",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41244",     "3694",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41244",     "3694",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41251",     "3695",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41251",     "3695",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41252",     "3695",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41252",     "3695",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41259",     "3696",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41259",     "3696",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41260",     "3696",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41260",     "3696",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41267",     "3697",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41267",     "3697",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41268",     "3697",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41268",     "3697",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41275",     "3698",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41275",     "3698",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41276",     "3698",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41276",     "3698",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41283",     "3700",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41283",     "3700",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41284",     "3700",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41284",     "3700",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41291",     "3701",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41291",     "3701",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41292",     "3701",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41292",     "3701",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41299",     "3702",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41299",     "3702",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41300",     "3702",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41300",     "3702",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41307",     "3706",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41307",     "3706",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41308",     "3706",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41308",     "3706",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41315",     "3709",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41315",     "3709",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
-                            "COHP_41316",     "3709",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
-                            "COHP_41316",     "3709",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018"
-                            ) |>
-                    dplyr::mutate(sample_date = lubridate::mdy(sample_date))
+                        ~sample, ~mouse_id, ~tissue, ~timepoint,                    ~project, ~sample_date,
+                    "COHP_11843",     "2683",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                    "COHP_11844",     "2685",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                    "COHP_11845",     "2686",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                    "COHP_11846",     "2689",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                    "COHP_11847",     "2692",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                    "COHP_11848",     "2700",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                    "COHP_11849",     "2702",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                    "COHP_11850",     "2705",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                    "COHP_11851",     "2709",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                    "COHP_11852",     "2720",  "PBMC",       "T6",             "AML.mRNA.2016",    "2/23/2016",
+                    "COHP_20898",     "3335",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                    "COHP_20978",     "3336",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                    "COHP_20919",     "3336",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                    "COHP_20922",     "3341",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                    "COHP_20923",     "3357",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                    "COHP_20882",     "3357",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                    "COHP_20982",     "3368",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                    "COHP_21001",     "3368",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                    "COHP_20965",     "3370",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                    "COHP_20985",     "3370",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                    "COHP_21006",     "3339",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                    "COHP_20986",     "3339",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                    "COHP_20907",     "3342",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                    "COHP_21008",     "3342",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                    "COHP_20970",     "3346",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                    "COHP_20910",     "3346",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                    "COHP_20950",     "3349",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                    "COHP_20971",     "3349",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                    "COHP_20972",     "3334",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                    "COHP_20993",     "3335",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                    "COHP_20894",     "3340",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                    "COHP_20915",     "3340",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                    "COHP_20916",     "3350",  "PBMC",       "T6", "AML.mRNA.2018.all_samples",    "8/15/2017",
+                    "COHP_20956",     "3350",  "PBMC",       "T7", "AML.mRNA.2018.all_samples",    "9/12/2017",
+                    "COHP_41243",     "3694",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                    "COHP_41244",     "3694",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                    "COHP_41251",     "3695",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                    "COHP_41252",     "3695",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                    "COHP_41259",     "3696",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                    "COHP_41260",     "3696",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                    "COHP_41267",     "3697",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                    "COHP_41268",     "3697",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                    "COHP_41275",     "3698",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                    "COHP_41276",     "3698",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                    "COHP_41283",     "3700",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                    "COHP_41284",     "3700",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                    "COHP_41291",     "3701",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                    "COHP_41292",     "3701",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                    "COHP_41299",     "3702",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                    "COHP_41300",     "3702",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                    "COHP_41307",     "3706",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                    "COHP_41308",     "3706",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018",
+                    "COHP_41315",     "3709",  "PBMC",       "T6",             "AML.mRNA.2020",    "5/18/2018",
+                    "COHP_41316",     "3709",  "PBMC",       "T7",             "AML.mRNA.2020",    "5/25/2018"
+                    ) |>
+                    dplyr::mutate(sample_date = lubridate::mdy(sample_date)) |>
+                        dplyr::select("sample", "mouse_id", "tissue", "timepoint", "project", "sample_date")
+
 
         aml_sample_metadata <- rbind(t6_t7_dates, missing_t6_t7_dates) |>
             dplyr::mutate(mouse_tp = glue::glue("{mouse_id}_{timepoint}_{tissue}"))
         # Get the per-mouse metadata for aml mice, emailed from Ya-Huei Kuo, 2022-9-2
-        
+
         aml_mouse_metadata <- tibble::tribble(
                                     ~mouse_id, ~treatment, ~genotype, ~sex,       ~dob,       ~dod,
                                         "2683",     "Ctrl",      "WT",  "M",   "6/2/2015",  "2/23/2016",
@@ -261,7 +244,7 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
 
     # consolidate sample metadata where possible
     # using dplyr::rows_update() & tidyr::fill() to fill in missing values
-    sample_sheet <- dplyr::rows_update(all_mice, aml_mice, by = "mouse_tp", unmatched = "ignore") |>
+    sample_sheet <- dplyr::rows_update(all_mice, aml_mice, by = "sample", unmatched = "ignore") |>
         dplyr::rows_update(cml_mice, by = "mouse_tp", unmatched = "ignore") |>
         dplyr::group_by(mouse_id) |>
         tidyr::fill(c("treatment", "genotype", "sex", "dob", "dod"), .direction = "downup") |>

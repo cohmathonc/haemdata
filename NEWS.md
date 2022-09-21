@@ -2,6 +2,8 @@
 
 # dev
 * add Howto.Rmd
+* Update AML sample and mouse metadata provided by Dr. Kuo 2022-9-2
+
 # haemdata 0.0.0.9004
 * Make `auth_type = "device_code"` the default for MS365R
 * added CML mRNA 2022 part 2 (71 samples)
