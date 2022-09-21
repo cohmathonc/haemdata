@@ -9,5 +9,24 @@
         "markdown",
         "r",
         "rmd"
-    ]
+    ],
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#d23331",
+        "activityBar.background": "#d23331",
+        "activityBar.foreground": "#e7e7e7",
+        "activityBar.inactiveForeground": "#e7e7e799",
+        "activityBarBadge.background": "#114e12",
+        "activityBarBadge.foreground": "#e7e7e7",
+        "commandCenter.border": "#e7e7e799",
+        "sash.hoverBorder": "#d23331",
+        "statusBar.background": "#ab2725",
+        "statusBar.foreground": "#e7e7e7",
+        "statusBarItem.hoverBackground": "#d23331",
+        "statusBarItem.remoteBackground": "#ab2725",
+        "statusBarItem.remoteForeground": "#e7e7e7",
+        "titleBar.activeBackground": "#ab2725",
+        "titleBar.activeForeground": "#e7e7e7",
+        "titleBar.inactiveBackground": "#ab272599",
+        "titleBar.inactiveForeground": "#e7e7e799"
+    }
 }
