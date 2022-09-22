@@ -3,9 +3,8 @@
 # metadata_mmu -----------------------------------------------------------
 #' Minimal metadata for mouse samples
 #' 
-#' [<i class="fas fa-file-excel fa-download"></i> Download](metadata_mmu_template.xlsx) the template for new samples
-#'
-#'  |  | Description |
+#' [Download](../metadata_mmu_template.xlsx) a template for new samples
+#'  | Column | Description |
 #'  |---|---|
 #'  | `sample` | Integrative Genomics Core `library_id` with the format `COHP_XXXXX`. `sample` is not unique as some libraries are split across multiple sequencing runs. This identifier is used to match sequence reads, QC metrics, raw counts and metadata, for each sample. |
 #'  | `fastq_1` | Full path of fastq1, unique in the table |

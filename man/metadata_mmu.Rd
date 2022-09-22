@@ -8,11 +8,8 @@
 \href{https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24}{\code{make_metadata_mmu()}}
 }
 \description{
-\href{metadata_mmu_template.xlsx}{<i class="fas fa-file-excel fa-download"></i> Download} the template for new samples
-}
-\details{
-\tabular{ll}{
-    \tab Description \cr
+\href{../metadata_mmu_template.xlsx}{Download} a template for new samples\tabular{ll}{
+   Column \tab Description \cr
    \code{sample} \tab Integrative Genomics Core \code{library_id} with the format \code{COHP_XXXXX}. \code{sample} is not unique as some libraries are split across multiple sequencing runs. This identifier is used to match sequence reads, QC metrics, raw counts and metadata, for each sample. \cr
    \code{fastq_1} \tab Full path of fastq1, unique in the table \cr
    \code{fastq_2} \tab Full path of fastq2, unique in the table, or blank for single-end reads \cr
@@ -34,8 +31,8 @@
    \code{age_at_sample} \tab Age at sample collection, in weeks (\code{sample_date - dob}) \cr
    \code{age_at_end} \tab Age at end of of the experiment, in weeks (\code{max(sample_date) - dob}) \cr
 }
-
-
+}
+\details{
 The \href{https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24}{\code{make_metadata_mmu()}}
 function assembles the metadata for all RNAseq libraries from AML and CML mice, by consolidating
 data scraped from multiple sequencing run sheets, directly from sequencing folders, emails, and so forth.
