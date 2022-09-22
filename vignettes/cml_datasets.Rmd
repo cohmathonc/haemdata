@@ -20,14 +20,10 @@ library(SummarizedExperiment)
 
 use_pinboard("onedrive")
 
-se1 <- get_pin("mmu_mrna_2016_2022_GENCODEm28_HLT_qc.rds") %>%
+cml_mice <- get_pin("mmu_mrna_all_mice_GENCODEm28_HLT_qc.rds") %>%
     subset(select = grepl("CML", SummarizedExperiment::colData(.)$project))
 
-se2 <- get_pin("mmu_mrna_cml3_qc_GENCODEm28_HLT_qc.rds")
-
-se <- merge_mrna_se(se1, se2)
-
-pca <- pca_se(se)
+pca <- pca_se(cml_mice)
 ```
 
 ```{r pca_plots}
@@ -39,5 +35,5 @@ pca$correlation_plot
 ```
 
 ```{r transgenes}
-plot_transgenes_se(se)
+plot_transgenes_se(cml_mice)
 ```

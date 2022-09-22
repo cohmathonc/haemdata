@@ -22,7 +22,7 @@ First, we need to setup the pin-board and download the mouse datasets.
 library(haemdata)
 use_pinboard("onedrive")
 
-all_mice <- get_pin("mmu_mrna_2016_2022_GENCODEm28_HLT_qc.rds")
+all_mice <- get_pin("mmu_mrna_all_mice_GENCODEm28_HLT_qc.rds")
 ```
 
 ### 2016 mice
