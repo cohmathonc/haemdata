@@ -575,10 +575,11 @@ make_tpm_matrix <- function(summarised_experiment, drop = NULL, tpm = 1, samples
 #' @name merge_mrna_se
 #' @param se1, name of a `SummarisedExperiment` object to merge
 #' @param se2, name of the other `SummarisedExperiment` object to merge
+#' @param new_name, name of the new `SummarisedExperiment` object
 #' @return a `SummarisedExperiment` object
 #' @author Denis O'Meally
 #' @export
-merge_mrna_se <- function(se1, se2) {
+merge_mrna_se <- function(se1, se2, new_name) {
 
 #metadata
     metadata1 <- S4Vectors::metadata(se1)
@@ -606,7 +607,7 @@ merge_mrna_se <- function(se1, se2) {
 
     # update the metadata
     new_metadata <- list(
-        object_name = glue::glue("{metadata1$object_name}_+_{metadata2$object_name}"),
+        object_name = new_name,
         reference_genome = reference_genome,
         rnaseq_release = rnaseq_release,
         workflow = workflow,
@@ -628,14 +629,14 @@ merge_mrna_se <- function(se1, se2) {
     coldata1 <- SummarizedExperiment::colData(se1) |>
         dplyr::as_tibble() |>
         dplyr::select(dplyr::all_of(common_cols)) |>
-            `rownames<-`(colnames(se1)) |>
-            S4Vectors::DataFrame()
+            S4Vectors::DataFrame() |>
+            `rownames<-`(colnames(se1))
 
     coldata2 <- SummarizedExperiment::colData(se2) |>
         dplyr::as_tibble() |>
         dplyr::select(dplyr::all_of(common_cols)) |>
-        `rownames<-`(colnames(se2)) |>
-        S4Vectors::DataFrame()
+        S4Vectors::DataFrame() |>
+        `rownames<-`(colnames(se2))
 
     #replace the coldata
     SummarizedExperiment::colData(se1) <- coldata1
