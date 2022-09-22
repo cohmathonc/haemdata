@@ -1,6 +1,7 @@
 
 
 # dev
+* add metadata_mmu template for new samples
 * add pins for "all mice" `SummarisedExperiment` and csv expression matrix
 * update AML sample and mouse metadata provided by Dr. Kuo: Email 2022-9-2 and 
   PSON Teams channel (`General|Copy of matadata_mmu_pivoted_AMLmice.YK.xlsx`)
