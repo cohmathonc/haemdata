@@ -61,7 +61,7 @@ apollo_small <- targets::tar_resources(
         future::tweak(
             future.batchtools::batchtools_slurm,
             template = "future.tmpl",
-            resources = list(ncpus = 2L, memory = "20G", walltime = "2:00:00")
+            resources = list(ncpus = 2L, memory = "20G", walltime = "4:00:00")
         ),
         future::tweak("multisession", workers = 2L)
     ))
@@ -73,6 +73,17 @@ apollo_bigmem <- targets::tar_resources(
             future.batchtools::batchtools_slurm,
             template = "future.tmpl",
             resources = list(ncpus = 6L, memory = "600G", walltime = "12:00:00", partition = "fast")
+        ),
+        future::tweak("multisession", workers = 6L)
+    ))
+)
+
+apollo_shortmem <- targets::tar_resources(
+    future = targets::tar_resources_future(plan = list(
+        future::tweak(
+            future.batchtools::batchtools_slurm,
+            template = "future.tmpl",
+            resources = list(ncpus = 6L, memory = "200G", walltime = "4:00:00", partition = "fast")
         ),
         future::tweak("multisession", workers = 6L)
     ))
