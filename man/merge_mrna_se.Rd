@@ -4,12 +4,14 @@
 \alias{merge_mrna_se}
 \title{Merge a pair of \code{SummarisedExperiments}}
 \usage{
-merge_mrna_se(se1, se2)
+merge_mrna_se(se1, se2, new_name)
 }
 \arguments{
 \item{se1, }{name of a \code{SummarisedExperiment} object to merge}
 
 \item{se2, }{name of the other \code{SummarisedExperiment} object to merge}
+
+\item{new_name, }{name of the new \code{SummarisedExperiment} object}
 }
 \value{
 a \code{SummarisedExperiment} object
