@@ -2,6 +2,8 @@
 
 # metadata_mmu -----------------------------------------------------------
 #' Minimal metadata for mouse samples
+#' 
+#' [<i class="fas fa-file-excel fa-download"></i> Download](metadata_mmu_template.xlsx) the template for new samples
 #'
 #'  |  | Description |
 #'  |---|---|
