@@ -1,19 +1,24 @@
 
 
 # dev
+* add pins for "all mice" `SummarisedExperiment` and csv expression matrix
+* update AML sample and mouse metadata provided by Dr. Kuo: Email 2022-9-2 and 
+  PSON Teams channel (`General|Copy of matadata_mmu_pivoted_AMLmice.YK.xlsx`)
 * add Howto.Rmd
-* Update AML sample and mouse metadata provided by Dr. Kuo 2022-9-2
+* add `assay` to `metadata_mmu`
+* `sample_sheets` now 4-column nf-core format
+* numerous small fixes
 
 # haemdata 0.0.0.9004
-* Make `auth_type = "device_code"` the default for MS365R
+* make `auth_type = "device_code"` the default for MS365R
 * added CML mRNA 2022 part 2 (71 samples)
 * updated vignettes with figs and examples for mRNAseq & scRNAseq
-* Added sample dates from PSON Teams channel (`General|AML.Seq.Samples_dates.xlsx`), along with computed columns `sample_weeks`, `age_at_end`, `age_at_start`, `age_at_sample`
-* Added `R-CMD-CHK` GitHub Action for CI testing
-* Added RNAseq reads from 90 libraries published by Kim et al 2020 [SciRep](https://www.nature.com/articles/s41598-020-76933-2); [PRJEB27973](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJEB27973)
-* Streamlined package installation by removing all but the minimal dependencies
-* Moved to {`Microsoft365R`} and {`pins`} for storing processed datasets and metadata. 
+* added sample dates from PSON Teams channel (`General|AML.Seq.Samples_dates.xlsx`), along with computed columns `sample_weeks`, `age_at_end`, `age_at_start`, `age_at_sample`
+* added `R-CMD-CHK` GitHub Action for CI testing
+* added RNAseq reads from 90 libraries published by Kim et al 2020 [SciRep](https://www.nature.com/articles/s41598-020-76933-2); [PRJEB27973](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJEB27973)
+* streamlined package installation by removing all but the minimal dependencies
+* moved to {`Microsoft365R`} and {`pins`} for storing processed datasets and metadata. 
   
 # haemdata 0.0.0.9000
 
-* Added a `NEWS.md` file to track changes to the package.
+* added a `NEWS.md` file to track changes to the package.
