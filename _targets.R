@@ -324,8 +324,10 @@ list(
     # TODO # # Annotate cell type -----------------------------------------------------------
 
     # Publish Seurat objects -----------------------------------------------------------
-    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_pins, publish_seurat(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc)),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT_pins, publish_seurat(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc)),
+    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_pins, publish_seurat(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc),
+    resources = apollo_small),
+    tar_target(mmu_10x_2022_1_GRCm38_HLT_pins, publish_seurat(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc),
+    resources = apollo_small),
 
     ######### Collect latest pin versions #########
     # TODO make a function to prune pins not in a release
@@ -346,5 +348,5 @@ list(
             hsa_mrna_kim_GENCODEm28_pins
         ))
     ),
-            tar_target(built_package, build_package(latest_published_data), resources = apollo_bigmem)
+            tar_target(built_package, build_package(latest_published_data), resources = apollo_shortmem)
 )
