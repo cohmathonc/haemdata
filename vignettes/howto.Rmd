@@ -8,37 +8,37 @@ title: "How do I..."
 
 ```{r, message = FALSE}
 library(haemdata)
-use_pinboard("devel")
+use_pinboard("onedrive")
 
 gene_of_interest <- "ENSMUSG00000005672"
 
-all_mice <- get_pin("mmu_mrna_2016_2022_GENCODEm28_HLT_qc.rds")
+all_mice <- get_pin("mmu_mrna_all_mice_GENCODEm28_HLT_qc.rds")
 
 se <- subset(all_mice,
     select = grepl("2018", SummarizedExperiment::colData(all_mice)$batch)
 )
 
 col_data <- SummarizedExperiment::colData(se) |>
-        as.data.frame() |>
-        droplevels()
+    as.data.frame() |>
+    droplevels()
 
 SummarizedExperiment::assay(se, "abundance") |>
-        tibble::rownames_to_column("gene_id") |>
-        dplyr::filter(stringr::str_detect(gene_id, gene_of_interest)) |>
-        tidyr::pivot_longer(!gene_id, names_to = "sample") |>
-        dplyr::left_join(col_data, by = "sample") |>
-        ggplot2::ggplot(ggplot2::aes(y = log2(value + 0.1), x = sample_weeks, group = mouse_id, col = treatment)) +
-        ggplot2::geom_line(alpha = 0.3) +
-        ggplot2::geom_point(alpha = 0.3) +
-        ggplot2::geom_smooth(ggplot2::aes(group = treatment), span = 0.4) +
-        ggplot2::facet_wrap("gene_id") +
-        ggplot2::ggtitle(glue::glue("Abundance of {gene_of_interest}")) +
-        ggplot2::ylab("log2(TPM)") +
-        ggplot2::xlab("Weeks") +
-        ggsci::scale_color_d3("category20") +
-        ggplot2::theme_minimal() +
-        ggplot2::theme(
-            axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-            legend.title = ggplot2::element_blank()
-        )
+    tibble::rownames_to_column("gene_id") |>
+    dplyr::filter(stringr::str_detect(gene_id, gene_of_interest)) |>
+    tidyr::pivot_longer(!gene_id, names_to = "sample") |>
+    dplyr::left_join(col_data, by = "sample") |>
+    ggplot2::ggplot(ggplot2::aes(y = log2(value + 0.1), x = sample_weeks, group = mouse_id, col = treatment)) +
+    ggplot2::geom_line(alpha = 0.3) +
+    ggplot2::geom_point(alpha = 0.3) +
+    ggplot2::geom_smooth(ggplot2::aes(group = treatment), span = 0.4) +
+    ggplot2::facet_wrap("gene_id") +
+    ggplot2::ggtitle(glue::glue("Abundance of {gene_of_interest}")) +
+    ggplot2::ylab("log2(TPM)") +
+    ggplot2::xlab("Weeks") +
+    ggsci::scale_color_d3("category20") +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+        axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+        legend.title = ggplot2::element_blank()
+    )
 ```
