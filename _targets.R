@@ -217,11 +217,14 @@ list(
     tar_target(hsa_mrna_kim_qc_se, annotate_se(get_rnaseq_se(hsa_mrna_kim_qc), metadata_hsa, hsa_mrna_kim_qc)),
 
     ###############################################################################################
+    # Merge SummarisedExperiments
+    tar_target(mmu_mrna_all_mice_qc_se, merge_mrna_se(mmu_mrna_2016_2022_qc_se, mmu_mrna_cml3_qc_se,
+        new_name = "mmu_mrna_all_mice_GENCODEm28_HLT_qc")),
+    # ###############################################################################################
     # Drop samples that fail mapping threshold  -- only for SummarisedExperiments generated from qc runs
     tar_target(mmu_mrna_aml2016_qc_se_flt, qc_filter_se(mmu_mrna_aml2016_qc_se)),
-    tar_target(mmu_mrna_2016_2022_qc_se_flt, qc_filter_se(mmu_mrna_2016_2022_qc_se)),
+    tar_target(mmu_mrna_all_mice_qc_se_flt, qc_filter_se(mmu_mrna_all_mice_qc_se)),
     tar_target(mmu_mrna_techrep_qc_se_flt, qc_filter_se(mmu_mrna_techrep_qc_se)),
-    tar_target(mmu_mrna_cml3_qc_se_flt, qc_filter_se(mmu_mrna_cml3_qc_se)),
     tar_target(hsa_mrna_flt3_qc_se_flt, qc_filter_se(hsa_mrna_flt3_qc_se)),
     tar_target(hsa_mrna_mds_qc_se_flt, qc_filter_se(hsa_mrna_mds_qc_se)),
     tar_target(hsa_mrna_kim_qc_se_flt, qc_filter_se(hsa_mrna_kim_qc_se)),
@@ -238,14 +241,12 @@ list(
     #     resources = apollo_large),
     # tar_target(hsa_mrna_flt3_qc_se_outliers, find_outliers_se(hsa_mrna_flt3_qc_se),
     #     resources = apollo_large)
-
     ###############################################################################################
     # Publish mRNAseq metadata (with pins package) ----------------------------------------------
     ###############################################################################################
     # save SummarisedExperiments to disk
-    tar_target(mmu_mrna_2016_2022_GENCODEm28_pins, publish_se(mmu_mrna_2016_2022_qc_se_flt)),
+    tar_target(mmu_mrna_all_mice_GENCODEm28_pins, publish_se(mmu_mrna_all_mice_qc_se_flt)),
     tar_target(mmu_mrna_techrep_GENCODEm28_pins, publish_se(mmu_mrna_techrep_qc_se_flt)),
-    tar_target(mmu_mrna_cml3_GENCODEm28_pins, publish_se(mmu_mrna_cml3_qc_se_flt)),
     tar_target(hsa_mrna_flt3_GENCODEm28_pins, publish_se(hsa_mrna_flt3_qc_se_flt)),
     tar_target(hsa_mrna_mds_GENCODEm28_pins, publish_se(hsa_mrna_mds_qc_se_flt)),
     tar_target(hsa_mrna_kim_GENCODEm28_pins, publish_se(hsa_mrna_kim_qc_se_flt)),
@@ -338,9 +339,8 @@ list(
             metadata_mmu_pins,
             metadata_hsa_pins,
             # bulk RNAseq
-            mmu_mrna_2016_2022_GENCODEm28_pins,
+            mmu_mrna_all_mice_GENCODEm28_pins,
             mmu_mrna_techrep_GENCODEm28_pins,
-            mmu_mrna_cml3_GENCODEm28_pins,
             hsa_mrna_flt3_GENCODEm28_pins,
             hsa_mrna_mds_GENCODEm28_pins,
             hsa_mrna_kim_GENCODEm28_pins
