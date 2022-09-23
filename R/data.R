@@ -65,7 +65,7 @@ NULL
 # published_pins -----------------------------------------------------------├
 #' Datasets published to the Haemdata pin board
 #'
-#' Lists the name and most recent version of each dataset published to the Haemdata pin board.
+#' Lists the name and version of each dataset published to the Haemdata pinboard in the current release.
 #' Pins can be retrieved with the [`get_pin()`] function.
 #'
 #' @format A `data.frame` with the following columns:
