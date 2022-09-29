@@ -258,6 +258,25 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
             ) |>
             dplyr::distinct()
 
+        # add percent_ckit
+        get_teams_file("General/cKit+ AllTimes.csv")
+        percent_ckit <- read.csv("data-raw/cKit+ AllTimes.csv") |>
+            tidyr::pivot_longer(
+                cols = -mouse_id,
+                names_to = "timepoint",
+                values_to = "percent_ckit"
+            ) |>
+            na.omit()
+
+        sample_sheet <- dplyr::left_join(sample_sheet, percent_ckit, by = c("mouse_id", "timepoint")) |>
+            dplyr::select(
+                sample, fastq_1, fastq_2, strandedness, assay, mouse_id,
+                tissue, timepoint, project, batch, treatment, genotype, sex,
+                sample_date, percent_ckit, dob, dod, sample_weeks, age_at_end, age_at_start,
+                age_at_sample
+            ) |>
+            dplyr::distinct()
+
     return(sample_sheet)
 }
 #### mRNA -----
