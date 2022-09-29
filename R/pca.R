@@ -1,3 +1,5 @@
+# TODO https://github.com/pkimes/pkimes/blob/master/R/ggpcaplot.R
+
 #' @title Perform PCA on a SummarisedExperiment
 #' @description Perform PCA on the `assay` of a SummarisedExperiment object and make a biplot, pairs plot and
 #' correlation of metadata columns with PCs.
