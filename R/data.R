@@ -22,6 +22,7 @@
 #'  | `batch` | Sequencing groups |
 #'  | `dod` | Date of death of the mouse, YYYY-MM-DD |
 #'  | `sample_date` | Date the sample was collected, YYYY-MM-DD |
+#'  | `percent_ckit` | Percentage of c-KIT+ cells, measured by flow cytometry (CD117) |
 #'  | `sample_weeks` | Timepoint in weeks (`sample_date - min(sample_date)`). Post treatment chemo samples begin at week 0, pretreatment samples < 0. |
 #'  | `age_at_start` | Age at start of the experiment, in weeks (`min(sample_date) - dob`) |
 #'  | `age_at_sample` | Age at sample collection, in weeks (`sample_date - dob`) |

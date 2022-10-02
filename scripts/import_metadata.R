@@ -260,7 +260,7 @@ make_metadata_mmu <- function(sample_sheet_all_mice) {
 
         # add percent_ckit
         get_teams_file("General/cKit+ AllTimes.csv")
-        percent_ckit <- read.csv("data-raw/cKit+ AllTimes.csv") |>
+        percent_ckit <- read.csv("data-raw/cKit+ AllTimes.csv", colClasses = c("mouse_id" = "character")) |>
             tidyr::pivot_longer(
                 cols = -mouse_id,
                 names_to = "timepoint",
