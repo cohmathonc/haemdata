@@ -1,5 +1,15 @@
+# Roadmap
+* fix erroneous AML mouse metadata
+* fix mislabelled FLT3 AML samples, add new samples
+* simplify `metadata_hsa`
+* include miRNA for AML samples
+* revised colour scheme
+* ggPCA and PC vs. time plots
+* scRNAseq for CML; add AML scRNAseq h5a to metadata_mmu
 
-
+# dev
+* add `percent_ckit` to mmu_metadata.csv
+  
 # haemdata 0.0.0.9005
 * add metadata_mmu template for new samples
 * add pins for "all mice" `SummarisedExperiment` and csv expression matrix
