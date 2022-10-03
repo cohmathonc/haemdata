@@ -61,7 +61,6 @@ publish_metadata <- function(metadata) {
     if (is.null(haemdata::haemdata_env$pin_board)) {
         stop(haemdata::haemdata_env$pin_board_msg)
     } else {
-        print(haemdata::haemdata_env$pin_board_msg)
         # extract name
         name <- deparse(substitute(metadata))
 
