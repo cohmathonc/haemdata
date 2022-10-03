@@ -11,10 +11,11 @@
 #' set in [run_nf_core_rnaseq()]
 #' @param mapping_threshold an integer. Threshold below which the `qc_pass_mapping`
 #' will be `FALSE`. Default: 5 per cent.
+#' @param metadata_mmu_prepub a data.frame of the metadata_mmu table
 #' @return a data.frame
 #' @author Denis O'Meally
 #' @export
-flag_lowly_mapped_mmu_se <- function(summarised_experiment, mapping_threshold = 5) {
+flag_lowly_mapped_mmu_se <- function(summarised_experiment, metadata_mmu_prepub, mapping_threshold = 5) {
 
     # Check that the summarised_experiment is from a mouse run
     if (stringr::str_detect(S4Vectors::metadata(summarised_experiment)["object_name"], "mmu", negate = TRUE)) {
@@ -33,8 +34,7 @@ flag_lowly_mapped_mmu_se <- function(summarised_experiment, mapping_threshold = 
         dplyr::select(sample, qc_pass_mapping)
 
     ## Update metadata with qc_pass_mapping
-    use_pinboard("onedrive")
-    metadata_mmu <- get_pin("metadata_mmu.csv") |>
+    metadata_mmu <- metadata_mmu_prepub |>
         dplyr::left_join(qc_pass_mapping, by = "sample")
 
     return(metadata_mmu)

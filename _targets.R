@@ -222,7 +222,7 @@ list(
         new_name = "mmu_mrna_all_mice_GENCODEm28_HLT_qc")),
     # ###############################################################################################
     # Amend metadata_mmu with qc_pass_mapping column
-    tar_target(metadata_mmu, flag_lowly_mapped_mmu_se(mmu_mrna_all_mice_qc_se)),
+    tar_target(metadata_mmu, flag_lowly_mapped_mmu_se(mmu_mrna_all_mice_qc_se, metadata_mmu_prepub)),
     # ###############################################################################################
     # Drop hsa samples that fail mapping threshold  -- for SummarisedExperiments generated from qc runs
     tar_target(hsa_mrna_flt3_qc_se_flt, qc_filter_se(hsa_mrna_flt3_qc_se)),
