@@ -4,8 +4,17 @@
 # to learn about your options.
 
 
-# clear all pins and upload a new version to the pinboard
+# invalidate all pins 
 targets::tar_invalidate(ends_with("_pins"))
+
+# invalidate all metadata pins 
+targets::tar_invalidate(matches("metadata.*_pins"))
+
+# invalidate all mouse mRNA pins
+targets::tar_invalidate(matches("mmu_mrna.*_pins"))
+
+# invalidate the package build
+targets::tar_invalidate(matches("built_package"))
 
 # run the pipeline
 targets::tar_make_future()
