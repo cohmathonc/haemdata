@@ -6,17 +6,17 @@ Various references are used throughout the project:
 
 ### GENCODEr40
 
-This February 2019 genome build ([GRCh38.p13](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.28_GRCh38.p13/GCA_000001405.28_GRCh38.p13_assembly_report.txt))
+This February 2019 human genome build ([GRCh38.p13](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.28_GRCh38.p13/GCA_000001405.28_GRCh38.p13_assembly_report.txt))
 is paired with GENCODE annotation Release 40/Ensembl release 106, published April 2022. Both were downloaded from [Gencode](https://www.gencodegenes.org/human/release_40.html) in May 2022.
 
 ### GENCODEm28_HLT
 
-This June 2020 genome build ([GRCm39](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/635/GCA_000001635.9_GRCm39/GCA_000001635.9_GRCm39_assembly_report.txt))
-is paired with GENCODE annotation M28/Ensembl release 105, released Dec 2021. Both were downloaded from [Gencode](https://www.gencodegenes.org/mouse/release_M28.html) in Jan 2022.
+This June 2020 mouse genome build ([GRCm39](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/635/GCA_000001635.9_GRCm39/GCA_000001635.9_GRCm39_assembly_report.txt))
+is paired with GENCODE annotation M28/Ensembl release 105, published Dec 2021. Both were downloaded from [Gencode](https://www.gencodegenes.org/mouse/release_M28.html) in Jan 2022.
 
 ### GRCm38_HLT
 
-GRCm38_HLT ([GRCm38](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.20/)) is equivalent to the venerable `mm10` reference genome, used for the [*Cancer Research*](https://doi.org/10.1158/0008-5472.CAN-20-0354) and [*Science Advances*](https://doi.org/10.1126/sciadv.abj1664) papers. 
+GRCm38_HLT is equivalent to the venerable `mm10` mouse reference genome ([GRCm38](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.20/)), used for the [*Cancer Research*](https://doi.org/10.1158/0008-5472.CAN-20-0354) and [*Science Advances*](https://doi.org/10.1126/sciadv.abj1664) papers. 
 The assembly was originally released in January 2012 and is no longer updated; it is annotated with Ensembl release 81, published July 2015. The version used here was downloaded from Illumina's [iGenomes](https://support.illumina.com/sequencing/sequencing_software/igenome.html) in 2017.
 
 ### Additional human leukemic transgenes ("HLT")
