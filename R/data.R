@@ -27,6 +27,7 @@
 #'  | `age_at_start` | Age at start of the experiment, in weeks (`min(sample_date) - dob`) |
 #'  | `age_at_sample` | Age at sample collection, in weeks (`sample_date - dob`) |
 #'  | `age_at_end` | Age at end of of the experiment, in weeks (`max(sample_date) - dob`) |
+#'  | `qc_pass_mapping` | `TRUE` if STAR uniquely mapped reads >= `mapping_threshold` (5% by default), or `FALSE` if not. |
 #' 
 #' The [`make_metadata_mmu()`](https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24)
 #' function assembles the metadata for all RNAseq libraries from AML and CML mice, by consolidating
