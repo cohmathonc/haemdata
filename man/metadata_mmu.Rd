@@ -26,10 +26,12 @@
    \code{batch} \tab Sequencing groups \cr
    \code{dod} \tab Date of death of the mouse, YYYY-MM-DD \cr
    \code{sample_date} \tab Date the sample was collected, YYYY-MM-DD \cr
+   \code{percent_ckit} \tab Percentage of c-KIT+ cells, measured by flow cytometry (CD117) \cr
    \code{sample_weeks} \tab Timepoint in weeks (\code{sample_date - min(sample_date)}). Post treatment chemo samples begin at week 0, pretreatment samples < 0. \cr
    \code{age_at_start} \tab Age at start of the experiment, in weeks (\code{min(sample_date) - dob}) \cr
    \code{age_at_sample} \tab Age at sample collection, in weeks (\code{sample_date - dob}) \cr
    \code{age_at_end} \tab Age at end of of the experiment, in weeks (\code{max(sample_date) - dob}) \cr
+   \code{qc_pass_mapping} \tab \code{TRUE} if STAR uniquely mapped reads >= \code{mapping_threshold} (5\% by default), or \code{FALSE} if not. \cr
 }
 }
 \details{

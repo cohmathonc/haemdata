@@ -15,7 +15,7 @@ A \code{data.frame} with the following columns:
 data(published_pins)
 }
 \description{
-Lists the name and most recent version of each dataset published to the Haemdata pin board.
+Lists the name and version of each dataset published to the Haemdata pinboard in the current release.
 Pins can be retrieved with the \code{\link[=get_pin]{get_pin()}} function.
 }
 \examples{
