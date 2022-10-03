@@ -50,3 +50,5 @@ usethis::use_github_release()
 devtools::document()
 pkgdown::build_reference()
 pkgdown::build_home()
+pkgdown::build_article(name = "genomes")
+
