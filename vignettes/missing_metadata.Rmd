@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 
 ```{r  message=FALSE, warning=FALSE}
 require(haemdata)
-use_pinboard("devel")
+use_pinboard("onedrive")
 
 metadata_mmu <- get_pin("metadata_mmu.csv")
 ```
