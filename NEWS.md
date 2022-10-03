@@ -1,14 +1,20 @@
 # Roadmap
-* fix erroneous AML mouse metadata
+* fix erroneous AML mouse metadata: dob/dod incorrect for some samples (Yu-Husan Fu)
 * fix mislabelled FLT3 AML samples, add new samples
 * simplify `metadata_hsa`
 * include miRNA for AML samples
 * revised colour scheme
 * ggPCA and PC vs. time plots
-* scRNAseq for CML; add AML scRNAseq h5a to metadata_mmu
+* scRNAseq
+  - CML mice 
+  - add AML scRNAseq h5a to metadata_mmu
+  - add 10X read metrics for all libraries
 
-# dev
-* add `percent_ckit` to mmu_metadata.csv
+# haemdata 0.0.0.9006
+* add `percent_ckit`, `qc_pass_mapping` to mmu_metadata.csv
+* flag rather than drop mouse samples that fail mapping (`qc_pass_mapping`)
+* fix erroneous AML mouse sample metadata identified by Yu-Husan Fu
+* other small fixes
   
 # haemdata 0.0.0.9005
 * add metadata_mmu template for new samples
