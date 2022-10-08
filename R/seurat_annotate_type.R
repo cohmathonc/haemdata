@@ -1,37 +1,48 @@
-#' Annotate mouse bone marrow cell type
+#' Annotate mouse cell type
 #'
-#' Use the [`clustifyr::clustify()`] function to label cell types according
-#' to expression profiles identified by Dolgalev & Tikhonova (2021) in a
-#' meta-analysis of five mouse bone marrow scRNAseq datasets.
+#' Uses the [`SingleR::SingleR()`] function to label cell types according
+#' to expression profiles from the [Immunological Genome Project](https://www.immgen.org/) 
+#' made available via the the `{celldex}` package. The Seurat object per-cell metadata
+#' is updated with `cell_type` and `cell_type_fine` columns.
 #'
 #' @name seurat_annotate_type
-#' @param seurat_object a list of seurat objects
+#' @param seurat_object a Seurat object
 #' @return a seurat object
 #' @source https://www.frontiersin.org/articles/10.3389/fcell.2021.622519/full
-#' @author Denis O'Meally
+#' @author Denis O'Meally, Yu-Husan Fu
 #' @export
 seurat_annotate_type <- function(seurat_object) {
-    dolgalev_2021 <- read.csv(row.names = 1, "data-raw/Dolgalev_2021_expression-mean-labels-harmonized.csv")
-    
-    Seurat::DefaultAssay(seurat_object) <- "integrated"
+    #seurat_object <- get_pin("mmu_10x_2022_1_GENCODEm28_HLT.rds")
 
-    seurat_object <- clustifyr::clustify(
-        input = seurat_object,
-        cluster_col = "seurat_clusters",
-        ref_mat = dolgalev_2021,
-        query_genes = Seurat::VariableFeatures(seurat_object)[1:750]
-)
-# copy type column to clustifyr_dolgalev_2021
-Seurat::Idents(seurat_object) <- "type"
-Seurat::DimPlot(
-    seurat_object,
-    reduction = "umap",
-    label = TRUE,
-    repel = TRUE) &
-    theme(
-    legend.position = c(0, 0),
-    legend.justification = c("left", "bottom"),
-    legend.box.just = "left")
+    # Setup parallel processing
+    ncores <- parallelly::availableCores()
+    BiocParallel::register(
+        BiocParallel::MulticoreParam(ncores, ncores * 2, progressbar = TRUE)
+    )
+
+    Seurat::DefaultAssay(seurat_object) <- "RNA"
+
+    mmu_ImmGenData <- celldex::ImmGenData()
+
+    mmu_ImmGenData_label_fine <- mmu_ImmGenData$label.fine
+
+    cell_labels <- SingleR::SingleR(
+        Seurat::GetAssayData(seurat_object, assay = "RNA", slot = "data"),
+        mmu_ImmGenData,
+        mmu_ImmGenData_label_fine,
+        BPPARAM = BiocParallel::bpparam()
+    )
+
+    cell_types <- cell_labels |>
+        as.data.frame() |>
+        dplyr::mutate(
+            cell_type_fine = pruned.labels,
+            cell_type = stringr::str_replace(pruned.labels, " \\s*\\([^\\)]+\\)", "")) |>
+        dplyr::select(
+            cell_type,
+            cell_type_fine)
+
+    seurat_object <- Seurat::AddMetaData(seurat_object, cell_types)
 
     return(seurat_object)
 
