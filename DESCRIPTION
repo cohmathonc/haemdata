@@ -1,7 +1,7 @@
 Package: haemdata
 Title: An R package for accessing genomic data from the PSON AML
     State-transition project at COH
-Version: 0.0.0.9006
+Version: 0.0.0.9007
 Authors@R: 
     person("Denis", "O'Meally", , "domeally@coh.org", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7749-9506"))
@@ -25,6 +25,7 @@ Imports:
     pins
 Suggests:
     BiocParallel,
+    celldex,
     clustifyr,
     future,
     future.apply,
@@ -50,6 +51,7 @@ Suggests:
     sctransform,
     Seurat,
     SeuratObject,
+    SingleR,
     stringr,
     SummarizedExperiment,
     targets,
@@ -71,5 +73,4 @@ Collate:
     'data.R'
     'run_nfcore.R'
     'seurat.R'
-    'seurat_annotate_type.R'
     'summarised_experiments.R'
