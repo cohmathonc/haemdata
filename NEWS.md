@@ -1,7 +1,7 @@
 # dev
-* add ROADMAP.md
-  
+  * add SingleR `cell_type` and `cell_type_fine` to Seurat objects/h5ad files 
 # haemdata 0.0.0.9006
+* add ROADMAP.md
 * add `percent_ckit`, `qc_pass_mapping` to mmu_metadata.csv
 * flag rather than drop mouse samples that fail mapping (`qc_pass_mapping`)
 * fix erroneous AML mouse sample metadata identified by Yu-Husan Fu (@yufu1120)
