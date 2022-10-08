@@ -280,30 +280,21 @@ list(
     ),
     # # Make clusters  ---------------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust, seurat_annotate_clusters_and_umap(
-        mmu_10x_2022_1_GENCODEm28_HLT_sct
-    ),
-    resources = apollo_large
-    ),
+        mmu_10x_2022_1_GENCODEm28_HLT_sct), resources = apollo_large),
     tar_target(mmu_10x_2022_1_GRCm38_HLT_sct_clust, seurat_annotate_clusters_and_umap(
-        mmu_10x_2022_1_GRCm38_HLT_sct
-    ),
-    resources = apollo_large
-    ),
+        mmu_10x_2022_1_GRCm38_HLT_sct), resources = apollo_large),
+    
     # # Annotate cell cycle ---------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc, seurat_annotate_cell_cycle(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust),
-        resources = apollo_medium
-    ),
+        resources = apollo_large),
     tar_target(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc, seurat_annotate_cell_cycle(mmu_10x_2022_1_GRCm38_HLT_sct_clust),
-        resources = apollo_medium
-    ),
+        resources = apollo_large),
 
     # # Annotate cell type -----------------------------------------------------------
-    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc_ct, seurat_annotate_cell_cycle(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc),
-        resources = apollo_medium
-    ),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc_ct, seurat_annotate_cell_cycle(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc),
-        resources = apollo_medium
-    ),
+    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc_ct, seurat_annotate_cell_type(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc),
+        resources = apollo_large),
+    tar_target(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc_ct, seurat_annotate_cell_type(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc),
+        resources = apollo_large),
 
     # Publish Seurat objects -----------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_pins, publish_seurat(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc_ct),

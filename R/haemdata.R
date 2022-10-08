@@ -12,7 +12,8 @@ globalVariables(c(
     "percent_ribo", "timepoint_project", "value", "weeks",
     "width", "csv_pin", "csv_version", "Sample", "basepairs",
     "fastq_1", "fastq_2", "gene_id", "gene_name", "mouse_id",
-    "sample_weeks", "strandedness"
+    "sample_weeks", "strandedness", "cell_type", "cell_type_fine",
+    "pruned.labels"
     ))
 # setup package environment
 

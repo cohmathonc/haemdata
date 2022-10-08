@@ -2,18 +2,18 @@
 
 #' Annotate mouse cell type
 #'
-#' Uses the [`SingleR::SingleR()`] function to label cell types according
+#' Uses the SingleR::SingleR() function to label cell types according
 #' to expression profiles from the [Immunological Genome Project](https://www.immgen.org/) 
 #' made available via the the `{celldex}` package. The Seurat object per-cell metadata
 #' is updated with `cell_type` and `cell_type_fine` columns.
 #'
-#' @name seurat_annotate_type
+#' @name seurat_annotate_cell_type
 #' @param seurat_object a Seurat object
 #' @return a Seurat object with cell type annotations
 #' @source https://bioconductor.org/books/release/SingleRBook/
 #' @author Denis O'Meally, Yu-Husan Fu
 #' @export
-seurat_annotate_type <- function(seurat_object) {
+seurat_annotate_cell_type <- function(seurat_object) {
 
     # Setup parallel processing
     ncores <- parallelly::availableCores()
