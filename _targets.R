@@ -271,29 +271,6 @@ list(
         resources = apollo_medium
     ),
 
-    # # # # Integrate cells using Reciprocal PCA -------------------------------------
-    # #! FIXME some bug in batchtools that causes the following to fail, but works in an interactive session
-    # #! For now, run this step manually
-    # # tar_target(mmu_10x_2022_1_GENCODEm28_HLT_rpca, seurat_integrate_RPCA(mmu_10x_2022_1_GENCODEm28_HLT_qc),
-    # #     resources = apollo_large),
-    # # tar_target(mmu_10x_2022_1_GRCm38_HLT_rpca, seurat_integrate_RPCA(mmu_10x_2022_1_GRCm38_HLT_qc),
-    # #     resources = apollo_large),
-
-    # # # Make clusters  ---------------------------------------------------------------
-    # tar_target(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust, seurat_annotate_clusters_and_umap(
-    #     # mmu_10x_2022_1_GENCODEm28_HLT_rpca),
-    #     qs::qread(glue::glue("{nf_core_cache}/tmp/GENCODEm28_HLT_seurat_qc_rpca.qs"))),
-    #     resources = apollo_large),
-    # tar_target(mmu_10x_2022_1_GRCm38_HLT_rpca_clust, seurat_annotate_clusters_and_umap(
-    #     # mmu_10x_2022_1_GRCm38_HLT_rpca)
-    #     qs::qread(glue::glue("{nf_core_cache}/tmp/GRCm38_HLT_seurat_qc_rpca.qs"))),
-    #     resources = apollo_large),
-    # # # Annotate cell cycle ---------------------------------------------------------
-    # tar_target(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust_cc, seurat_annotate_cell_cycle(mmu_10x_2022_1_GENCODEm28_HLT_rpca_clust),
-    #     resources = apollo_medium),
-    # tar_target(mmu_10x_2022_1_GRCm38_HLT_rpca_clust_cc, seurat_annotate_cell_cycle(mmu_10x_2022_1_GRCm38_HLT_rpca_clust),
-    #     resources = apollo_medium),
-
     # # # Integrate cells with SCTransform
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct, seurat_sctransform(mmu_10x_2022_1_GENCODEm28_HLT_qc),
         resources = apollo_bigmem
