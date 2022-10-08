@@ -297,13 +297,18 @@ list(
         resources = apollo_medium
     ),
 
-
-    # TODO # # Annotate cell type -----------------------------------------------------------
+    # # Annotate cell type -----------------------------------------------------------
+    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc_ct, seurat_annotate_cell_cycle(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc),
+        resources = apollo_medium
+    ),
+    tar_target(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc_ct, seurat_annotate_cell_cycle(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc),
+        resources = apollo_medium
+    ),
 
     # Publish Seurat objects -----------------------------------------------------------
-    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_pins, publish_seurat(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc),
+    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_pins, publish_seurat(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc_ct),
     resources = apollo_small),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT_pins, publish_seurat(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc),
+    tar_target(mmu_10x_2022_1_GRCm38_HLT_pins, publish_seurat(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc_ct),
     resources = apollo_small),
 
     ######### Collect latest pin versions #########
