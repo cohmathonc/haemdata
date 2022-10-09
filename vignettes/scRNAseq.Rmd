@@ -194,6 +194,7 @@ scCustomize::DimPlot_scCustom(seurat_object, reduction = "umap", group.by = "ori
 sc_qc_plot_group_by(seurat_object, "tissue")
 sc_qc_plot_group_by(seurat_object, "ckit")
 sc_qc_plot_group_by(seurat_object, "Phase")
+sc_qc_plot_group_by(seurat_object, "cell_type")
 # cleanup
 rm(seurat_object)
 gc()
@@ -228,6 +229,7 @@ scCustomize::DimPlot_scCustom(seurat_object, reduction = "umap", group.by = "ori
 sc_qc_plot_group_by(seurat_object, "tissue")
 sc_qc_plot_group_by(seurat_object, "ckit")
 sc_qc_plot_group_by(seurat_object, "Phase")
+sc_qc_plot_group_by(seurat_object, "cell_type")
 ```
 
 ## Notes

@@ -19,7 +19,8 @@ a Seurat object with cell type annotations
 Uses the SingleR::SingleR() function to label cell types according
 to expression profiles from the \href{https://www.immgen.org/}{Immunological Genome Project}
 made available via the the \code{{celldex}} package. The Seurat object per-cell metadata
-is updated with \code{cell_type} and \code{cell_type_fine} columns.
+is updated with \code{cell_type} and \code{cell_type_fine} columns. Cell types are taken from the pruned
+labels in the \code{celldex} package.
 }
 \author{
 Denis O'Meally, Yu-Husan Fu
