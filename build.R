@@ -10,6 +10,9 @@ targets::tar_invalidate(ends_with("_pins"))
 # invalidate all metadata pins 
 targets::tar_invalidate(matches("metadata.*_pins"))
 
+# invalidate all mouse 10X pins
+targets::tar_invalidate(matches("mmu_10x.*_pins"))
+
 # invalidate all mouse mRNA pins
 targets::tar_invalidate(matches("mmu_mrna.*_pins"))
 
