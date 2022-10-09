@@ -3,9 +3,10 @@
 #' Annotate mouse cell type
 #'
 #' Uses the SingleR::SingleR() function to label cell types according
-#' to expression profiles from the [Immunological Genome Project](https://www.immgen.org/) 
+#' to expression profiles from the [Immunological Genome Project](https://www.immgen.org/)
 #' made available via the the `{celldex}` package. The Seurat object per-cell metadata
-#' is updated with `cell_type` and `cell_type_fine` columns.
+#' is updated with `cell_type` and `cell_type_fine` columns. Cell types are taken from the pruned
+#' labels in the `celldex` package.
 #'
 #' @name seurat_annotate_cell_type
 #' @param seurat_object a Seurat object
@@ -20,6 +21,8 @@ seurat_annotate_cell_type <- function(seurat_object) {
     BiocParallel::register(
         BiocParallel::MulticoreParam(ncores, ncores * 2, progressbar = TRUE)
     )
+    # Make it reproducible
+    set.seed(1448145)
 
     Seurat::DefaultAssay(seurat_object) <- "RNA"
 
