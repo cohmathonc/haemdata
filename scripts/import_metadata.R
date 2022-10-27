@@ -363,7 +363,7 @@ parse_metadata_AML.validation.2017 <- function() {
     return(sample_sheet)
 }
 
-# AML.scRNAseq.2022
+# AML.scRNAseq.2022 (bulk)
 parse_metadata_AML.scRNAseq.2022 <- function() {
     sample_sheet <- data.frame(
         fastq_1 = system(
