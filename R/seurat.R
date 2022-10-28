@@ -396,7 +396,7 @@ seurat_annotate_cell_cycle <- function(seurat_object) {
 #' scTransform integration for Seurat objects
 #'
 #' Integrate a Seurat object using `sctransform`.
-#' https://satijalab.org/seurat/articles/integration_introduction.html#performing-integration-on-datasets-normalized-with-sctransform-1
+#' https://satijalab.org/seurat/articles/sctransform_v2_vignette.html
 #'
 #' @title Integrate a Seurat object using `sctransform`
 #' @param seurat_object a Seurat object
