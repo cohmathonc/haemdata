@@ -34,8 +34,10 @@ flag_lowly_mapped_mmu_se <- function(summarised_experiment, metadata_mmu_prepub,
         dplyr::select(sample, qc_pass_mapping)
 
     ## Update metadata with qc_pass_mapping
-    metadata_mmu <- metadata_mmu_prepub |>
-        dplyr::left_join(qc_pass_mapping, by = "sample")
+    metadata_mmu <- dplyr::rows_update(
+        metadata_mmu_prepub,
+        qc_pass_mapping,
+        by = "sample")
 
     return(metadata_mmu)
 }
