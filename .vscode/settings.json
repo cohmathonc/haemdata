@@ -1,7 +1,8 @@
 {
     "peacock.color": "#ab2725",
     "spellright.language": [
-        "en"
+        "en",
+        "en_AU"
     ],
     "spellright.documentTypes": [
         "latex",
@@ -28,5 +29,10 @@
         "titleBar.activeForeground": "#e7e7e7",
         "titleBar.inactiveBackground": "#ab272599",
         "titleBar.inactiveForeground": "#e7e7e799"
+    },
+    "spellright.parserByClass": {
+        "quarto": {
+            "parser": "markdown"
+        }
     }
 }

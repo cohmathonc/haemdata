@@ -23,7 +23,7 @@ make_metadata_hsa <- function(sample_sheet) {
     return(metadata_hsa)
 }
 
-#' Make metadata for mouse AML samples
+#' Update metadata for mouse AML samples
 #'
 #' This function prepares the `metadata_mmu` object for all RNAseq libraries from AML and CML mice.
 #' Minimal metadata fields include sample, fastq_1, fastq_2, strandedness,
@@ -32,191 +32,52 @@ make_metadata_hsa <- function(sample_sheet) {
 #'
 #' Raise an \href{https://github.com/drejom/haemdata/issues}{issue on GitHub}
 #' to report erroneous or missing records.
-#' @details Sample dates are read in from Teams (General|AML.Seq.Samples_dates.xlsx). For samples with
-#' the timepoint label `L` (leukemia) or `END`, `weeks` for the sample is
-#' calculated from the latest date in the sample sheet for that mouse.
-#' For bone marrow samples, `weeks` is set to the date of death (`dod`).
-#' @name make_metadata_mmu
+#' @details Updates the `metadata_mmu` object for all RNAseq libraries by using
+#' a published pin, previously assembled by the make_metadata_mmu() function,
+#' which was retired in version 0.0.0.0.9008.
+#' @name update_metadata_mmu
 #' @param sample_sheet_all_mice a data.frame produced by row binding all mouse sample sheets
 #' detailed in [R/import_metadata.R](https://github.com/drejom/haemdata/blob/main/R/import_metadata.R).
 #' @return a data.frame
 #' @author Denis O'Meally
 
-make_metadata_mmu <- function(sample_sheet_all_mice) {
-    all_mice <- sample_sheet_all_mice
-    # Add in columns to update
-    cols_to_update_character <- c(
-        "mouse_id", "tissue", "timepoint", "project",
-        "treatment", "genotype", "sex"
-    )
-    cols_to_update_date <- c(
-        "sample_date", "dob", "dod"
-    )
-    all_mice[c(cols_to_update_character, cols_to_update_date)] <- NA
-    all_mice[cols_to_update_character] <- lapply(all_mice[cols_to_update_character], as.character)
-    all_mice[cols_to_update_date] <- lapply(all_mice[cols_to_update_date], as.Date)
+update_metadata_mmu <- function() {
+    # Update sample and mouse metadata
+    use_pinboard("onedrive")
+    all_mice <- get_pin("metadata_mmu.csv", "20221003T041923Z-a93aa") |>
+        purrr::modify_if(is.factor, as.character)
 
-    # AML sample and mouse metadata
+    # Fix bulk scRNAseq samples
     # download the file
-    get_teams_file("General/Copy of matadata_mmu_pivoted_AMLmice.YK.xlsx")
+    get_teams_file("General/sequencing summary_IGC-LZ-19773.xlsx")
 
-    # read in the worksheets
-    wide_dates <- readxl::read_excel(
-        "data-raw/Copy of matadata_mmu_pivoted_AMLmice.YK.xlsx",
+    corrected_tissue <- readxl::read_excel(
+        "data-raw/sequencing summary_IGC-LZ-19773.xlsx",
         col_names = TRUE,
         col_types = "text"
     ) |>
-        dplyr::select(-c("Helper", "cohp"))
+        dplyr::select(Sample_Name) |>
+            dplyr::mutate(
+                sample = paste0("COHP_",
+                stringr::str_extract(Sample_Name, "\\d{5}")), tissue = "PBMC_CKIT") |>
+            dplyr::filter(stringr::str_detect(Sample_Name, "PBCKIT")) |>
+            dplyr::select(-Sample_Name)
 
-    missing_t6_t7_dates <- tidyr::pivot_longer(
-        data = wide_dates,
-        cols = !c("sample", "project", "mouse_id", "tissue"),
-        names_to = "timepoint",
-        values_to = "sample_date"
+    # Fix DOD for AML samples from @yufu1120
+    # download the file
+    get_teams_file("General/metadata_mmu_correct_YHF_20221028.xlsx")
+    corrected_dod <- readxl::read_excel(
+        "data-raw/metadata_mmu_correct_YHF_20221028.xlsx",
+        col_names = TRUE,
+        col_types = "text"
     ) |>
-        tidyr::drop_na("sample_date") |>
-        dplyr::mutate(sample_date = as.Date(sample_date)) |>
-        dplyr::arrange(mouse_id, sample_date) |>
-        dplyr::select("sample", "mouse_id", "tissue", "timepoint", "project", "sample_date")
-
-    # T6 was left off the sheet sent to Ya-Huei, so we need to add it in separately
-    t6_t7_dates <- tibble::tribble(
-        ~sample, ~mouse_id, ~tissue, ~timepoint, ~project, ~sample_date,
-        "COHP_11843", "2683", "PBMC", "T6", "AML.mRNA.2016", "2/23/2016",
-        "COHP_11844", "2685", "PBMC", "T6", "AML.mRNA.2016", "2/23/2016",
-        "COHP_11845", "2686", "PBMC", "T6", "AML.mRNA.2016", "2/23/2016",
-        "COHP_11846", "2689", "PBMC", "T6", "AML.mRNA.2016", "2/23/2016",
-        "COHP_11847", "2692", "PBMC", "T6", "AML.mRNA.2016", "2/23/2016",
-        "COHP_11848", "2700", "PBMC", "T6", "AML.mRNA.2016", "2/23/2016",
-        "COHP_11849", "2702", "PBMC", "T6", "AML.mRNA.2016", "2/23/2016",
-        "COHP_11850", "2705", "PBMC", "T6", "AML.mRNA.2016", "2/23/2016",
-        "COHP_11851", "2709", "PBMC", "T6", "AML.mRNA.2016", "2/23/2016",
-        "COHP_11852", "2720", "PBMC", "T6", "AML.mRNA.2016", "2/23/2016",
-        "COHP_20898", "3335", "PBMC", "T6", "AML.mRNA.2018.all_samples", "8/15/2017",
-        "COHP_20978", "3336", "PBMC", "T6", "AML.mRNA.2018.all_samples", "8/15/2017",
-        "COHP_20919", "3336", "PBMC", "T7", "AML.mRNA.2018.all_samples", "9/12/2017",
-        "COHP_20922", "3341", "PBMC", "T6", "AML.mRNA.2018.all_samples", "8/15/2017",
-        "COHP_20923", "3357", "PBMC", "T6", "AML.mRNA.2018.all_samples", "8/15/2017",
-        "COHP_20882", "3357", "PBMC", "T7", "AML.mRNA.2018.all_samples", "9/12/2017",
-        "COHP_20982", "3368", "PBMC", "T6", "AML.mRNA.2018.all_samples", "8/15/2017",
-        "COHP_21001", "3368", "PBMC", "T7", "AML.mRNA.2018.all_samples", "9/12/2017",
-        "COHP_20965", "3370", "PBMC", "T6", "AML.mRNA.2018.all_samples", "8/15/2017",
-        "COHP_20985", "3370", "PBMC", "T7", "AML.mRNA.2018.all_samples", "9/12/2017",
-        "COHP_21006", "3339", "PBMC", "T6", "AML.mRNA.2018.all_samples", "8/15/2017",
-        "COHP_20986", "3339", "PBMC", "T7", "AML.mRNA.2018.all_samples", "9/12/2017",
-        "COHP_20907", "3342", "PBMC", "T6", "AML.mRNA.2018.all_samples", "8/15/2017",
-        "COHP_21008", "3342", "PBMC", "T7", "AML.mRNA.2018.all_samples", "9/12/2017",
-        "COHP_20970", "3346", "PBMC", "T6", "AML.mRNA.2018.all_samples", "8/15/2017",
-        "COHP_20910", "3346", "PBMC", "T7", "AML.mRNA.2018.all_samples", "9/12/2017",
-        "COHP_20950", "3349", "PBMC", "T6", "AML.mRNA.2018.all_samples", "8/15/2017",
-        "COHP_20971", "3349", "PBMC", "T7", "AML.mRNA.2018.all_samples", "9/12/2017",
-        "COHP_20972", "3334", "PBMC", "T6", "AML.mRNA.2018.all_samples", "8/15/2017",
-        "COHP_20993", "3335", "PBMC", "T7", "AML.mRNA.2018.all_samples", "9/12/2017",
-        "COHP_20894", "3340", "PBMC", "T6", "AML.mRNA.2018.all_samples", "8/15/2017",
-        "COHP_20915", "3340", "PBMC", "T7", "AML.mRNA.2018.all_samples", "9/12/2017",
-        "COHP_20916", "3350", "PBMC", "T6", "AML.mRNA.2018.all_samples", "8/15/2017",
-        "COHP_20956", "3350", "PBMC", "T7", "AML.mRNA.2018.all_samples", "9/12/2017",
-        "COHP_41243", "3694", "PBMC", "T6", "AML.mRNA.2020", "5/18/2018",
-        "COHP_41244", "3694", "PBMC", "T7", "AML.mRNA.2020", "5/25/2018",
-        "COHP_41251", "3695", "PBMC", "T6", "AML.mRNA.2020", "5/18/2018",
-        "COHP_41252", "3695", "PBMC", "T7", "AML.mRNA.2020", "5/25/2018",
-        "COHP_41259", "3696", "PBMC", "T6", "AML.mRNA.2020", "5/18/2018",
-        "COHP_41260", "3696", "PBMC", "T7", "AML.mRNA.2020", "5/25/2018",
-        "COHP_41267", "3697", "PBMC", "T6", "AML.mRNA.2020", "5/18/2018",
-        "COHP_41268", "3697", "PBMC", "T7", "AML.mRNA.2020", "5/25/2018",
-        "COHP_41275", "3698", "PBMC", "T6", "AML.mRNA.2020", "5/18/2018",
-        "COHP_41276", "3698", "PBMC", "T7", "AML.mRNA.2020", "5/25/2018",
-        "COHP_41283", "3700", "PBMC", "T6", "AML.mRNA.2020", "5/18/2018",
-        "COHP_41284", "3700", "PBMC", "T7", "AML.mRNA.2020", "5/25/2018",
-        "COHP_41291", "3701", "PBMC", "T6", "AML.mRNA.2020", "5/18/2018",
-        "COHP_41292", "3701", "PBMC", "T7", "AML.mRNA.2020", "5/25/2018",
-        "COHP_41299", "3702", "PBMC", "T6", "AML.mRNA.2020", "5/18/2018",
-        "COHP_41300", "3702", "PBMC", "T7", "AML.mRNA.2020", "5/25/2018",
-        "COHP_41307", "3706", "PBMC", "T6", "AML.mRNA.2020", "5/18/2018",
-        "COHP_41308", "3706", "PBMC", "T7", "AML.mRNA.2020", "5/25/2018",
-        "COHP_41315", "3709", "PBMC", "T6", "AML.mRNA.2020", "5/18/2018",
-        "COHP_41316", "3709", "PBMC", "T7", "AML.mRNA.2020", "5/25/2018"
-    ) |>
-        dplyr::mutate(sample_date = lubridate::mdy(sample_date)) |>
-        dplyr::select("sample", "mouse_id", "tissue", "timepoint", "project", "sample_date")
-
-
-    aml_sample_metadata <- rbind(t6_t7_dates, missing_t6_t7_dates)
-    # Get the per-mouse metadata for aml mice, emailed from Ya-Huei Kuo, 2022-9-2
-
-        # download the file
-        get_teams_file("General/AML_mouse_metadata.xlsx")
-
-        # read in the worksheets
-        aml_mouse_metadata <- readxl::read_excel(
-            "data-raw/AML_mouse_metadata.xlsx",
-            col_names = TRUE,
-            col_types = "text"
-        ) |>
-        dplyr::select(mouse_id, treatment, genotype, sex, dob, dod) |>
-        dplyr::mutate(
-                    dob = as.Date(as.numeric(dob), origin = "1899-12-30"),
-                    dod = as.Date(as.numeric(dod), origin = "1899-12-30"))
-
-    aml_mice <- dplyr::left_join(aml_sample_metadata, aml_mouse_metadata, by = "mouse_id")
-
-    # CML sample and mouse metadata
-    use_pinboard("onedrive")
-    cml_mice <- get_pin("metadata_mmu.csv", "20220904T234748Z-f5f2a") |>
-        dplyr::filter(grepl("CML", project)) |>
-        dplyr::select("sample", "fastq_1", "fastq_2", "strandedness", "mouse_id", "tissue", "timepoint", "project", "treatment", "genotype", "sex", "sample_date", "dob", "dod")
-
-    cml_mice[cols_to_update_character] <- lapply(cml_mice[cols_to_update_character], as.character)
-    cml_mice[cols_to_update_date] <- lapply(cml_mice[cols_to_update_date], as.Date)
-
-    # consolidate sample metadata where possible
-    # using dplyr::rows_update() & tidyr::fill() to fill in missing values
-    sample_sheet <- dplyr::rows_update(all_mice, aml_mice, by = "sample", unmatched = "ignore") |>
-        dplyr::rows_update(cml_mice, by = "sample", unmatched = "ignore") |>
-        dplyr::group_by(mouse_id) |>
-        tidyr::fill(c("treatment", "genotype", "sex", "dob", "dod"), .direction = "downup") |>
-        dplyr::mutate(
-            # add columns: assay, sample_weeks, age_at_end, age_at_start, age_at_sample
-            assay = "mRNA",
-            sample_weeks = difftime(sample_date, min(sample_date), units = "weeks"),
-            age_at_end = difftime(max(sample_date), dob, units = "weeks"),
-            age_at_start = difftime(min(sample_date), dob, units = "weeks"),
-            age_at_sample = difftime(sample_date, dob, units = "weeks"),
-            dplyr::across(dplyr::starts_with(c("age", "sample_weeks")), round, 1)
-        ) |>
-        dplyr::ungroup()
-
-        # add batch
-        use_pinboard("onedrive")
-        batch <- get_pin("metadata_mmu.csv", "20220904T234748Z-f5f2a") |>
-                dplyr::select("sample", "batch")
-        sample_sheet <- dplyr::left_join(sample_sheet, batch, by = "sample") |>
-            dplyr::select(
-                sample, fastq_1, fastq_2, strandedness, assay, mouse_id,
-                tissue, timepoint, project, batch, treatment, genotype, sex,
-                sample_date, dob, dod, sample_weeks, age_at_end, age_at_start,
-                age_at_sample
-            ) |>
-            dplyr::distinct()
-
-        # add percent_ckit
-        get_teams_file("General/cKit+ AllTimes.csv")
-        percent_ckit <- read.csv("data-raw/cKit+ AllTimes.csv", colClasses = c("mouse_id" = "character")) |>
-            tidyr::pivot_longer(
-                cols = -mouse_id,
-                names_to = "timepoint",
-                values_to = "percent_ckit"
-            ) |>
-            na.omit()
-
-        sample_sheet <- dplyr::left_join(sample_sheet, percent_ckit, by = c("mouse_id", "timepoint")) |>
-            dplyr::select(
-                sample, fastq_1, fastq_2, strandedness, assay, mouse_id,
-                tissue, timepoint, project, batch, treatment, genotype, sex,
-                sample_date, percent_ckit, dob, dod, sample_weeks, age_at_end, age_at_start,
-                age_at_sample
-            ) |>
-            dplyr::distinct()
+        dplyr::select(sample, dod) |>
+        dplyr::mutate(dod = as.Date(as.numeric(dod), origin = "1899-12-30") |> as.character()) |>
+        dplyr::distinct()
+    
+    # Update the sample metadata
+    sample_sheet <- dplyr::rows_update(all_mice, corrected_tissue, by = "sample", unmatched = "ignore") |>
+                    dplyr::rows_update(corrected_dod, by = "sample", unmatched = "ignore")
 
     return(sample_sheet)
 }
