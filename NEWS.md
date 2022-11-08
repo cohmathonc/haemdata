@@ -1,4 +1,10 @@
-# dev
+# haemdata 0.0.0.9008
+  * implement update_metadata_mmu() and retire make_metadata_mmu()
+  * fix erroneous AML mouse sample metadata identified by @yufu1120 (DOD)
+  * fix erroneous AML scRNAseq bulk sample metadata (PBMC_CKIT)
+  * other small fixes
+
+# haemdata 0.0.0.9007
   * add SingleR `cell_type` and `cell_type_fine` to Seurat objects/h5ad files 
   
 # haemdata 0.0.0.9006
@@ -11,7 +17,7 @@
 # haemdata 0.0.0.9005
 * add metadata_mmu template for new samples
 * add pins for "all mice" `SummarisedExperiment` and csv expression matrix
-* update AML sample and mouse metadata provided by Dr. Kuo: Email 2022-9-2 and 
+* update AML sample and mouse metadata provided by @yahueikuo: Email 2022-9-2 and 
   PSON Teams channel (`General|Copy of matadata_mmu_pivoted_AMLmice.YK.xlsx`)
 * add Howto.Rmd
 * add `assay` to `metadata_mmu`

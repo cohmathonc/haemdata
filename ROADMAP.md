@@ -1,7 +1,7 @@
 # Roadmap
 
-* fix erroneous AML mouse metadata: dob/dod incorrect for some samples (@yufu1120)
-* fix mislabelled FLT3 AML samples, add new samples
+* fix mislabelled scRNAseq 10X
+* fix mislabelled human FLT3 AML samples, add new samples
 * simplify `metadata_hsa`
 * include miRNA for AML samples
 * revised colour scheme
