@@ -157,7 +157,7 @@ list(
     # Consolidate metadata -----------------------------------------------------
     ############################################################################
     # consolidate metadata across all mice samples
-    tar_target(metadata_mmu_prepub, make_metadata_mmu(rbind(sample_sheet_2016_2022, sample_sheet_CML_3))),
+    tar_target(metadata_mmu_prepub, update_metadata_mmu()),
     # consolidate metadata across human samples
     tar_target(metadata_hsa, make_metadata_hsa(
         dplyr::full_join(sample_sheet_2022_3, sample_sheet_2022_2) |>

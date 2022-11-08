@@ -387,7 +387,7 @@ qc_filter_se <- function(summarised_experiment, mapping_threshold = 5) {
 #' Plot human transgene expression
 #'
 #' Plots expression of genes matching the pattern `HSA_.*_gene` from a SummarisedExpression object.
-#' Log2TPM is values are plotted from the `abundance` assay.
+#' Log2TPM values are plotted from the `abundance` assay.
 #'
 #' @name plot_transgenes
 #' @param summarised_experiment a SummarisedExperiment object

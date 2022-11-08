@@ -12,7 +12,7 @@
 #'  | `strandedness` | Sequencing library protocol (`reverse` or `unstranded`) |
 #'  | `assay` | one of `mRNA`, `miRNA`, `scRNA` |
 #'  | `mouse_id` | A unique 3 or 4 digit identifier for each mouse; database held by [Kuo lab](mailto:YKuo@coh.org?subject=Question%20about%20AML%20mice%20from%20PSON) for AML mice and [Zhang lab](mailto:YKuo@coh.org?subject=Question%20about%20AML%20mice%20from%20PSON) for CML. |
-#'  | `tissue` | Tissue type: `PBMC` peripheral blood mononuclear cells; `BM` bone marrow aspirant; `BM_CKIT` ckit+ flow sorted `BM` |
+#'  | `tissue` | Tissue type: `PBMC` peripheral blood mononuclear cells; `BM` bone marrow aspirant; `BM_CKIT` ckit+ flow sorted `BM`; `PBMC_CKIT` ckit+ flow sorted `PBMC` |
 #'  | `timepoint` | Timepoint label; formatting is inconsistent across cohorts |
 #'  | `treatment` | Experimental treatment group |
 #'  | `genotype` | Mouse genotype |
