@@ -74,10 +74,24 @@ update_metadata_mmu <- function() {
         dplyr::select(sample, dod) |>
         dplyr::mutate(dod = as.Date(as.numeric(dod), origin = "1899-12-30") |> as.character()) |>
         dplyr::distinct()
-    
+
     # Update the sample metadata
     sample_sheet <- dplyr::rows_update(all_mice, corrected_tissue, by = "sample", unmatched = "ignore") |>
                     dplyr::rows_update(corrected_dod, by = "sample", unmatched = "ignore")
+
+    # Add in cellranger h5 files (for Gencode reference)
+    h5_paths <- scan("data-raw/cellranger_h5_paths.txt", character()) |>
+        as_tibble() |>
+        dplyr::filter(str_detect(value, "GENCODE")) |>    dplyr::mutate(
+            mouse_id = stringr::str_extract(value, "(?<=per_sample_outs/)(.*?)(?=[_])") |> as.numeric()    ,
+            tissue = stringr::str_extract(value, "(?<=per_sample_outs/\\d{4}_)(.*?)(?=[/])"),
+            tissue = stringr::str_replace(tissue, "PB", "PBMC"),
+            tissue = stringr::str_replace(tissue, "ckit", "CKIT"),
+            hdf5 = value
+        ) |>
+        dplyr::select(-value)
+
+    sample_sheet <- dplyr::left_join(sample_sheet, h5_paths, by = c("mouse_id", "tissue"))
 
     return(sample_sheet)
 }

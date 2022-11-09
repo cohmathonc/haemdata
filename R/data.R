@@ -6,9 +6,10 @@
 #' [Download](../metadata_mmu_template.xlsx) a template for new samples
 #'  | Column | Description |
 #'  |---|---|
-#'  | `sample` | Integrative Genomics Core `library_id` with the format `COHP_XXXXX`. `sample` is not unique as some libraries are split across multiple sequencing runs. This identifier is used to match sequence reads, QC metrics, raw counts and metadata, for each sample. |
+#'  | `sample` | Integrative Genomics Core `library_id` with the format `COHP_XXXXX`. This identifier is used to match sequence reads, QC metrics, raw counts and metadata, for each sample. `sample` is not unique as some libraries are split across multiple sequencing runs.|
 #'  | `fastq_1` | Full path of fastq1, unique in the table |
 #'  | `fastq_2` | Full path of fastq2, unique in the table, or blank for single-end reads |
+#'  | `hdf5` | Full path of h5 file, Cell Rangers's HDF5 Feature-Barcode Matrix Format |
 #'  | `strandedness` | Sequencing library protocol (`reverse` or `unstranded`) |
 #'  | `assay` | one of `mRNA`, `miRNA`, `scRNA` |
 #'  | `mouse_id` | A unique 3 or 4 digit identifier for each mouse; database held by [Kuo lab](mailto:YKuo@coh.org?subject=Question%20about%20AML%20mice%20from%20PSON) for AML mice and [Zhang lab](mailto:YKuo@coh.org?subject=Question%20about%20AML%20mice%20from%20PSON) for CML. |
