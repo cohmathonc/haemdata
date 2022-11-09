@@ -193,18 +193,6 @@ tar_plan(
     tar_target(hsa_mrna_kim_qc_se_flt, qc_filter_se(hsa_mrna_kim_qc_se)),
 
     ###############################################################################################
-    ### find outliers
-    # tar_target(mmu_mrna_2016_2022_qc_se_outliers, find_outliers_se(mmu_mrna_2016_2022_qc_se),
-    #     resources = apollo_large),
-    # tar_target(mmu_mrna_cml_qc_se_outliers, find_outliers_se(mmu_mrna_cml_qc_se),
-    #     resources = apollo_large),
-    # tar_target(mmu_mrna_aml_qc_se_outliers, find_outliers_se(mmu_mrna_aml_qc_se),
-    #     resources = apollo_large),
-    # tar_target(mmu_mrna_aml2016_qc_se_outliers, find_outliers_se(mmu_mrna_aml2016_qc_se),
-    #     resources = apollo_large),
-    # tar_target(hsa_mrna_flt3_qc_se_outliers, find_outliers_se(hsa_mrna_flt3_qc_se),
-    #     resources = apollo_large)
-    ###############################################################################################
     # Publish mRNAseq metadata (with pins package) ----------------------------------------------
     ###############################################################################################
     # save SummarisedExperiments to disk
