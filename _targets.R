@@ -30,57 +30,59 @@ if (!file.exists(nf_core_cache)) {
     stop("This pipeline must be run on Apollo")
 }
 
-list(
+# Get metadata_mmu
+use_pinboard("onedrive")
+published_metadata_mmu <- get_pin("metadata_mmu.csv", "20221003T041923Z-a93aa") |>
+    purrr::modify_if(is.character, as.factor)
+
+tar_plan(
     # make the package logo
     tar_target(logo, make_logo()),
 
     ###############################################################################################
     # Build sample sheets -------------------------------------------------
     # AML
-    tar_target(sample_sheet_2016_1, parse_metadata_AML.mRNA.2016()),
+    # tar_target(sample_sheet_2016_1, parse_metadata_AML.mRNA.2016()),
     tar_target(sample_sheet_2017_1, parse_metadata_AML.validation.2017()),
-    tar_target(sample_sheet_2018_1, parse_metadata_AML.mRNA.2018.all_samples()),
-    tar_target(sample_sheet_2020_1, parse_metadata_AML.mRNA.2020()),
+    # tar_target(sample_sheet_2018_1, parse_metadata_AML.mRNA.2018.all_samples()),
+    # tar_target(sample_sheet_2020_1, parse_metadata_AML.mRNA.2020()),
     tar_target(sample_sheet_2020_2, parse_metadata_AML.mRNA.novaseq_validation.2020()),
-    tar_target(sample_sheet_2021_1, parse_metadata_AML.mRNA.2021.RxGroup1()),
-    tar_target(sample_sheet_2021_2, parse_metadata_AML.mRNA.2021.RxGroup2()),
-    tar_target(sample_sheet_2021_3, parse_metadata_AML.mRNA.2021.RxGroup2_pt2()),
-    tar_target(sample_sheet_2021_4, parse_metadata_AML.mRNA.2022.RxGroup3()),
-    # CML
-    tar_target(sample_sheet_CML_1, parse_metadata_CML.mRNA.2021()),
-    tar_target(sample_sheet_CML_2, parse_metadata_CML.mRNA.2022()),
-    tar_target(sample_sheet_CML_3, parse_metadata_CML.mRNA.2022_pt2()),
-    # AML scRNAseq
-    tar_target(sample_sheet_2022_1, parse_metadata_AML.scRNAseq.2022()),
-    # Patient data, mRNAseq
-    # FLT3 AML patients (COH Biobank); MDS from EGAD00001003891; AML patients from PRJEB27973
+    # tar_target(sample_sheet_2021_1, parse_metadata_AML.mRNA.2021.RxGroup1()),
+    # tar_target(sample_sheet_2021_2, parse_metadata_AML.mRNA.2021.RxGroup2()),
+    # tar_target(sample_sheet_2021_3, parse_metadata_AML.mRNA.2021.RxGroup2_pt2()),
+    # tar_target(sample_sheet_2021_4, parse_metadata_AML.mRNA.2022.RxGroup3()),
+    ##  CML
+    # tar_target(sample_sheet_CML_1, parse_metadata_CML.mRNA.2021()),
+    # tar_target(sample_sheet_CML_2, parse_metadata_CML.mRNA.2022()),
+    #tar_target(sample_sheet_CML_3, parse_metadata_CML.mRNA.2022_pt2()),
+    ## AML scRNAseq
+    # tar_target(sample_sheet_2022_1, parse_metadata_AML.scRNAseq.2022()),
+    ## Patient data, mRNAseq
+    ## FLT3 AML patients (COH Biobank); MDS from EGAD00001003891; AML patients from PRJEB27973
     tar_target(sample_sheet_2022_2, parse_metadata_AML.mRNA.HSA_FLT3.2022()),
     tar_target(sample_sheet_2022_3, parse_metadata_MDS.rnaseq.EGAD00001003891()),
     tar_target(sample_sheet_2022_4, parse_metadata_AML.PRJEB27973()),
 
     # Make sample sheets for the nf-core/rnaseq pipeline as described in the manual:
     # https://nf-co.re/rnaseq/usage#samplesheet-input
-    # CML mice
-    tar_target(
-        sample_sheet_CML,
-        rbind(sample_sheet_CML_1, sample_sheet_CML_2)
-    ),
+
     # 2016_2022 mice (no validation sets included)
-    tar_target(
-        sample_sheet_2016_2022,
-        rbind(
-            sample_sheet_2016_1,
-            sample_sheet_2018_1,
-            sample_sheet_2020_1,
-            sample_sheet_2021_1,
-            sample_sheet_2021_2,
-            sample_sheet_2021_3,
-            sample_sheet_2021_4,
-            sample_sheet_CML_1,
-            sample_sheet_CML_2,
-            sample_sheet_2022_1
-        )
-    ),
+    pattern_2016_2022 = "^AML.mRNA.2016$|^AML.mRNA.2018.all_samples$|^AML.mRNA.2020$|
+        |^AML.mRNA.2021.RxGroup1$|^AML.mRNA.2021.RxGroup2$|^AML.mRNA.2021.RxGroup2_pt2$|
+        |^AML.mRNA.2022.RxGroup3$|^CML.mRNA.2021$|^CML.mRNA.2022$|^AML.scRNAseq.2022$",
+    sample_sheet_2016_2022 = published_metadata_mmu |>
+        dplyr::filter(str_detect(project, pattern_2016_2022)) |>
+        dplyr::select(sample, fastq_1, fastq_2, strandedness),
+    # CML mice
+    pattern_cml = "^CML.mRNA.2021$|^CML.mRNA.2022$",
+    sample_sheet_CML = published_metadata_mmu |>
+        dplyr::filter(str_detect(project, pattern_cml)) |>
+        dplyr::select(sample, fastq_1, fastq_2, strandedness),
+
+    # sample_sheet_CML_3 (CML.mRNA.2022_pt2)
+    sample_sheet_CML_3 = published_metadata_mmu |>
+        dplyr::filter(str_detect(project, "^CML.mRNA.2022_pt2$")) |>
+        dplyr::select(sample, fastq_1, fastq_2, strandedness),
 
     # Make a sample sheet for the validation sets 2017_1 & 2020_2
     # which are essentially technical replicates and so are not included with
@@ -112,10 +114,6 @@ list(
         run_nf_core_rnaseq("mmu_mrna_techrep", sample_sheet_techrep, "GENCODEm28_HLT"),
         format = "file"
     ),
-    tar_target(mmu_mrna_aml2016_qc,
-        run_nf_core_rnaseq("mmu_mrna_aml2016", sample_sheet_2016_1, "GENCODEm28_HLT"),
-        format = "file"
-    ),
     tar_target(mmu_mrna_cml3_qc,
         run_nf_core_rnaseq("mmu_mrna_cml3_qc", sample_sheet_CML_3, "GENCODEm28_HLT"),
         format = "file"
@@ -135,21 +133,6 @@ list(
     # Salmon only
     tar_target(CML.mRNA_salmon,
         run_nf_core_rnaseq("mmu_mrna_cml", sample_sheet_CML, "GENCODEm28_HLT", qc = FALSE),
-        format = "file"
-    ),
-
-    # run the nf-core pipeline GRCm38_HLT
-    # Salmon only
-    tar_target(mmu_mrna_aml2016_GRCm38_HLT_salmon,
-        run_nf_core_rnaseq("mmu_mrna_aml2016", sample_sheet_2016_1, "GRCm38_HLT", qc = FALSE),
-        format = "file"
-    ),
-    tar_target(CML.mRNA_GRCm38_HLT_salmon,
-        run_nf_core_rnaseq("mmu_mrna_cml", sample_sheet_CML, "GRCm38_HLT", qc = FALSE),
-        format = "file"
-    ),
-    tar_target(mmu_mrna_2016_2022_GRCm38_HLT_salmon,
-        run_nf_core_rnaseq("mmu_mrna_2016_2022", sample_sheet_2016_2022, "GRCm38_HLT", qc = FALSE),
         format = "file"
     ),
 
@@ -184,32 +167,12 @@ list(
             select = grepl("AML", SummarizedExperiment::colData(mmu_mrna_2016_2022_qc_se)$project)
         )
     ),
-    tar_target(mmu_mrna_aml2016_qc_se, annotate_se(
-        get_rnaseq_se(mmu_mrna_aml2016_qc), metadata_mmu_prepub, mmu_mrna_aml2016_qc
-    )),
     tar_target(mmu_mrna_techrep_qc_se, annotate_se(
         get_rnaseq_se(mmu_mrna_techrep_qc), metadata_mmu_prepub, mmu_mrna_techrep_qc
     )),
     tar_target(mmu_mrna_cml3_qc_se, annotate_se(
         get_rnaseq_se(mmu_mrna_cml3_qc), metadata_mmu_prepub, mmu_mrna_cml3_qc
     )),
-
-    # GRCm38_HLT 
-    tar_target(mmu_mrna_2016_2022_GRCm38_HLT_salmon_se, annotate_se(
-        get_rnaseq_se(mmu_mrna_2016_2022_GRCm38_HLT_salmon), metadata_mmu_prepub, mmu_mrna_2016_2022_GRCm38_HLT_salmon
-    )),
-    tar_target(
-        mmu_mrna_cml_GRCm38_HLT_salmon_se,
-        subset(mmu_mrna_2016_2022_GRCm38_HLT_salmon_se,
-            select = grepl("CML", SummarizedExperiment::colData(mmu_mrna_2016_2022_GRCm38_HLT_salmon_se)$project)
-        )
-    ),
-    tar_target(
-        mmu_mrna_aml_GRCm38_HLT_salmon_se,
-        subset(mmu_mrna_2016_2022_GRCm38_HLT_salmon_se,
-            select = grepl("AML", SummarizedExperiment::colData(mmu_mrna_2016_2022_GRCm38_HLT_salmon_se)$project)
-        )
-    ),
 
     # GENCODEr40
     tar_target(hsa_mrna_flt3_qc_se, annotate_se(get_rnaseq_se(hsa_mrna_flt3_qc), metadata_hsa, hsa_mrna_flt3_qc)),
@@ -259,47 +222,29 @@ list(
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT, seurat_import_objects("GENCODEm28_HLT"),
         resources = apollo_medium
     ),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT, seurat_import_objects("GRCm38_HLT"),
-        resources = apollo_medium
-    ),
-
+    
     # # QC filter ---------------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_qc, seurat_perform_cell_qc(mmu_10x_2022_1_GENCODEm28_HLT),
         resources = apollo_medium
     ),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT_qc, seurat_perform_cell_qc(mmu_10x_2022_1_GRCm38_HLT),
-        resources = apollo_medium
-    ),
-
     # # # Integrate cells with SCTransform
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct, seurat_sctransform(mmu_10x_2022_1_GENCODEm28_HLT_qc),
-        resources = apollo_bigmem
-    ),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT_sct, seurat_sctransform(mmu_10x_2022_1_GRCm38_HLT_qc),
         resources = apollo_bigmem
     ),
     # # Make clusters  ---------------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust, seurat_annotate_clusters_and_umap(
         mmu_10x_2022_1_GENCODEm28_HLT_sct), resources = apollo_large),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT_sct_clust, seurat_annotate_clusters_and_umap(
-        mmu_10x_2022_1_GRCm38_HLT_sct), resources = apollo_large),
     
     # # Annotate cell cycle ---------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc, seurat_annotate_cell_cycle(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust),
-        resources = apollo_large),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc, seurat_annotate_cell_cycle(mmu_10x_2022_1_GRCm38_HLT_sct_clust),
         resources = apollo_large),
 
     # # Annotate cell type -----------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc_ct, seurat_annotate_cell_type(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc),
         resources = apollo_large),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc_ct, seurat_annotate_cell_type(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc),
-        resources = apollo_large),
 
     # Publish Seurat objects -----------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_pins, publish_seurat(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc_ct),
-    resources = apollo_small),
-    tar_target(mmu_10x_2022_1_GRCm38_HLT_pins, publish_seurat(mmu_10x_2022_1_GRCm38_HLT_sct_clust_cc_ct),
     resources = apollo_small),
 
     ######### Collect latest pin versions #########
@@ -308,7 +253,6 @@ list(
         latest_published_data,
         haemdata::write_data("published_pins", rbind(
             # 10X single cell RNA-seq
-            mmu_10x_2022_1_GRCm38_HLT_pins,
             mmu_10x_2022_1_GENCODEm28_HLT_pins,
             # metadata
             metadata_mmu_pins,
@@ -321,5 +265,5 @@ list(
             hsa_mrna_kim_GENCODEm28_pins
         ))
     ),
-            tar_target(built_package, build_package(latest_published_data), resources = apollo_shortmem)
+    tar_target(built_package, build_package(latest_published_data), resources = apollo_shortmem)
 )
