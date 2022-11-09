@@ -37,7 +37,9 @@ flag_lowly_mapped_mmu_se <- function(summarised_experiment, metadata_mmu_prepub,
     metadata_mmu <- dplyr::rows_update(
         metadata_mmu_prepub,
         qc_pass_mapping,
-        by = "sample")
+        by = "sample",
+        unmatched = "ignore"
+    )
 
     return(metadata_mmu)
 }
