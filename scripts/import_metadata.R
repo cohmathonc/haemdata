@@ -91,7 +91,8 @@ update_metadata_mmu <- function() {
         ) |>
         dplyr::select(-value)
 
-    sample_sheet <- dplyr::left_join(sample_sheet, h5_paths, by = c("mouse_id", "tissue"))
+    sample_sheet <- dplyr::left_join(sample_sheet, h5_paths, by = c("mouse_id", "tissue")) |>
+        dplyr::reloacte(hdf5, .after = fastq_2)
 
     return(sample_sheet)
 }
