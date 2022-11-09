@@ -41,24 +41,10 @@ tar_plan(
 
     ###############################################################################################
     # Build sample sheets -------------------------------------------------
-    # AML
-    # tar_target(sample_sheet_2016_1, parse_metadata_AML.mRNA.2016()),
+    # AML validation samples
     tar_target(sample_sheet_2017_1, parse_metadata_AML.validation.2017()),
-    # tar_target(sample_sheet_2018_1, parse_metadata_AML.mRNA.2018.all_samples()),
-    # tar_target(sample_sheet_2020_1, parse_metadata_AML.mRNA.2020()),
     tar_target(sample_sheet_2020_2, parse_metadata_AML.mRNA.novaseq_validation.2020()),
-    # tar_target(sample_sheet_2021_1, parse_metadata_AML.mRNA.2021.RxGroup1()),
-    # tar_target(sample_sheet_2021_2, parse_metadata_AML.mRNA.2021.RxGroup2()),
-    # tar_target(sample_sheet_2021_3, parse_metadata_AML.mRNA.2021.RxGroup2_pt2()),
-    # tar_target(sample_sheet_2021_4, parse_metadata_AML.mRNA.2022.RxGroup3()),
-    ##  CML
-    # tar_target(sample_sheet_CML_1, parse_metadata_CML.mRNA.2021()),
-    # tar_target(sample_sheet_CML_2, parse_metadata_CML.mRNA.2022()),
-    #tar_target(sample_sheet_CML_3, parse_metadata_CML.mRNA.2022_pt2()),
-    ## AML scRNAseq
-    # tar_target(sample_sheet_2022_1, parse_metadata_AML.scRNAseq.2022()),
-    ## Patient data, mRNAseq
-    ## FLT3 AML patients (COH Biobank); MDS from EGAD00001003891; AML patients from PRJEB27973
+    ## AML & MDS patients (COH Biobank); MDS from EGAD00001003891; AML patients from PRJEB27973
     tar_target(sample_sheet_2022_2, parse_metadata_AML.mRNA.HSA_FLT3.2022()),
     tar_target(sample_sheet_2022_3, parse_metadata_MDS.rnaseq.EGAD00001003891()),
     tar_target(sample_sheet_2022_4, parse_metadata_AML.PRJEB27973()),
