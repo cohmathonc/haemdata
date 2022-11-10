@@ -82,17 +82,60 @@ update_metadata_mmu <- function() {
     # Add in cellranger h5 files (for Gencode reference)
     h5_paths <- scan("data-raw/cellranger_h5_paths.txt", character()) |>
         as_tibble() |>
-        dplyr::filter(str_detect(value, "GENCODE")) |>    dplyr::mutate(
-            mouse_id = stringr::str_extract(value, "(?<=per_sample_outs/)(.*?)(?=[_])") |> as.numeric()    ,
+        dplyr::filter(str_detect(value, "GENCODE")) |>
+        dplyr::mutate(
+            mouse_id = stringr::str_extract(value, "(?<=per_sample_outs/)(.*?)(?=[_])") |> as.numeric(),
             tissue = stringr::str_extract(value, "(?<=per_sample_outs/\\d{4}_)(.*?)(?=[/])"),
             tissue = stringr::str_replace(tissue, "PB", "PBMC"),
             tissue = stringr::str_replace(tissue, "ckit", "CKIT"),
-            hdf5 = value
-        ) |>
-        dplyr::select(-value)
+            id = paste(mouse_id, tissue, sep = "_"),
+            hdf5 = value,
+            assay = "scRNA") |>
+            dplyr::select(-value) |>
+                dplyr::left_join(sample_sheet, by = c("mouse_id" = "mouse_id", "tissue" = "tissue")) |>
+                dplyr::select(assay = assay.x, everything(), -c(assay.y, fastq_1, fastq_2, strandedness, batch, percent_ckit, qc_pass_mapping, sample))
 
-    sample_sheet <- dplyr::left_join(sample_sheet, h5_paths, by = c("mouse_id", "tissue")) |>
-        dplyr::relocate(hdf5, .after = fastq_2)
+        lib_and_samples <- tibble::tribble(
+            ~sample, ~one, ~two, ~three,
+            45663L, "4520_PBMC", "4522_PBMC", NA,
+            45664L, "4520_BM", "4522_BM", NA,
+            45665L, "4520_BM_CKIT", "4522_PBMC_CKIT", "4522_BM_CKIT",
+            45707L, "4512_PBMC", "4521_PBMC", NA,
+            45708L, "4512_BM", "4521_BM", NA,
+            45709L, "4512_BM_CKIT", "4521_PBMC_CKIT", "4521_BM_CKIT",
+            45831L, "4498_PBMC", "4502_PBMC", NA,
+            45832L, "4498_BM", "4502_BM", NA,
+            45833L, "4498_BM_CKIT", "4502_PBMC_CKIT", "4502_BM_CKIT",
+            45666L, "4520_PBMC", "4522_PBMC", NA,
+            45667L, "4520_BM", "4522_BM", NA,
+            45668L, "4520_BM_CKIT", "4522_PBMC_CKIT", "4522_BM_CKIT",
+            45710L, "4512_PBMC", "4521_PBMC", NA,
+            45711L, "4512_BM", "4521_BM", NA,
+            45712L, "4512_BM_CKIT", "4521_PBMC_CKIT", "4521_BM_CKIT",
+            45834L, "4498_PBMC", "4502_PBMC", NA,
+            45835L, "4498_BM", "4502_BM", NA,
+            45836L, "4498_BM_CKIT", "4502_PBMC_CKIT", "4502_BM_CKIT"
+        ) |>
+            dplyr::mutate(
+                sample = paste0("COHP_", sample)
+            ) |>
+            tidyr::pivot_longer(cols = -sample, names_to = "assay", values_to = "tissue") |>
+                dplyr::select(-assay) |>
+                na.omit() |>
+                dplyr::mutate(
+            mouse_id = stringr::str_extract(tissue, "\\d{4}") |> as.numeric(),
+            tissue = stringr::str_replace(tissue, "^\\d{4}_", ""))|>
+            mutate(id = paste(mouse_id, tissue, sep = "_")) |>
+                dplyr::select(-c(tissue, mouse_id)) |>
+                mutate(row_n = dplyr::row_number()) |>
+                tidyr::pivot_wider(id, names_from = row_n, values_from = sample, names_glue = "sic.{row_n}") |>
+                tidyr::unite("sample", starts_with("sic"), sep = ",", remove = TRUE, na.rm=TRUE)
+
+            h5_samples <- dplyr::left_join(h5_paths, lib_and_samples, by = c("id")) |>
+                dplyr::select(-id)
+
+    sample_sheet <- plyr::rbind.fill(sample_sheet, h5_samples) |>
+        dplyr::relocate(hdf5, .after = strandedness) 
 
     return(sample_sheet)
 }
