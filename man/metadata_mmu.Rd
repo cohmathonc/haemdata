@@ -10,13 +10,14 @@
 \description{
 \href{../metadata_mmu_template.xlsx}{Download} a template for new samples\tabular{ll}{
    Column \tab Description \cr
-   \code{sample} \tab Integrative Genomics Core \code{library_id} with the format \code{COHP_XXXXX}. \code{sample} is not unique as some libraries are split across multiple sequencing runs. This identifier is used to match sequence reads, QC metrics, raw counts and metadata, for each sample. \cr
+   \code{sample} \tab Integrative Genomics Core \code{library_id} with the format \code{COHP_XXXXX}. This identifier is used to match sequence reads, QC metrics, raw counts and metadata, for each sample. \code{sample} is not unique as some libraries are split across multiple sequencing runs. \cr
    \code{fastq_1} \tab Full path of fastq1, unique in the table \cr
    \code{fastq_2} \tab Full path of fastq2, unique in the table, or blank for single-end reads \cr
+   \code{hdf5} \tab Full path of h5 file, Cell Rangers's HDF5 Feature-Barcode Matrix Format \cr
    \code{strandedness} \tab Sequencing library protocol (\code{reverse} or \code{unstranded}) \cr
    \code{assay} \tab one of \code{mRNA}, \code{miRNA}, \code{scRNA} \cr
    \code{mouse_id} \tab A unique 3 or 4 digit identifier for each mouse; database held by \href{mailto:YKuo@coh.org?subject=Question\%20about\%20AML\%20mice\%20from\%20PSON}{Kuo lab} for AML mice and \href{mailto:YKuo@coh.org?subject=Question\%20about\%20AML\%20mice\%20from\%20PSON}{Zhang lab} for CML. \cr
-   \code{tissue} \tab Tissue type: \code{PBMC} peripheral blood mononuclear cells; \code{BM} bone marrow aspirant; \code{BM_CKIT} ckit+ flow sorted \code{BM} \cr
+   \code{tissue} \tab Tissue type: \code{PBMC} peripheral blood mononuclear cells; \code{BM} bone marrow aspirant; \code{BM_CKIT} ckit+ flow sorted \code{BM}; \code{PBMC_CKIT} ckit+ flow sorted \code{PBMC} \cr
    \code{timepoint} \tab Timepoint label; formatting is inconsistent across cohorts \cr
    \code{treatment} \tab Experimental treatment group \cr
    \code{genotype} \tab Mouse genotype \cr

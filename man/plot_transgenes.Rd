@@ -23,7 +23,7 @@ a ggplot2 plot
 }
 \description{
 Plots expression of genes matching the pattern \verb{HSA_.*_gene} from a SummarisedExpression object.
-Log2TPM is values are plotted from the \code{abundance} assay.
+Log2TPM values are plotted from the \code{abundance} assay.
 }
 \author{
 Denis O'Meally

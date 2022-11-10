@@ -19,7 +19,7 @@ scTransform integration for Seurat objects
 }
 \details{
 Integrate a Seurat object using \code{sctransform}.
-https://satijalab.org/seurat/articles/integration_introduction.html#performing-integration-on-datasets-normalized-with-sctransform-1
+https://satijalab.org/seurat/articles/sctransform_v2_vignette.html
 }
 \author{
 Denis O'Meally

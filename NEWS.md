@@ -1,11 +1,14 @@
 # haemdata 0.0.0.9008
+  * freeze on updating GRCm38 pins
+  * include AML scRNAseq 10X hda5 file paths in metadata_mmu
   * implement update_metadata_mmu() and retire make_metadata_mmu()
   * fix erroneous AML mouse sample metadata identified by @yufu1120 (DOD)
-  * fix erroneous AML scRNAseq bulk sample metadata (PBMC_CKIT)
-  * other small fixes
+  * fix erroneous AML scRNAseq bulk sample labels (PBMC_CKIT)
+  * fix mislabelled scRNAseq 10X samples (previous fix 321c166; now fixed in Cellranger sample sheet)
+  * other small typos and spelling corrections
 
 # haemdata 0.0.0.9007
-  * add SingleR `cell_type` and `cell_type_fine` to Seurat objects/h5ad files 
+  * add SingleR `cell_type` and `cell_type_fine` to Seurat objects/h5ad files
   
 # haemdata 0.0.0.9006
 * add ROADMAP.md
