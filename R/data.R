@@ -19,18 +19,18 @@
 #'  | `genotype` | Mouse genotype |
 #'  | `sex` | Sex, `M` or `F` |
 #'  | `dob` | Date of birth of the mouse, YYYY-MM-DD |
-#'  | `project` | Indicates which samples were processed together; a project may contain multiple `batches` |
-#'  | `batch` | Sequencing groups |
-#'  | `dod` | Date of death of the mouse, YYYY-MM-DD |
+#'  | `project` | Cohorts of mice collected and processed together; a project may contain multiple `batches` |
+#'  | `batch` | Groups of samples sequenced together |
+#'  | `dod` | Date of death of the mouse, YYYY-MM-DD. `NA` if the mouse survived the experiment. |
 #'  | `sample_date` | Date the sample was collected, YYYY-MM-DD |
 #'  | `percent_ckit` | Percentage of c-KIT+ cells, measured by flow cytometry (CD117) |
 #'  | `sample_weeks` | Timepoint in weeks (`sample_date - min(sample_date)`). Post treatment chemo samples begin at week 0, pretreatment samples < 0. |
 #'  | `age_at_start` | Age at start of the experiment, in weeks (`min(sample_date) - dob`) |
 #'  | `age_at_sample` | Age at sample collection, in weeks (`sample_date - dob`) |
 #'  | `age_at_end` | Age at end of of the experiment, in weeks (`max(sample_date) - dob`) |
-#'  | `qc_pass_mapping` | `TRUE` if STAR uniquely mapped reads >= `mapping_threshold` (5% by default), or `FALSE` if not. |
+#'  | `qc_pass_mapping` | `mRNA` samples only. `TRUE` if STAR uniquely mapped reads >= `mapping_threshold` (5% by default), or `FALSE` if not. |
 #' 
-#' The [`make_metadata_mmu()`](https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24)
+#' #TODO The [`update_metadata_mmu()`](https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24)
 #' function assembles the metadata for all RNAseq libraries from AML and CML mice, by consolidating
 #' data scraped from multiple sequencing run sheets, directly from sequencing folders, emails, and so forth.
 #' The code is complex and ugly and undoubetly some errors will have made it through. 
@@ -40,7 +40,7 @@
 #'
 #' @name metadata_mmu
 #' @docType data
-#' @source [`make_metadata_mmu()`](https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24)
+#' @source [`update_metadata_mmu()`](https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24)
 #' @author Denis O'Meally
 NULL
 
