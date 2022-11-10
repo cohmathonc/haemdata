@@ -55,6 +55,15 @@ update_metadata_mmu <- function() {
         )|>
         purrr::modify_if(is.factor, as.character)
 
+    # all_mice <- pins::pin_read(
+    #     pins::board_folder(
+    #     "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata",
+    #     versioned = FALSE
+    # ),
+    #     "metadata_mmu.csv") |>
+    #     purrr::modify_if(is.factor, as.character)
+
+
     # Fix bulk scRNAseq samples
     # download the file
     get_teams_file("General/sequencing summary_IGC-LZ-19773.xlsx")
@@ -143,7 +152,7 @@ update_metadata_mmu <- function() {
                 dplyr::select(-id)
 
     sample_sheet <- plyr::rbind.fill(sample_sheet, h5_samples) |>
-        dplyr::relocate(hdf5, .after = strandedness) 
+        dplyr::relocate(hdf5, .after = strandedness)
 
     return(sample_sheet)
 }
