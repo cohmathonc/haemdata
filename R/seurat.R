@@ -173,8 +173,8 @@ rotate_umap <- function(seurat_object, x = FALSE, y = FALSE) {
 #' @author Denis O'Meally
 #' @export
 # Make Seurat objects
-seurat_import_objects <- function(path_regex,
-                                  cellranger_folder = "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger") {
+seurat_import_objects <- function(project_regex,
+                                  pinboard = "onedrive") {
     # get a list of ChrY genes from GTF file
     # Parse GTF: https://www.biostars.org/p/140471/
 
@@ -193,22 +193,21 @@ seurat_import_objects <- function(path_regex,
             sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE
         )
     }
+    message("trying to load from pinboard")
+    use_pinboard(pinboard)
+    h5_paths <- get_pin("metadata_mmu.csv") |> # , "20221003T041923Z-a93aa")
+        purrr::modify_if(is.factor, as.character) |>
+        dplyr::filter(stringr::str_detect(project, {{ project_regex }})) |>
+        dplyr::filter(stringr::str_detect(assay, "scRNA")) |>
+        dplyr::pull(hdf5)
+    message("loaded from pinboard")
+    print(h5_paths)
 
-    # find paths of sparse matrices
-
-    if (file.exists("data-raw/cellranger_h5_paths.txt")) {
-        h5_paths <- scan("data-raw/cellranger_h5_paths.txt", character())
-    } else {
-        # list.files(path = cellranger_folder,
-        # pattern = "sample_feature_bc_matrix.h5", full.names = TRUE, recursive = TRUE)
-        h5_paths <- system(
-            glue::glue("find {cellranger_folder} -name sample_feature_bc_matrix.h5"),
-            intern = TRUE
-        )
-        writeLines(h5_paths, "inst/extdata/cellranger_h5_paths.txt")
-    }
-
-    h5_paths <- grep(path_regex, h5_paths, value = TRUE)
+    message("trying to load from file")
+    h5_paths <- scan("data-raw/cellranger_h5_paths.txt", character())
+    h5_paths <- grep("GENCODE", h5_paths, value = TRUE)
+    message("loaded from file")
+    print(h5_paths)
 
     # Load all the samples
     seurat_object_list <- future.apply::future_lapply(X = h5_paths, FUN = function(x) {
@@ -218,8 +217,10 @@ seurat_import_objects <- function(path_regex,
 
         ref_genome <- gsub("_lib.*", "", stringr::str_extract(x, "(?<=cellranger\\/)(.*?)(?=\\/)"))
         tissue <- dplyr::case_when(
-            stringr::str_detect(x, "PB") ~ "PBMC",
+            stringr::str_detect(x, "PB_ckit") ~ "PBMC_CKIT",
+            stringr::str_detect(x, "BM_ckit") ~ "BM_CKIT",
             stringr::str_detect(x, "BM") ~ "BM",
+            stringr::str_detect(x, "PB") ~ "PBMC",
             TRUE ~ NA_character_
         )
         ckit <- dplyr::case_when(
