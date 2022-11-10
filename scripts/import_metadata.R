@@ -43,8 +43,16 @@ make_metadata_hsa <- function(sample_sheet) {
 
 update_metadata_mmu <- function() {
     # Update sample and mouse metadata
-    use_pinboard("onedrive")
-    all_mice <- get_pin("metadata_mmu.csv", "20221003T041923Z-a93aa") |>
+    # Get metadata_mmu
+    all_mice <- pins::pin_read(
+        pins::board_ms365(
+            drive = Microsoft365R::get_team("PSON AML State-Transition", auth_type = "device_code")$get_drive(),
+            path = "haemdata",
+            versioned = TRUE
+        ),
+        "metadata_mmu.csv",
+        version = "20221003T041923Z-a93aa"
+        )|>
         purrr::modify_if(is.factor, as.character)
 
     # Fix bulk scRNAseq samples

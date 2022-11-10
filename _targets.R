@@ -14,7 +14,7 @@ library(targets)
 library(tarchetypes)
 # Set target options:
 tar_option_set(
-    packages = c("haemdata", "tidyverse", "SummarizedExperiment"), # packages that targets need to run
+    packages = c("tidyverse", "SummarizedExperiment"), # packages that targets need to run
     # imports = c("haemdata"), # packages that targets need to run
     error = "continue", # continue or stop on error
     # format = "qs", # default storage format
@@ -31,9 +31,15 @@ if (!file.exists(nf_core_cache)) {
 }
 
 # Get metadata_mmu
-use_pinboard("onedrive")
-published_metadata_mmu <- get_pin("metadata_mmu.csv", "20221003T041923Z-a93aa") |>
-    purrr::modify_if(is.character, as.factor)
+published_metadata_mmu <- pins::pin_read(
+    pins::board_ms365(
+            drive = Microsoft365R::get_team("PSON AML State-Transition", auth_type = "device_code")$get_drive(),
+            path = "haemdata",
+            versioned = TRUE
+        ),
+    "metadata_mmu.csv",
+    version = "20221003T041923Z-a93aa"
+)
 
 tar_plan(
     # make the package logo
@@ -141,18 +147,6 @@ tar_plan(
     tar_target(mmu_mrna_2016_2022_qc_se, annotate_se(
         get_rnaseq_se(mmu_mrna_2016_2022_qc), metadata_mmu_prepub, mmu_mrna_2016_2022_qc
     )),
-    tar_target(
-        mmu_mrna_cml_qc_se,
-        subset(mmu_mrna_2016_2022_qc_se,
-            select = grepl("CML", SummarizedExperiment::colData(mmu_mrna_2016_2022_qc_se)$project)
-        )
-    ),
-    tar_target(
-        mmu_mrna_aml_qc_se,
-        subset(mmu_mrna_2016_2022_qc_se,
-            select = grepl("AML", SummarizedExperiment::colData(mmu_mrna_2016_2022_qc_se)$project)
-        )
-    ),
     tar_target(mmu_mrna_techrep_qc_se, annotate_se(
         get_rnaseq_se(mmu_mrna_techrep_qc), metadata_mmu_prepub, mmu_mrna_techrep_qc
     )),
@@ -193,10 +187,10 @@ tar_plan(
     ###############################################################################################
     # single cell RNA-seq ------------------------------------------------------------------------
     # load data
-    tar_target(mmu_10x_2022_1_GENCODEm28_HLT, seurat_import_objects("GENCODEm28_HLT"),
+    tar_target(mmu_10x_2022_1_GENCODEm28_HLT, seurat_import_objects("^AML.scRNAseq.2022$", "devel"),
         resources = apollo_medium
     ),
-    
+
     # # QC filter ---------------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_qc, seurat_perform_cell_qc(mmu_10x_2022_1_GENCODEm28_HLT),
         resources = apollo_medium
@@ -208,7 +202,7 @@ tar_plan(
     # # Make clusters  ---------------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust, seurat_annotate_clusters_and_umap(
         mmu_10x_2022_1_GENCODEm28_HLT_sct), resources = apollo_large),
-    
+
     # # Annotate cell cycle ---------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc, seurat_annotate_cell_cycle(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust),
         resources = apollo_large),
