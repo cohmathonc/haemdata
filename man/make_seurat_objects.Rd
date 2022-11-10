@@ -5,17 +5,11 @@
 \alias{seurat_import_objects}
 \title{Make a Seurat object from 10X Cellranger CellPlex data}
 \usage{
-seurat_import_objects(
-  path_regex,
-  cellranger_folder = "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger"
-)
+seurat_import_objects(project_regex)
 }
 \arguments{
-\item{path_regex}{string, optional, regex pattern to match in path. Use this to select different
-genome builds, eg "GRCm38".}
-
-\item{cellranger_folder}{string, path to the cellranger folder. Default
-is \verb{/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger}}
+\item{project_regex}{string, optional, regex pattern to match in \code{project}. Use this to select different
+cohorts.}
 }
 \value{
 a list of Seurat objects
