@@ -158,23 +158,20 @@ rotate_umap <- function(seurat_object, x = FALSE, y = FALSE) {
 #' Loads 10X Cellranger CellPlex h5 data, builds Seurat objects and adds the following metatdata columns:
 #' `percent_mt`, `percent_ribo`, `percent_hb`, `percent_platelet`, `percent_xist`, `chrY_counts`, `percent_myh11`.
 #'
-#' Data are read in from the "cellranger" directory `/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger`
-#' by searching for files named `sample_feature_bc_matrix.h5`. This can take some time, so after the 1st run,
-#' the paths are written to `data-raw/cellranger_h5_paths.txt` and read from there for subsequent runs.
-#' Similarly, sex chromosome genes are parsed from the GTF and cached in `inst/extdata`.
+#' Data are read in from file paths recorded in the metadata_mmu table, column `hdf5`.
+#' the `project_regex` parameter is used to select the cohort from by filtering on the 
+#' `project` column of the metadata_mmu table.
+#' Sex chromosome genes are parsed from the GTF and cached in `inst/extdata`.
 #'
 #' TODO: Include eg for accessing Y genes from package
 #'
-#' @param path_regex string, optional, regex pattern to match in path. Use this to select different
-#' genome builds, eg "GRCm38".
-#' @param cellranger_folder string, path to the cellranger folder. Default
-#' is `/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger`
+#' @param project_regex string, optional, regex pattern to match in `project`. Use this to select different
+#' cohorts.
 #' @return a list of Seurat objects
 #' @author Denis O'Meally
 #' @export
 # Make Seurat objects
-seurat_import_objects <- function(project_regex,
-                                  pinboard = "onedrive") {
+seurat_import_objects <- function(project_regex) {
     # get a list of ChrY genes from GTF file
     # Parse GTF: https://www.biostars.org/p/140471/
 
@@ -193,21 +190,25 @@ seurat_import_objects <- function(project_regex,
             sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE
         )
     }
-    message("trying to load from pinboard")
-    use_pinboard(pinboard)
-    h5_paths <- get_pin("metadata_mmu.csv") |> # , "20221003T041923Z-a93aa")
+
+    use_pinboard("devel")
+    h5_paths <- get_pin("metadata_mmu.csv") |> 
         purrr::modify_if(is.factor, as.character) |>
         dplyr::filter(stringr::str_detect(project, {{ project_regex }})) |>
         dplyr::filter(stringr::str_detect(assay, "scRNA")) |>
         dplyr::pull(hdf5)
-    message("loaded from pinboard")
-    print(h5_paths)
+    message("loaded paths from pinboard")
 
-    message("trying to load from file")
-    h5_paths <- scan("data-raw/cellranger_h5_paths.txt", character())
-    h5_paths <- grep("GENCODE", h5_paths, value = TRUE)
-    message("loaded from file")
-    print(h5_paths)
+        # h5_paths <- pins::pin_read(
+        #     pins::board_folder(
+        #     "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata",
+        #     versioned = FALSE
+        # ),
+        #     "metadata_mmu.csv") |>
+        #     purrr::modify_if(is.factor, as.character) |>
+        # dplyr::filter(stringr::str_detect(project, {{ project_regex }})) |>
+        # dplyr::filter(stringr::str_detect(assay, "scRNA")) |>
+        #     dplyr::pull(hdf5)
 
     # Load all the samples
     seurat_object_list <- future.apply::future_lapply(X = h5_paths, FUN = function(x) {

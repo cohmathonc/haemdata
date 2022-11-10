@@ -14,8 +14,7 @@ library(targets)
 library(tarchetypes)
 # Set target options:
 tar_option_set(
-    packages = c("tidyverse", "SummarizedExperiment"), # packages that targets need to run
-    # imports = c("haemdata"), # packages that targets need to run
+    packages = c("haemdata", "tidyverse", "SummarizedExperiment"), # packages that targets need to run
     error = "continue", # continue or stop on error
     # format = "qs", # default storage format
     # # Set other options as needed.
@@ -131,7 +130,7 @@ tar_plan(
     ############################################################################
     # Consolidate metadata -----------------------------------------------------
     ############################################################################
-    # consolidate metadata across all mice samples
+    # Update mouse metadata with any new samples or corrections
     tar_target(metadata_mmu_prepub, update_metadata_mmu()),
     # consolidate metadata across human samples
     tar_target(metadata_hsa, make_metadata_hsa(
@@ -187,7 +186,7 @@ tar_plan(
     ###############################################################################################
     # single cell RNA-seq ------------------------------------------------------------------------
     # load data
-    tar_target(mmu_10x_2022_1_GENCODEm28_HLT, seurat_import_objects("^AML.scRNAseq.2022$", "devel"),
+    tar_target(mmu_10x_2022_1_GENCODEm28_HLT, seurat_import_objects("^AML.scRNAseq.2022$"),
         resources = apollo_medium
     ),
 
