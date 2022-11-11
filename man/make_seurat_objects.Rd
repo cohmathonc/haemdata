@@ -18,10 +18,10 @@ a list of Seurat objects
 Loads 10X Cellranger CellPlex h5 data, builds Seurat objects and adds the following metatdata columns:
 \code{percent_mt}, \code{percent_ribo}, \code{percent_hb}, \code{percent_platelet}, \code{percent_xist}, \code{chrY_counts}, \code{percent_myh11}.
 
-Data are read in from the "cellranger" directory \verb{/net/nfs-irwrsrchnas01/labs/rrockne/MHO/AML.scRNA.2022/cellranger}
-by searching for files named \code{sample_feature_bc_matrix.h5}. This can take some time, so after the 1st run,
-the paths are written to \code{data-raw/cellranger_h5_paths.txt} and read from there for subsequent runs.
-Similarly, sex chromosome genes are parsed from the GTF and cached in \code{inst/extdata}.
+Data are read in from file paths recorded in the metadata_mmu table, column \code{hdf5}.
+the \code{project_regex} parameter is used to select the cohort from by filtering on the
+\code{project} column of the metadata_mmu table.
+Sex chromosome genes are parsed from the GTF and cached in \code{inst/extdata}.
 
 TODO: Include eg for accessing Y genes from package
 }
