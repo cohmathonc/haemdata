@@ -2,7 +2,7 @@
 title: "Getting started"
 ---
 
-Haemdata provides a simple interface to genomic data for the PSON AML State-transition project at COH, and a complete record of how it was processed from fastq or h5 (10X) to gene expression estimates.
+Haemdata provides a simple interface to genomic data for the PSON AML State-transition project at COH, and a complete record of how samples were processed from fastq or h5 (10X) to gene expression estimates.
 
 Haemdata uses the Rstudio [`{pins}`](https://pins.rstudio.com/) package to publish R objects and other data to Microsoft OneDrive, making it easy to retrieve from any computer with internet access. Pins are version controlled, which means you can easily track changes between updates, re-run analyses on historical data, and undo mistakes.
 If you have an account on the [HPRCC](http://hprcc.coh.org/), you can skip the hassle of installation by using [RStudio Server for Bioconductor](http://hprcc.coh.org/user-guide/rbioc/) on the cluster. 
