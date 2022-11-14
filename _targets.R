@@ -29,16 +29,17 @@ if (!file.exists(nf_core_cache)) {
     stop("This pipeline must be run on Apollo")
 }
 
-# Get metadata_mmu
-published_metadata_mmu <- pins::pin_read(
-    pins::board_ms365(
-            drive = Microsoft365R::get_team("PSON AML State-Transition", auth_type = "device_code")$get_drive(),
-            path = "haemdata",
-            versioned = TRUE
-        ),
-    "metadata_mmu.csv",
-    version = "20221003T041923Z-a93aa"
-)
+# # Get metadata_mmu
+# published_metadata_mmu <- pins::pin_read(
+#     pins::board_ms365(
+#             drive = Microsoft365R::get_team("PSON AML State-Transition", auth_type = "device_code")$get_drive(),
+#             path = "haemdata",
+#             versioned = TRUE
+#         ),
+#     "metadata_mmu.csv",
+#     version = "20221114T215240Z-3eaae"
+# )
+published_metadata_mmu <- readRDS("raw-data/metadata_mmu.rds")
 
 tar_plan(
     # make the package logo

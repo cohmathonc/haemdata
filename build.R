@@ -4,10 +4,10 @@
 # to learn about your options.
 
 
-# invalidate all pins 
+# invalidate all pins
 targets::tar_invalidate(ends_with("_pins"))
 
-# invalidate all metadata pins 
+# invalidate all metadata pins
 targets::tar_invalidate(matches("metadata.*_pins"))
 
 # invalidate all mouse 10X pins

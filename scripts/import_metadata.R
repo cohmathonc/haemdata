@@ -44,16 +44,16 @@ make_metadata_hsa <- function(sample_sheet) {
 update_metadata_mmu <- function() {
     # Update sample and mouse metadata
     # Get metadata_mmu
-    all_mice <- pins::pin_read(
-        pins::board_ms365(
-            drive = Microsoft365R::get_team("PSON AML State-Transition", auth_type = "device_code")$get_drive(),
-            path = "haemdata",
-            versioned = TRUE
-        ),
-        "metadata_mmu.csv",
-        version = "20221003T041923Z-a93aa"
-        )|>
-        purrr::modify_if(is.factor, as.character)
+    # all_mice <- pins::pin_read(
+    #     pins::board_ms365(
+    #         drive = Microsoft365R::get_team("PSON AML State-Transition", auth_type = "device_code")$get_drive(),
+    #         path = "haemdata",
+    #         versioned = TRUE
+    #     ),
+    #     "metadata_mmu.csv",
+    #     version = "20221114T223607Z-e8d02"
+    #     )|>
+    #     purrr::modify_if(is.factor, as.character)
 
     # all_mice <- pins::pin_read(
     #     pins::board_folder(
@@ -63,97 +63,8 @@ update_metadata_mmu <- function() {
     #     "metadata_mmu.csv") |>
     #     purrr::modify_if(is.factor, as.character)
 
-
-    # Fix bulk scRNAseq samples
-    # download the file
-    get_teams_file("General/sequencing summary_IGC-LZ-19773.xlsx")
-
-    corrected_tissue <- readxl::read_excel(
-        "data-raw/sequencing summary_IGC-LZ-19773.xlsx",
-        col_names = TRUE,
-        col_types = "text"
-    ) |>
-        dplyr::select(Sample_Name) |>
-            dplyr::mutate(
-                sample = paste0("COHP_",
-                stringr::str_extract(Sample_Name, "\\d{5}")), tissue = "PBMC_CKIT") |>
-            dplyr::filter(stringr::str_detect(Sample_Name, "PBCKIT")) |>
-            dplyr::select(-Sample_Name)
-
-    # Fix DOD for AML samples from @yufu1120
-    # download the file
-    get_teams_file("General/metadata_mmu_correct_YHF_20221028.xlsx")
-    corrected_dod <- readxl::read_excel(
-        "data-raw/metadata_mmu_correct_YHF_20221028.xlsx",
-        col_names = TRUE,
-        col_types = "text"
-    ) |>
-        dplyr::select(sample, dod) |>
-        dplyr::mutate(dod = as.Date(as.numeric(dod), origin = "1899-12-30") |> as.character()) |>
-        dplyr::distinct()
-
-    # Update the sample metadata
-    sample_sheet <- dplyr::rows_update(all_mice, corrected_tissue, by = "sample", unmatched = "ignore") |>
-                    dplyr::rows_update(corrected_dod, by = "sample", unmatched = "ignore")
-
-    # Add in cellranger h5 files (for Gencode reference)
-    h5_paths <- scan("data-raw/cellranger_h5_paths.txt", character()) |>
-        as_tibble() |>
-        dplyr::filter(str_detect(value, "GENCODE")) |>
-        dplyr::mutate(
-            mouse_id = stringr::str_extract(value, "(?<=per_sample_outs/)(.*?)(?=[_])") |> as.numeric(),
-            tissue = stringr::str_extract(value, "(?<=per_sample_outs/\\d{4}_)(.*?)(?=[/])"),
-            tissue = stringr::str_replace(tissue, "PB", "PBMC"),
-            tissue = stringr::str_replace(tissue, "ckit", "CKIT"),
-            id = paste(mouse_id, tissue, sep = "_"),
-            hdf5 = value,
-            assay = "scRNA") |>
-            dplyr::select(-value) |>
-                dplyr::left_join(sample_sheet, by = c("mouse_id" = "mouse_id", "tissue" = "tissue")) |>
-                dplyr::select(assay = assay.x, everything(), -c(assay.y, fastq_1, fastq_2, strandedness, batch, percent_ckit, qc_pass_mapping, sample))
-
-        lib_and_samples <- tibble::tribble(
-            ~sample, ~one, ~two, ~three,
-            45663L, "4520_PBMC", "4522_PBMC", NA,
-            45664L, "4520_BM", "4522_BM", NA,
-            45665L, "4520_BM_CKIT", "4522_PBMC_CKIT", "4522_BM_CKIT",
-            45707L, "4512_PBMC", "4521_PBMC", NA,
-            45708L, "4512_BM", "4521_BM", NA,
-            45709L, "4512_BM_CKIT", "4521_PBMC_CKIT", "4521_BM_CKIT",
-            45831L, "4498_PBMC", "4502_PBMC", NA,
-            45832L, "4498_BM", "4502_BM", NA,
-            45833L, "4498_BM_CKIT", "4502_PBMC_CKIT", "4502_BM_CKIT",
-            45666L, "4520_PBMC", "4522_PBMC", NA,
-            45667L, "4520_BM", "4522_BM", NA,
-            45668L, "4520_BM_CKIT", "4522_PBMC_CKIT", "4522_BM_CKIT",
-            45710L, "4512_PBMC", "4521_PBMC", NA,
-            45711L, "4512_BM", "4521_BM", NA,
-            45712L, "4512_BM_CKIT", "4521_PBMC_CKIT", "4521_BM_CKIT",
-            45834L, "4498_PBMC", "4502_PBMC", NA,
-            45835L, "4498_BM", "4502_BM", NA,
-            45836L, "4498_BM_CKIT", "4502_PBMC_CKIT", "4502_BM_CKIT"
-        ) |>
-            dplyr::mutate(
-                sample = paste0("COHP_", sample)
-            ) |>
-            tidyr::pivot_longer(cols = -sample, names_to = "assay", values_to = "tissue") |>
-                dplyr::select(-assay) |>
-                na.omit() |>
-                dplyr::mutate(
-            mouse_id = stringr::str_extract(tissue, "\\d{4}") |> as.numeric(),
-            tissue = stringr::str_replace(tissue, "^\\d{4}_", ""))|>
-            mutate(id = paste(mouse_id, tissue, sep = "_")) |>
-                dplyr::select(-c(tissue, mouse_id)) |>
-                mutate(row_n = dplyr::row_number()) |>
-                tidyr::pivot_wider(id, names_from = row_n, values_from = sample, names_glue = "sic.{row_n}") |>
-                tidyr::unite("sample", starts_with("sic"), sep = ",", remove = TRUE, na.rm=TRUE)
-
-            h5_samples <- dplyr::left_join(h5_paths, lib_and_samples, by = c("id")) |>
-                dplyr::select(-id)
-
-    sample_sheet <- plyr::rbind.fill(sample_sheet, h5_samples) |>
-        dplyr::relocate(hdf5, .after = strandedness)
-
+    # Load in metadata_mmu and modify as needed
+    sample_sheet <- readRDS("data-raw/metadata_mmu.rds")
     return(sample_sheet)
 }
 #### mRNA -----
