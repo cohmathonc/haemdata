@@ -39,7 +39,7 @@ if (!file.exists(nf_core_cache)) {
 #     "metadata_mmu.csv",
 #     version = "20221114T215240Z-3eaae"
 # )
-published_metadata_mmu <- readRDS("raw-data/metadata_mmu.rds")
+published_metadata_mmu <- readRDS("data-raw/metadata_mmu.rds")
 
 tar_plan(
     # make the package logo
