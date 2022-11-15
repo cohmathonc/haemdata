@@ -1,3 +1,7 @@
+# haemdata 0.0.0.9009
+  * fix metadata_mmu 
+  * fix pin versions on Onedrive
+
 # haemdata 0.0.0.9008
   * freeze on updating GRCm38 pins
   * include AML scRNAseq 10X hda5 file paths in metadata_mmu
