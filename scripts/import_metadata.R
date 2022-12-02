@@ -1,6 +1,5 @@
 # Functions for importing metadata
-# TODO Remove "dob" from the parse_metadata_* functions, as it's added
-# TODO in make_metadata_mmu()
+
 #### metadata consolidation -----
 
 #' Make minimal metadata for HSA
@@ -240,12 +239,12 @@ parse_metadata_AML.PRJEB27973 <- function() {
     return(sample_sheet)
 }
 
-#### microRNA -----
+#### miRNA -----
 
 # ├ AML.mRNA.2016
 parse_metadata_AML.miRNA.2016 <- function() {
     project <- "AML.miRNA.2016"
-    assay <- "microRNA"
+    assay <- "miRNA"
     tissue <- "PBMC"
     sample_sheet <- read.csv("data-raw/2016miRNA_new_name_key.csv") |>
         dplyr::mutate(
@@ -265,7 +264,7 @@ parse_metadata_AML.miRNA.2016 <- function() {
 # ├ AML.mRNA.2018
 parse_metadata_AML.miRNA.2018 <- function() {
     project <- "AML.miRNA.2018"
-    assay <- "microRNA"
+    assay <- "miRNA"
     tissue <- "PBMC"
     fastq_paths <- list.files(
         path = "/net/nfs-irwrsrchnas01/labs/ykuo/Seq/AML2018_new_samples/2018_Aug_miRNA/original_fastq",
@@ -294,7 +293,7 @@ parse_metadata_AML.miRNA.2018 <- function() {
 # * were paired end, but only fastq_1 was used.
 parse_metadata_AML.miRNA.2020 <- function() {
     project <- "AML.miRNA.2020"
-    assay <- "microRNA"
+    assay <- "miRNA"
     batch <- "2020_U"
     tissue <- "PBMC"
     sample_sheet <- list.files(
@@ -326,7 +325,7 @@ parse_metadata_AML.miRNA.2020 <- function() {
 # ├ AML.miRNA.2021.RxGroup1
 parse_metadata_AML.miRNA.2021.RxGroup1 <- function() {
     project <- "AML.miRNA.2021.RxGroup1"
-    assay <- "microRNA"
+    assay <- "miRNA"
     tissue <- "PBMC"
     batch <- "2021_G"
     sample_sheet <- list.files(
@@ -356,7 +355,7 @@ parse_metadata_AML.miRNA.2021.RxGroup1 <- function() {
 # ├ AML.miRNA.2021.RxGroups1and2
 parse_metadata_AML.miRNA.2021.RxGroups1and2 <- function() {
     project <- "AML.miRNA.2021.RxGroups1and2"
-    assay <- "microRNA"
+    assay <- "miRNA"
     tissue <- "PBMC"
     batch <- "2021_H"
     sample_sheet <- list.files(
@@ -391,7 +390,7 @@ parse_metadata_AML.miRNA.2021.RxGroups1and2 <- function() {
 # ├ AML.miRNA.2021.RxGroup2_pt2
 parse_metadata_AML.miRNA.2021.RxGroup2_pt2 <- function() {
     project <- "AML.miRNA.2021.RxGroup2_pt2"
-    assay <- "microRNA"
+    assay <- "miRNA"
     tissue <- "PBMC"
     batch <- "2021_I"
     sample_sheet <- list.files(
@@ -422,7 +421,7 @@ parse_metadata_AML.miRNA.2021.RxGroup2_pt2 <- function() {
 # ├ AML.miRNA.2021.RxGroup3
 parse_metadata_AML.miRNA.2022.RxGroup3 <- function() {
     project <- "AML.miRNA.2022.RxGroup3"
-    assay <- "microRNA"
+    assay <- "miRNA"
     tissue <- "PBMC"
     batch <- "2022_D"
     fastq_paths <- list.files(
