@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 # {.tabset .tabset-fade}
 
 ## Mouse datasets {.tabset .tabset-fade}
-Note: Validation mice also avaialable via Haemdata/Ondrive. See [X]() for more details.
+Note: Validation mice also available via Haemdata/Ondrive. See [X]() for more details.
 
 First, we need to setup the pin-board and download the mouse datasets. 
 

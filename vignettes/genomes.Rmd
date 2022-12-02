@@ -30,7 +30,7 @@ Additional human leukemic transgenes are concatenated to genome fasta files and 
 |HSA_BCR | [NM_004327.4](https://www.ncbi.nlm.nih.gov/search/all/?term=NM_004327.4) | Homo sapiens BCR activator of RhoGEF and GTPase (BCR), transcript variant 1, mRNA|
 |HSA_ABL1 | [NM_005157.6](https://www.ncbi.nlm.nih.gov/search/all/?term=NM_005157.6) | Homo sapiens ABL proto-oncogene 1, non-receptor tyrosine kinase (ABL1), transcript variant a, mRNA|
 
-### Availibility
+### Availability
 
 Genome reference files (`fasta`, `gtf`, `star`, `salmon`) are located on the Isilon store, and can be accessed via the HPC at 
 

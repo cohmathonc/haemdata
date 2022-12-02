@@ -24,7 +24,7 @@ Data were downloaded from EGA with approval and must not be used for any purpose
 
 Shiozawa et al 2017 *Blood* [![DOI](https://zenodo.org/badge/DOI/10.1182/blood-2017-05-783050.svg)](http://doi.org/10.1182/blood-2017-05-783050)
 
-Shiozawa et al 2018 *Nat Commun* [![DOI](https://zenodo.org/badge/DOI/10.1038/s41467-018-06063-x.svg)](http://doi.org/10.1038/s41467-018-06063-x)
+Shiozawa et al 2018 *Nat Comm* [![DOI](https://zenodo.org/badge/DOI/10.1038/s41467-018-06063-x.svg)](http://doi.org/10.1038/s41467-018-06063-x)
 
 ```{r setup}
 library(haemdata)

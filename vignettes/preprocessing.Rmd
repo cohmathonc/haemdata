@@ -1,7 +1,7 @@
 ---
 title: "Preprocessing"
 ---
-To build the `SummarizedExperiments` and expression matrices, raw sequence reads were processed using nf-core pipelines, poorly mapped samples were removed and outlying samples flagged using [`OUTRIDER`](https://doi.org/10.1016/j.ajhg.2018.10.025). Single-cell RNAseq was preprocessed with 10X Cellranger and annotated `Seurat` and `Scanpy` objects produced with Seurat. Sample metadata was collated from a range of supplied excel sheets. Package [functions](http://cgt.coh.org/haemdata/reference/index.html) assist in visualising and sub-setting `SummarizedExperiment` and `Seurat` objects and should facilitate most types of analyses. If something is incorrect or lacking, please [contribute](http://cgt.coh.org/haemdata/CONTRIBUTING.html) a solution or raise an [issue](https://github.com/drejom/haemdata/issues).
+To build the `SummarizedExperiments` and expression matrices, raw sequence reads were processed using nf-core pipelines, poorly mapped samples were removed and outlying samples flagged using [`OUTRIDER`](https://doi.org/10.1016/j.ajhg.2018.10.025). Single-cell RNAseq was preprocessed with 10X Cellranger and annotated `Seurat` and `Scanpy` objects produced with Seurat. Sample metadata was collated from a range of supplied excel sheets. Package [functions](http://cgt.coh.org/haemdata/reference/index.html) assist in visualizing and sub-setting `SummarizedExperiment` and `Seurat` objects and should facilitate most types of analyses. If something is incorrect or lacking, please [contribute](http://cgt.coh.org/haemdata/CONTRIBUTING.html) a solution or raise an [issue](https://github.com/drejom/haemdata/issues).
 
 ## Targets 
 
@@ -22,7 +22,7 @@ Pseudocounts were merged into a matrix of counts per million per gene for each s
 using the tximport R package [PMID: 26925227](https://doi.org/10.12688/f1000research.7563.2).
 
 ## Availability
-The preprocessing pipeliens produce a multitude of in ancillary reports and files
+The preprocessing pipelines produce a multitude of in ancillary reports and files
 available in the `MHO` folder. Currently these data are difficult to access programmatically. 
 In a future release, they'll be accessible in the `colData` slot of
 the `SummarizedExperiment` objects produced.
