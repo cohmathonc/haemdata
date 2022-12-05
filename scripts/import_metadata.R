@@ -66,7 +66,7 @@ update_metadata_mmu <- function() {
     sample_sheet <- readRDS("data-raw/metadata_mmu.rds")
     return(sample_sheet)
 }
-#### mRNA -----
+#### MMU mRNA -----
 # ├ AML.mRNA.2016
 # AML.mRNA.2018.all_samples
 # TODO update to use file paths from new isilon - symlinks are broken
@@ -99,6 +99,8 @@ parse_metadata_AML.validation.2017 <- function() {
         dplyr::select(sample, fastq_1, fastq_2, strandedness)
     return(sample_sheet)
 }
+
+#### HSA mRNA -----
 
 # AML.mRNA.HSA_FLT3.2022
 parse_metadata_AML.mRNA.HSA_FLT3.2022 <- function() {
