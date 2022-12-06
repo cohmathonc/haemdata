@@ -2,15 +2,15 @@
 
 # metadata_mmu -----------------------------------------------------------
 #' Minimal metadata for mouse samples
-#' 
+#'
 #' [Download](../metadata_mmu_template.xlsx) a template for new samples
 #'  | Column | Description |
 #'  |---|---|
-#'  | `sample` | Integrative Genomics Core `library_id` with the format `COHP_XXXXX`. This identifier is used to match sequence reads, QC metrics, raw counts and metadata, for each sample. `sample` is not unique as some libraries are split across multiple sequencing runs.|
+#'  | `library_id` | Integrative Genomics Core *CLN* with the format `COHP_XXXXX`. This identifier is used to match sequence reads, QC metrics, raw counts and metadata, for each sample. `library_id` is not unique as some libraries are split across multiple sequencing runs.|
 #'  | `fastq_1` | Full path of fastq1, unique in the table |
 #'  | `fastq_2` | Full path of fastq2, unique in the table, or blank for single-end reads |
 #'  | `hdf5` | Full path of h5 file, Cell Rangers's HDF5 Feature-Barcode Matrix Format |
-#'  | `strandedness` | Sequencing library protocol (`reverse` or `unstranded`) |
+#'  | `strandedness` | Sequencing library protocol (`reverse`, `forward` or `unstranded`) |
 #'  | `assay` | one of `mRNA`, `miRNA`, `scRNA` |
 #'  | `mouse_id` | A unique 3 or 4 digit identifier for each mouse; database held by [Kuo lab](mailto:YKuo@coh.org?subject=Question%20about%20AML%20mice%20from%20PSON) for AML mice and [Zhang lab](mailto:YKuo@coh.org?subject=Question%20about%20AML%20mice%20from%20PSON) for CML. |
 #'  | `tissue` | Tissue type: `PBMC` peripheral blood mononuclear cells; `BM` bone marrow aspirant; `BM_CKIT` ckit+ flow sorted `BM`; `PBMC_CKIT` ckit+ flow sorted `PBMC` |
@@ -29,12 +29,12 @@
 #'  | `age_at_sample` | Age at sample collection, in weeks (`sample_date - dob`) |
 #'  | `age_at_end` | Age at end of of the experiment, in weeks (`max(sample_date) - dob`) |
 #'  | `qc_pass_mapping` | `mRNA` samples only. `TRUE` if STAR uniquely mapped reads >= `mapping_threshold` (5% by default), or `FALSE` if not. |
-#' 
+#'
 #' #TODO The [`update_metadata_mmu()`](https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24)
 #' function assembles the metadata for all RNAseq libraries from AML and CML mice, by consolidating
 #' data scraped from multiple sequencing run sheets, directly from sequencing folders, emails, and so forth.
-#' The code is complex and ugly and undoubetly some errors will have made it through. 
-#' 
+#' The code is complex and ugly and undoubetly some errors will have made it through.
+#'
 #' Raise an [issue on GitHub](https://github.com/drejom/haemdata/issues)
 #' to report erroneous or missing records.
 #'
@@ -49,7 +49,7 @@ NULL
 #'
 #' The [`make_metadata_hsa()`](https://github.com/drejom/haemdata/blob/cf03cf0a3eb420a8ee6276c7ec0a9186a55c0e2b/scripts/import_metadata.R#L3)
 #' function assembles the metadata for all RNAseq libraries
-#' from patient samples. Minimal metadata fields include sample, fastq_1, fastq_2, strandedness,
+#' from patient samples. Minimal metadata fields include library_id, fastq_1, fastq_2, strandedness,
 #' sample_id, tissue, weeks, timepoint, batch, treatment, genotype, sex, dob, project.
 #'
 #' For human samples, metadata are sourced from the EGA and supplied excel sheets.
@@ -104,4 +104,3 @@ NULL
 # #' @keywords cml mrna 2021
 # #' @usage get_pin(cml_mrna_2021_GRCm38_HLT)
 # NULL
-

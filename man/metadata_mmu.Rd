@@ -10,7 +10,9 @@
 \description{
 \href{../metadata_mmu_template.xlsx}{Download} a template for new samples\tabular{ll}{
    Column \tab Description \cr
-   \code{sample} \tab Integrative Genomics Core \code{library_id} with the format \code{COHP_XXXXX}. This identifier is used to match sequence reads, QC metrics, raw counts and metadata, for each sample. \code{sample} is not unique as some libraries are split across multiple sequencing runs. \cr
+   \code{library_id} \tab Integrative Genomics Core \code{library_id} with the format \code{COHP_XXXXX}. \cr
+   This identifier is used to match sequence reads, QC metrics, raw counts and metadata, \tab  \cr
+   for each sample. \code{library_id} is not unique as some libraries are split across multiple sequencing runs. \tab  \cr
    \code{fastq_1} \tab Full path of fastq1, unique in the table \cr
    \code{fastq_2} \tab Full path of fastq2, unique in the table, or blank for single-end reads \cr
    \code{hdf5} \tab Full path of h5 file, Cell Rangers's HDF5 Feature-Barcode Matrix Format \cr

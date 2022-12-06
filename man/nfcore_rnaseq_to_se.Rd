@@ -20,7 +20,7 @@ Makes a SummarisedExperiment from the pipeline run given by \code{multiqc_path}.
 \details{
 Genes and associated metadata come from the \code{gtf} logged in the multiqc report.
 
-Sample metadata is matched by the \code{sample} ID from the \code{sample_metadata} table and the
+Sample metadata is matched by the \code{library_id} from the \code{sample_metadata} table and the
 QC metrics from the pipeline run. If the multiqc path refers to a full QC run (\code{qc = TRUE}
 set in \code{\link[=run_nf_core_rnaseq]{run_nf_core_rnaseq()}}, the QC metrics come from
 \code{{out_path}/multiqc/star_salmon/multiqc_data/multiqc_general_stats.txt}. If a Salmon-only

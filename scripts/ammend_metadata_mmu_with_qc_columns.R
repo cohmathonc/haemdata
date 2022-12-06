@@ -29,15 +29,15 @@ flag_lowly_mapped_mmu_se <- function(summarised_experiment, metadata_mmu_prepub,
 
     qc_pass_mapping <- SummarizedExperiment::colData(summarised_experiment) |>
         dplyr::as_tibble() |>
-        dplyr::select(sample, star.uniquely_mapped_percent) |>
+        dplyr::select(library_id, star.uniquely_mapped_percent) |>
         dplyr::mutate(qc_pass_mapping = ifelse(star.uniquely_mapped_percent >= mapping_threshold, TRUE, FALSE)) |>
-        dplyr::select(sample, qc_pass_mapping)
+        dplyr::select(library_id, qc_pass_mapping)
 
     ## Update metadata with qc_pass_mapping
     metadata_mmu <- dplyr::rows_update(
         metadata_mmu_prepub,
         qc_pass_mapping,
-        by = "sample",
+        by = "library_id",
         unmatched = "ignore"
     )
 

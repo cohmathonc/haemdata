@@ -10,7 +10,7 @@
 \description{
 The \href{https://github.com/drejom/haemdata/blob/cf03cf0a3eb420a8ee6276c7ec0a9186a55c0e2b/scripts/import_metadata.R#L3}{\code{make_metadata_hsa()}}
 function assembles the metadata for all RNAseq libraries
-from patient samples. Minimal metadata fields include sample, fastq_1, fastq_2, strandedness,
+from patient samples. Minimal metadata fields include library_id, fastq_1, fastq_2, strandedness,
 sample_id, tissue, weeks, timepoint, batch, treatment, genotype, sex, dob, project.
 }
 \details{

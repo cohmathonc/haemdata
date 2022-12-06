@@ -88,7 +88,7 @@ get_rnaseq_se <- function(multiqc_path, gtf = TRUE) {
 #'
 #' Genes and associated metadata come from the `gtf` logged in the multiqc report.
 #'
-#' Sample metadata is matched by the `sample` ID from the `sample_metadata` table and the
+#' Sample metadata is matched by the `library_id` ID from the `sample_metadata` table and the
 #' QC metrics from the pipeline run. If the multiqc path refers to a full QC run (`qc = TRUE`
 #' set in [run_nf_core_rnaseq()], the QC metrics come from
 #' `{out_path}/multiqc/star_salmon/multiqc_data/multiqc_general_stats.txt`. If a Salmon-only
@@ -106,12 +106,10 @@ get_rnaseq_se <- function(multiqc_path, gtf = TRUE) {
 #' @author Denis O'Meally
 #' @export
 annotate_se <- function(summarised_experiment, sample_metadata, multiqc_path = NULL, gtf = FALSE, qc = TRUE, mode = "replace") {
-    # multiqc_path <- AML.mRNA.2016_qc
-    #   multiqc_path <- all_mice.mRNA_salmon_GRCm38_HLT
-    # summarised_experiment <- AML.mRNA.2016_qc_se
-    # sample_metadata <- metadata_mmu
-    # sample_metadata <- AML.mRNA.2016_qc_se_outliers$
-
+    # multiqc_path <- mmu_mrna_cml3_qc
+    # summarised_experiment <- mmu_mrna_cml3_qc_se
+    # sample_metadata <- metadata_mmu_prepub
+    
     # remove library metadata from sample_metadata
     sample_metadata <- sample_metadata |>
         dplyr::select(!dplyr::matches("fastq_1|fastq_2|strandedness")) |>
@@ -119,7 +117,7 @@ annotate_se <- function(summarised_experiment, sample_metadata, multiqc_path = N
 
     existing_colData <- SummarizedExperiment::colData(summarised_experiment) |>
         as.data.frame() |>
-        tibble::rownames_to_column("sample")
+        tibble::rownames_to_column("library_id")
 
     # get the QC metrics from the multiqc report; update gene annotation from the multiqc gtf
     if (!is.null(multiqc_path)) {
@@ -141,8 +139,8 @@ annotate_se <- function(summarised_experiment, sample_metadata, multiqc_path = N
                 )
 
                 qc_data <- utils::read.csv(qc_path, sep = "\t", header = TRUE, stringsAsFactors = FALSE) |>
-                    dplyr::mutate(sample = gsub("_1$|_2$", "", Sample)) |> # for paired end data, take the mean
-                    dplyr::group_by(sample) %>% # of the FastQC stats, which are reported for each read pair
+                    dplyr::mutate(library_id = gsub("_1$|_2$", "", Sample)) |> # for paired end data, take the mean
+                    dplyr::group_by(library_id) %>% # of the FastQC stats, which are reported for each read pair
                     dplyr::mutate(
                         dplyr::across(dplyr::starts_with("FastQC"), ~ replace_na(.x, mean(.x, na.rm = TRUE)))
                     ) |>
@@ -180,12 +178,12 @@ annotate_se <- function(summarised_experiment, sample_metadata, multiqc_path = N
         SummarizedExperiment::colData(summarised_experiment) <-
             dplyr::left_join(
                 dplyr::left_join(
-                    data.frame(sample = colnames(summarised_experiment)),
+                    data.frame(library_id = colnames(summarised_experiment)),
                     sample_metadata,
-                    by = "sample"
+                    by = "library_id"
                 ),
                 qc_data,
-                by = "sample"
+                by = "library_id"
             ) |>
             `rownames<-`(colnames(summarised_experiment)) |>
             S4Vectors::DataFrame()
@@ -193,9 +191,9 @@ annotate_se <- function(summarised_experiment, sample_metadata, multiqc_path = N
     } else if (mode == "replace" && qc == FALSE) {
         SummarizedExperiment::colData(summarised_experiment) <-
             dplyr::left_join(
-                data.frame(sample = colnames(summarised_experiment)),
+                data.frame(library_id = colnames(summarised_experiment)),
                 sample_metadata,
-                by = "sample"
+                by = "library_id"
             ) |>
             `rownames<-`(colnames(summarised_experiment)) |>
             S4Vectors::DataFrame()
@@ -205,15 +203,15 @@ annotate_se <- function(summarised_experiment, sample_metadata, multiqc_path = N
             dplyr::left_join(
                 dplyr::left_join(
                     dplyr::left_join(
-                        data.frame(sample = colnames(summarised_experiment)),
+                        data.frame(library_id = colnames(summarised_experiment)),
                         sample_metadata,
-                        by = "sample"
+                        by = "library_id"
                     ),
                     qc_data,
-                    by = "sample"
+                    by = "library_id"
                 ),
                 existing_colData,
-                by = "sample"
+                by = "library_id"
             ) |>
             `rownames<-`(colnames(summarised_experiment)) |>
             S4Vectors::DataFrame()
@@ -222,12 +220,12 @@ annotate_se <- function(summarised_experiment, sample_metadata, multiqc_path = N
         SummarizedExperiment::colData(summarised_experiment) <-
             dplyr::left_join(
                 dplyr::left_join(
-                    data.frame(sample = colnames(summarised_experiment)),
+                    data.frame(library_id = colnames(summarised_experiment)),
                     sample_metadata,
-                    by = "sample"
+                    by = "library_id"
                 ),
                 existing_colData,
-                by = "sample"
+                by = "library_id"
             ) |>
             `rownames<-`(colnames(summarised_experiment)) |>
             S4Vectors::DataFrame()
@@ -309,7 +307,7 @@ find_outliers_se <- function(summarised_experiment) {
     results$plot_power <- OUTRIDER::plotPowerAnalysis(ods)
     results$plot_encoding_dimensions <- OUTRIDER::plotEncDimSearch(ods)
     results$plot_aberrant_per_sample <- OUTRIDER::plotAberrantPerSample(ods, padjCutoff = 0.05)
-    results$aberrant_per_sample <- OUTRIDER::aberrant(ods, by = "sample")
+    results$aberrant_per_sample <- OUTRIDER::aberrant(ods, by = "library_id")
     results$aberrant_per_gene <- OUTRIDER::aberrant(ods, by = "gene")
     results$results <- OUTRIDER::results(ods)
     results$normalizationFactors <- OUTRIDER::normalizationFactors(ods)
@@ -356,7 +354,7 @@ qc_filter_se <- function(summarised_experiment, mapping_threshold = 5) {
         stop("'uniquely_mapped_percent' not found in summarised_experiment colData...")
     }
 
-    ## Update metadata with removed sample if needs be
+    ## Update metadata with removed library_id if needs be
     if (ncol(summarised_experiment) != ncol(filtered_se)) {
         metadata <- S4Vectors::metadata(filtered_se)
 
@@ -406,8 +404,8 @@ plot_transgenes_se <- function(summarised_experiment, assay = "abundance", group
     mat |>
         tibble::rownames_to_column("gene_id") |>
         dplyr::filter(stringr::str_detect(gene_id, "HSA_.*_gene")) |>
-        tidyr::pivot_longer(!gene_id, names_to = "sample") |>
-        dplyr::left_join(col_data, by = "sample") |>
+        tidyr::pivot_longer(!gene_id, names_to = "library_id") |>
+        dplyr::left_join(col_data, by = "library_id") |>
         ggplot2::ggplot(ggplot2::aes(y = log2(value + 0.1), x = sample_weeks, group = mouse_id, col = eval(rlang::sym(group_by)))) +
         ggplot2::geom_line(alpha = 0.3) +
         ggplot2::geom_point(alpha = 0.3) +
@@ -430,7 +428,7 @@ plot_transgenes_se <- function(summarised_experiment, assay = "abundance", group
 #' @param summarised_experiment a `SummarisedExperiment` object
 #' @param assay the assay to perform PCA on, Default: "abundance"
 #' @param col_by column name of colData to use for colouring samples in PCA plots. If none is given,
-#' samples will be coloured by the "condition", "treatment" or "sample" column if any exists, in that order. Default: NULL
+#' samples will be coloured by the "condition", "treatment" or "library_id" column if any exists, in that order. Default: NULL
 #' @return a list of ggplot2 plots
 #' @details Could be rewritten, but this is a quick and dirty way to get something working using \code{vignette("PCAtools", package = "PCAtools")}.
 #' @examples
@@ -458,13 +456,13 @@ pca_se <- function(summarised_experiment, assay = "abundance", col_by = NULL) {
 
     # colour the samples by `col_by`; If not given, colour by condition; if there is no condition,
     # colour by treatment; if there is no treatment, colour by batch
-    # colour by batch; if there is no treatment, colour by sample
+    # colour by batch; if there is no treatment, colour by library_id
     if (is.null(col_by)) {
         condition <- dplyr::case_when(
             "condition" %in% colnames(sample_sheet) ~ "condition",
             "treatment" %in% colnames(sample_sheet) ~ "treatment",
             "batch" %in% colnames(sample_sheet) ~ "treatment",
-            TRUE ~ "sample"
+            TRUE ~ "library_id"
         )
     } else {
         condition <- col_by
@@ -480,7 +478,7 @@ pca_se <- function(summarised_experiment, assay = "abundance", col_by = NULL) {
     num_components <- min(PCAtools::findElbowPoint(p$variance), 10)
 
     corr_metadata <- sample_sheet |>
-        # dplyr::select(-c("sample", "fastq_1", "fastq_2")) |>
+        # dplyr::select(-c("library_id", "fastq_1", "fastq_2")) |>
         janitor::remove_constant(na.rm = TRUE) |>
         colnames()
 
@@ -535,8 +533,8 @@ pca_se <- function(summarised_experiment, assay = "abundance", col_by = NULL) {
 #' @param tpm minimum TPM for a gene to be kept, Default: 1
 #' @param samples minimum number of samples a gene must be present in to be kept, Default: 5
 #' @return a list
-#' * `tpm_matrix` an expression matrix, with genes as rows nad samples as columns
-#' * `name` a name indicating the `tpm` and `sample` thresholds used
+#' * `tpm_matrix` an expression matrix, with genes as rows and samples as columns
+#' * `name` a name indicating the `tpm` and `samples` thresholds used
 #' @details This function makes an expression matrix, filtering out genes with
 #' fewer than `tpm` reads in at least `samples` samples.
 #' @examples
@@ -655,7 +653,7 @@ merge_mrna_se <- function(se1, se2, new_name) {
 #'
 #' Genes and associated metadata come from the `gtf` logged in the multiqc report.
 #'
-#' Sample metadata is matched by the `sample` ID from the `sample_metadata` table and the
+#' Sample metadata is matched by the `library_id` from the `sample_metadata` table and the
 #' QC metrics from the pipeline run. If the multiqc path refers to a full QC run (`qc = TRUE`
 #' set in [run_nf_core_rnaseq()], the QC metrics come from
 #' `{out_path}/multiqc/star_salmon/multiqc_data/multiqc_general_stats.txt`. If a Salmon-only
@@ -694,8 +692,8 @@ nfcore_rnaseq_to_se <- function(multiqc_path, sample_metadata) {
     )
 
     qc_data <- utils::read.csv(qc_path, sep = "\t", header = TRUE, stringsAsFactors = FALSE) |>
-        dplyr::mutate(sample = gsub("_1$|_2$", "", Sample)) |> # for paired end data, take the mean
-        dplyr::group_by(sample) %>% # of the FastQC stats, which are reported for each read pair
+        dplyr::mutate(library_id = gsub("_1$|_2$", "", Sample)) |> # for paired end data, take the mean
+        dplyr::group_by(library_id) %>% # of the FastQC stats, which are reported for each read pair
         dplyr::mutate(
             dplyr::across(dplyr::starts_with("FastQC"), ~ replace_na(.x, mean(.x, na.rm = TRUE)))
         ) |>
@@ -731,12 +729,12 @@ nfcore_rnaseq_to_se <- function(multiqc_path, sample_metadata) {
     SummarizedExperiment::colData(salmon_se) <-
         dplyr::left_join(
             dplyr::left_join(
-                data.frame(sample = colnames(salmon_se)),
+                data.frame(library_id = colnames(salmon_se)),
                 sample_metadata,
-                by = "sample"
+                by = "library_id"
             ),
             qc_data,
-            by = "sample"
+            by = "library_id"
         ) |>
         `rownames<-`(colnames(salmon_se)) |>
         S4Vectors::DataFrame()

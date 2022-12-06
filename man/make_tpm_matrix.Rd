@@ -18,8 +18,8 @@ make_tpm_matrix(summarised_experiment, drop = NULL, tpm = 1, samples = 5)
 \value{
 a list
 \itemize{
-\item \code{tpm_matrix} an expression matrix, with genes as rows nad samples as columns
-\item \code{name} a name indicating the \code{tpm} and \code{sample} thresholds used
+\item \code{tpm_matrix} an expression matrix, with genes as rows and samples as columns
+\item \code{name} a name indicating the \code{tpm} and \code{samples} thresholds used
 }
 }
 \description{

@@ -12,7 +12,7 @@ pca_se(summarised_experiment, assay = "abundance", col_by = NULL)
 \item{assay}{the assay to perform PCA on, Default: "abundance"}
 
 \item{col_by}{column name of colData to use for colouring samples in PCA plots. If none is given,
-samples will be coloured by the "condition", "treatment" or "sample" column if any exists, in that order. Default: NULL}
+samples will be coloured by the "condition", "treatment" or "library_id" column if any exists, in that order. Default: NULL}
 }
 \value{
 a list of ggplot2 plots

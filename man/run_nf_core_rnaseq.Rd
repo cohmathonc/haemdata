@@ -10,7 +10,7 @@ run_nf_core_rnaseq(run_folder, sample_sheet, ref_genome, qc = TRUE)
 \item{run_folder}{subfolder in which to run nextflow, keeps the pipeline
 from overwriting previous runs and enables the \code{-resume} feature of Nextflow.}
 
-\item{sample_sheet}{nf-core sample sheet with the columns \verb{sample, fastq_1, fastq_2, strandedness} (see \href{https://github.com/drejom/haemdata/blob/HEAD/R/import_metadata.R}{\code{R/import_metadata.R}})}
+\item{sample_sheet}{nf-core sample sheet with the columns \verb{library_id, fastq_1, fastq_2, strandedness} (see \href{https://github.com/drejom/haemdata/blob/HEAD/R/import_metadata.R}{\code{R/import_metadata.R}})}
 
 \item{ref_genome}{nf-core reference genome, see \href{../articles/genomes.html}{Reference Genomes} for supported references}
 

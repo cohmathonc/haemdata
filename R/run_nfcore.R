@@ -14,7 +14,7 @@
 #' @name run_nf_core_rnaseq
 #' @param run_folder subfolder in which to run nextflow, keeps the pipeline
 #' from overwriting previous runs and enables the `-resume` feature of Nextflow.
-#' @param sample_sheet nf-core sample sheet with the columns `sample, fastq_1, fastq_2, strandedness` (see [`R/import_metadata.R`](https://github.com/drejom/haemdata/blob/HEAD/R/import_metadata.R))
+#' @param sample_sheet nf-core sample sheet with the columns `library_id, fastq_1, fastq_2, strandedness` (see [`R/import_metadata.R`](https://github.com/drejom/haemdata/blob/HEAD/R/import_metadata.R))
 #' @param ref_genome nf-core reference genome, see \href{../articles/genomes.html}{Reference Genomes} for supported references
 #' @param qc run the full QC pipeline with STAR_Salmon, or Salmon pseudoalignment only, skipping all QC steps (default: TRUE)
 #' @return a path to the run script, or the multiqc report if it exists.
@@ -56,7 +56,7 @@ run_nf_core_rnaseq <- function(run_folder, sample_sheet, ref_genome, qc = TRUE) 
         # if theres no run script, make one and submit it to the cluster
     } else if (!file.exists(glue::glue("{run_path}/run_{run_mode}_{ref_genome}.sh"))) {
         sample_sheet |>
-            dplyr::select(sample, fastq_1, fastq_2, strandedness) |>
+            dplyr::select(sample = library_id, fastq_1, fastq_2, strandedness) |>
             readr::write_csv(paste0(run_path, "/sample_sheet.csv"))
 
         # make a sbatch script

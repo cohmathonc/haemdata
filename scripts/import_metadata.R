@@ -25,7 +25,7 @@ make_metadata_hsa <- function(sample_sheet) {
 #' Update metadata for mouse AML samples
 #'
 #' This function prepares the `metadata_mmu` object for all RNAseq libraries from AML and CML mice.
-#' Minimal metadata fields include sample, fastq_1, fastq_2, strandedness,
+#' Minimal metadata fields include library_id, fastq_1, fastq_2, strandedness,
 #' mouse_id, tissue, sample_date, week, timepoint, batch, treatment, genotype,
 #' sex, dob, dod, project.
 #'
@@ -64,6 +64,11 @@ update_metadata_mmu <- function() {
 
     # Load in metadata_mmu and modify as needed
     sample_sheet <- readRDS("data-raw/metadata_mmu.rds")
+
+    # use library_id in liue of sample
+    sample_sheet <- sample_sheet |>
+        dplyr::select(library_id = sample, dplyr::everything())
+
     return(sample_sheet)
 }
 #### MMU mRNA -----
@@ -83,8 +88,8 @@ parse_metadata_AML.mRNA.novaseq_validation.2020 <- function() {
             intern = TRUE
         ) %>% grep("_R2_", ., value = TRUE)
     ) |>
-        dplyr::mutate(sample = stringr::str_extract(fastq_1, "COHP_\\d{5}"), strandedness = "reverse") |>
-        dplyr::select(sample, fastq_1, fastq_2, strandedness)
+        dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"), strandedness = "reverse") |>
+        dplyr::select(library_id, fastq_1, fastq_2, strandedness)
     return(sample_sheet)
 }
 # AML.validation.2017
@@ -95,8 +100,8 @@ parse_metadata_AML.validation.2017 <- function() {
             intern = TRUE
         ) %>% grep("_R1_", ., value = TRUE)
     ) |>
-        dplyr::mutate(sample = paste0("COHP_", substr(basename(fastq_1), 1, 5)), fastq_2 = "", strandedness = "reverse") |>
-        dplyr::select(sample, fastq_1, fastq_2, strandedness)
+        dplyr::mutate(library_id = paste0("COHP_", substr(basename(fastq_1), 1, 5)), fastq_2 = "", strandedness = "reverse") |>
+        dplyr::select(library_id, fastq_1, fastq_2, strandedness)
     return(sample_sheet)
 }
 
@@ -148,7 +153,7 @@ parse_metadata_AML.mRNA.HSA_FLT3.2022 <- function() {
         dplyr::left_join(fastqs)
     sample_sheet <- dplyr::left_join(sequencing_metadata, sample_metadata, by = "sample_id") |>
         dplyr::arrange(patient_id, weeks) |>
-        dplyr::select(sample = library_id, fastq_1, fastq_2, strandedness, dplyr::everything())
+        dplyr::select(library_id, fastq_1, fastq_2, strandedness, dplyr::everything())
     return(sample_sheet)
 }
 # MDS.rnaseq.EGAD00001003891
@@ -212,7 +217,7 @@ parse_metadata_MDS.rnaseq.EGAD00001003891 <- function() {
             ),
             project = project
         ) |>
-        dplyr::select(sample = ega_run_accession_id, fastq_1, fastq_2, strandedness, dplyr::everything(), project) |>
+        dplyr::select(library_id = ega_run_accession_id, fastq_1, fastq_2, strandedness, dplyr::everything(), project) |>
         dplyr::filter(library_strategy == "RNA-Seq")
     return(sample_sheet)
 }
@@ -226,7 +231,7 @@ parse_metadata_AML.PRJEB27973 <- function() {
         tidyr::separate(sample_alias, into = c("genotype", "patient_id", "timepoint"), sep = "-") |>
         dplyr::mutate(
             project = "AML.PRJEB27973",
-            sample = sample,
+            library_id = sample,
             patient_id = patient_id,
             timepoint = timepoint,
             batch = "PRJEB27973",
@@ -237,7 +242,7 @@ parse_metadata_AML.PRJEB27973 <- function() {
             genotype = genotype,
             tissue = "BM"
         ) |>
-        dplyr::select(sample, fastq_1, fastq_2, strandedness, patient_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project, everything())
+        dplyr::select(library_id, fastq_1, fastq_2, strandedness, patient_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project, everything())
     return(sample_sheet)
 }
 

@@ -17,7 +17,7 @@ parse_metadata_AML.miRNA.2016 <- function() {
             seq_batch = as.numeric(as.factor(stringr::str_replace(oldname, ".*(?>Seq/)(\\w*)/.*", "\\1"))),
             batch = paste0("2016_", seq_batch)
         ) |>
-        dplyr::select(sample = library_id, fastq_1, mouse_id, timepoint, tissue, batch, project, assay)
+        dplyr::select(library_id, fastq_1, mouse_id, timepoint, tissue, batch, project, assay)
     return(sample_sheet)
 }
 # ├ AML.miRNA.2018
@@ -44,7 +44,7 @@ parse_metadata_AML.miRNA.2018 <- function() {
             batch = stringr::str_replace(NewName, "(?:[^_]+_){6}([^_]*).*", "\\1")
         ) |>
         dplyr::left_join(fastq_paths, by = "library_id") |>
-        dplyr::select(sample = library_id, fastq_1 = value, mouse_id, timepoint, tissue, batch, project, assay)
+        dplyr::select(library_id, fastq_1 = value, mouse_id, timepoint, tissue, batch, project, assay)
     return(sample_sheet)
 }
 # ├ AML.miRNA.2020
@@ -77,7 +77,7 @@ parse_metadata_AML.miRNA.2020 <- function() {
                 TRUE ~ timepoint
             )
         ) |>
-        dplyr::select(sample = library_id, fastq_1, mouse_id, timepoint, tissue, batch, project, assay)
+        dplyr::select(library_id, fastq_1, mouse_id, timepoint, tissue, batch, project, assay)
     return(sample_sheet)
 }
 
@@ -107,7 +107,7 @@ parse_metadata_AML.miRNA.2021.RxGroup1 <- function() {
             ),
             timepoint = sub("BM", NA_character_, timepoint)
         ) |>
-        dplyr::select(sample = library_id, fastq_1, mouse_id, timepoint, tissue, batch, project, assay)
+        dplyr::select(library_id, fastq_1, mouse_id, timepoint, tissue, batch, project, assay)
     return(sample_sheet)
 }
 
@@ -142,7 +142,7 @@ parse_metadata_AML.miRNA.2021.RxGroups1and2 <- function() {
                 TRUE ~ timepoint
             )
         ) |>
-        dplyr::select(sample = library_id, fastq_1, mouse_id, timepoint, tissue, batch, project, assay)
+        dplyr::select(library_id, fastq_1, mouse_id, timepoint, tissue, batch, project, assay)
     return(sample_sheet)
 }
 
@@ -172,7 +172,7 @@ parse_metadata_AML.miRNA.2021.RxGroup2_pt2 <- function() {
             ),
             timepoint = sub("BM", NA_character_, timepoint)
         ) |>
-        dplyr::select(sample = library_id, fastq_1, mouse_id, timepoint, tissue, batch, project, assay)
+        dplyr::select(library_id, fastq_1, mouse_id, timepoint, tissue, batch, project, assay)
     return(sample_sheet)
 }
 
@@ -208,6 +208,6 @@ parse_metadata_AML.miRNA.2022.RxGroup3 <- function() {
             timepoint = sub("BM", NA_character_, timepoint)
         ) |>
         dplyr::left_join(fastq_paths, by = "library_id") |>
-        dplyr::select(sample = library_id, fastq_1 = value, mouse_id, timepoint, tissue, batch, project, assay)
+        dplyr::select(library_id, fastq_1 = value, mouse_id, timepoint, tissue, batch, project, assay)
     return(sample_sheet)
 }

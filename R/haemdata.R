@@ -13,8 +13,8 @@ globalVariables(c(
     "width", "csv_pin", "csv_version", "Sample", "basepairs",
     "fastq_1", "fastq_2", "gene_id", "gene_name", "mouse_id",
     "sample_weeks", "strandedness", "cell_type", "cell_type_fine",
-    "pruned.labels", "assay", "hdf5", "project"
-    ))
+    "pruned.labels", "assay", "hdf5", "project", "library_id", "sample_id"
+))
 # setup package environment
 
 #' @title Package environment
@@ -70,4 +70,3 @@ write_data <- function(schemeName, data) {
     eval(parse(text = sprintf("save(%s, file = '%s', compress = 'xz')", varName, fileLocation)))
     return(paste0("data/", rdaFile))
 }
-
