@@ -1,8 +1,6 @@
 # Roadmap
 
 * retire GRCm38
-* change `sample` to `library` for metadata_mmu & metadata_hsa
-  - make nf-core sample sheets use `library` column for required `sample` column
 * add a PSON sample identifier for all samples
 * include miRNA for AML samples
 * include additional mmu 10X libraries from Amber's lab 
@@ -14,4 +12,3 @@
   - CML mice 
   - add 10X read metrics for all libraries
 * update nf-core version to 3.9+ and remove rRNA
-

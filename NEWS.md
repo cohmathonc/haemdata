@@ -1,3 +1,8 @@
+# # haemdata 0.0.0.9010 
+* change `sample` to `library_id` for metadata_mmu & metadata_hsa
+* nf-core sample sheets use `library_id` column for `sample` column
+* add a warning about reproducibility when pins are loaded without stipulating the `version`
+
 # haemdata 0.0.0.9009
   * fix metadata_mmu 
   * fix pin versions on Onedrive
