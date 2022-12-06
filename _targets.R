@@ -39,7 +39,8 @@ if (!file.exists(nf_core_cache)) {
 #     "metadata_mmu.csv",
 #     version = "20221114T215240Z-3eaae"
 # )
-published_metadata_mmu <- readRDS("data-raw/metadata_mmu.rds")
+published_metadata_mmu <- readRDS("data-raw/metadata_mmu.rds") |>
+    dplyr::select(library_id = sample, everything())
 
 tar_plan(
     # make the package logo
@@ -64,17 +65,17 @@ tar_plan(
         |^AML.mRNA.2022.RxGroup3$|^CML.mRNA.2021$|^CML.mRNA.2022$|^AML.scRNAseq.2022$",
     sample_sheet_2016_2022 = published_metadata_mmu |>
         dplyr::filter(str_detect(project, pattern_2016_2022)) |>
-        dplyr::select(sample, fastq_1, fastq_2, strandedness),
+        dplyr::select(library_id, fastq_1, fastq_2, strandedness),
     # CML mice
     pattern_cml = "^CML.mRNA.2021$|^CML.mRNA.2022$",
     sample_sheet_CML = published_metadata_mmu |>
         dplyr::filter(str_detect(project, pattern_cml)) |>
-        dplyr::select(sample, fastq_1, fastq_2, strandedness),
+        dplyr::select(library_id, fastq_1, fastq_2, strandedness),
 
     # sample_sheet_CML_3 (CML.mRNA.2022_pt2)
     sample_sheet_CML_3 = published_metadata_mmu |>
         dplyr::filter(str_detect(project, "^CML.mRNA.2022_pt2$")) |>
-        dplyr::select(sample, fastq_1, fastq_2, strandedness),
+        dplyr::select(library_id, fastq_1, fastq_2, strandedness),
 
     # Make a sample sheet for the validation sets 2017_1 & 2020_2
     # which are essentially technical replicates and so are not included with
@@ -193,7 +194,7 @@ tar_plan(
 
     # # QC filter ---------------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_qc, seurat_perform_cell_qc(mmu_10x_2022_1_GENCODEm28_HLT),
-        resources = apollo_medium
+        resources = apollo_large
     ),
     # # # Integrate cells with SCTransform
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct, seurat_sctransform(mmu_10x_2022_1_GENCODEm28_HLT_qc),
