@@ -50,4 +50,4 @@ x$fastq_1 |>
     length()
 ```
 
-See the Articles menu above for more examples.
+See the [Articles](http://cgt.coh.org/haemdata/articles/) menu above for more examples.
