@@ -6,7 +6,8 @@
 #' [Download](../metadata_mmu_template.xlsx) a template for new samples
 #'  | Column | Description |
 #'  |---|---|
-#'  | `library_id` | Integrative Genomics Core *CLN* with the format `COHP_XXXXX`. This identifier is used to match sequence reads, QC metrics, raw counts and metadata, for each sample. `library_id` is not unique as some libraries are split across multiple sequencing runs.|
+#'  | `sample_id` | A unique sample identifier with the format `PSON_XXXX` that uniquely identifies a tissue sample with respect to the mouse, tissue type and sample date. Use this number to match samples across assays (eg mRNA & miRNA.) |
+#'  | `library_id` | Integrative Genomics Core *CLN* with the format `COHP_XXXXX`. This identifier is used to match sequence reads, QC metrics, raw counts and metadata, for each sequencing library. `library_id` is not unique as some libraries are split across multiple sequencing runs.|
 #'  | `fastq_1` | Full path of fastq1, unique in the table |
 #'  | `fastq_2` | Full path of fastq2, unique in the table, or blank for single-end reads |
 #'  | `hdf5` | Full path of h5 file, Cell Rangers's HDF5 Feature-Barcode Matrix Format |
