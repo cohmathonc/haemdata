@@ -369,3 +369,16 @@ Remotes:
         assay(filtered_se, "counts") |> head()
     }
 
+#### sample ID PSON
+
+sample_ids <- all_mice |>
+    select(mouse_id, tissue, sample_date) |>
+    distinct() |>
+    arrange(lubridate::date(sample_date)) |>
+    mutate(sample_id = sprintf("PSON_%04d", row_number()))
+
+ sample_sheet <- all_mice |>
+    left_join(sample_ids, by = c("mouse_id", "tissue", "sample_date")) |>
+    relocate(sample_id) |>
+    head()
+
