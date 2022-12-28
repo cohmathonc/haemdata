@@ -67,7 +67,7 @@ Language: en-AU
 LazyData: true
 LazyDataCompression: xz
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Collate: 
     'haemdata.R'
     'access_data.R'
