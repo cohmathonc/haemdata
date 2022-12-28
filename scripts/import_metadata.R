@@ -25,15 +25,18 @@ make_metadata_hsa <- function(sample_sheet) {
 #' Update metadata for mouse AML samples
 #'
 #' This function prepares the `metadata_mmu` object for all RNAseq libraries from AML and CML mice.
-#' Minimal metadata fields include library_id, fastq_1, fastq_2, strandedness,
+#' Minimal metadata fields include sample_id, library_id, fastq_1, fastq_2, strandedness,
 #' mouse_id, tissue, sample_date, week, timepoint, batch, treatment, genotype,
 #' sex, dob, dod, project.
 #'
 #' Raise an \href{https://github.com/drejom/haemdata/issues}{issue on GitHub}
 #' to report erroneous or missing records.
 #' @details Updates the `metadata_mmu` object for all RNAseq libraries by using
-#' a published pin, previously assembled by the make_metadata_mmu() function,
-#' which was retired in version 0.0.0.0.9008.
+#' a previously published version, either from a pin or a n excel file, or csv, etc. 
+#' The metadata table was assembled by crawling a range of disparate datasources
+#' including emails, CSVs, excel files, etc. and put together by the the 
+#' make_metadata_mmu() function, retired in version 0.0.0.0.9008.
+#' 
 #' @name update_metadata_mmu
 #' @param sample_sheet_all_mice a data.frame produced by row binding all mouse sample sheets
 #' detailed in [R/import_metadata.R](https://github.com/drejom/haemdata/blob/main/R/import_metadata.R).
@@ -42,7 +45,8 @@ make_metadata_hsa <- function(sample_sheet) {
 
 update_metadata_mmu <- function() {
     # Update sample and mouse metadata
-    # Get metadata_mmu
+    # Load in metadata_mmu and modify as needed
+
     # all_mice <- pins::pin_read(
     #     pins::board_ms365(
     #         drive = Microsoft365R::get_team("PSON AML State-Transition", auth_type = "device_code")$get_drive(),
@@ -54,20 +58,24 @@ update_metadata_mmu <- function() {
     #     )|>
     #     purrr::modify_if(is.factor, as.character)
 
-    # all_mice <- pins::pin_read(
-    #     pins::board_folder(
-    #     "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata",
-    #     versioned = FALSE
-    # ),
-    #     "metadata_mmu.csv") |>
-    #     purrr::modify_if(is.factor, as.character)
+    all_mice <- pins::pin_read(
+        pins::board_folder(
+        "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata",
+        versioned = FALSE
+    ),
+        "metadata_mmu.csv") |>
+        purrr::modify_if(is.factor, as.character)
 
-    # Load in metadata_mmu and modify as needed
-    sample_sheet <- readRDS("data-raw/metadata_mmu.rds")
+    # Assign sample IDs
+    sample_ids <- all_mice |>
+        dplyr::select(mouse_id, tissue, sample_date) |>
+        dplyr::distinct() |>
+        dplyr::arrange(lubridate::date(sample_date)) |>
+        dplyr::mutate(sample_id = sprintf("PSON_%04d", row_number()))
 
-    # use library_id in liue of sample
-    sample_sheet <- sample_sheet |>
-        dplyr::select(library_id = sample, dplyr::everything())
+    sample_sheet <- all_mice |>
+        dplyr::left_join(sample_ids, by = c("mouse_id", "tissue", "sample_date")) |>
+        dplyr::relocate(sample_id)
 
     return(sample_sheet)
 }
