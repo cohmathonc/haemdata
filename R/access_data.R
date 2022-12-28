@@ -131,7 +131,7 @@ get_pin <- function(pin_name, version = NULL) {
         if (pin_name %in% available_pins) {
             if (is.null(version)) {
                 version <- get_latest_pin_version(pin_name)
-                base::warning(glue::glue("Using latest version of pin: {version};\n\tInclude this parameter to make your code reproducible and avoid future warnings\n\te.g. get_pin(\"{pin_name}\", version = \"{version}\")"))
+                base::warning(glue::glue("Using latest version of pin: {version}\n\tInclude the version parameter to make your code reproducible and avoid future warnings. E.g.:\n\tget_pin(\"{pin_name}\", version = \"{version}\")"))
             }
             hash <- gsub(".*-", "", version)
 
