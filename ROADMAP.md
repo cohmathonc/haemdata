@@ -1,7 +1,6 @@
 # Roadmap
 
 * retire GRCm38
-* add a PSON sample identifier for all samples
 * include miRNA for AML samples
 * include additional mmu 10X libraries from Amber's lab 
 * fix mislabelled human FLT3 AML samples, add new samples
