@@ -49,10 +49,8 @@ export SINGULARITY_BIND="/labs,/opt/singularity,/opt/singularity-images/rbioc,${
 ## Run R:
 ## we merge R output with stdout from SLURM, which gets then logged via --output option
 /opt/singularity/3.7.0/bin/singularity exec \
-    --env R_LIBS_USER=~/R/bioc-3.15 \
-    --env R_LIBS_SITE=/opt/singularity-images/rbioc/rlibs/bioc-3.15 \
+    --env R_LIBS_USER=~/R/bioc-3.16 \
+    --env R_LIBS_SITE=/opt/singularity-images/rbioc/rlibs/bioc-3.16 \
     --cleanenv \
-    /opt/singularity-images/rbioc/vscode-rbioc_3.15.sif \
+    /opt/singularity-images/rbioc/vscode-rbioc_3.16.sif \
     Rscript -e 'batchtools::doJobCollection("<%= uri %>")'
-    
-    
