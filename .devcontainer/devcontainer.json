@@ -3,7 +3,7 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.202.5/containers/r
 {
     "name": "R (BioC)",
-    "image": "denom/rbioc:3.14.005",
+    "image": "ghcr.io/drejom/vscode-rbioc:latest",
     // Set *default* container specific settings.json values on container create.
     "settings": {
         "r.rterm.linux": "/usr/local/bin/radian",
