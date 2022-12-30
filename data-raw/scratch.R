@@ -369,3 +369,47 @@ Remotes:
         assay(filtered_se, "counts") |> head()
     }
 
+
+#' Delete the latest pins on a board
+#'
+#' @param board The name of the board to delete pins from
+#' @param days_to_delete The number of days to delete pins from
+#' @export
+delete_latest_pins <- function(board, days_to_delete = 7) {
+    library(pins)
+    # Get the pins on the specified board
+    pins <- pin_list(board)
+
+    # Create a list to store the pin IDs that will be deleted
+    pin_ids_to_delete <- list()
+
+    # Get the current time
+    current_time <- Sys.time()
+
+    # Loop through each pin and add the latest one to the list if it was created within the last week
+    for (pin in pins) {
+        # Get the metadata for the current pin
+        pin_metadata <- pin_meta(board, pin)
+
+        # Check if the pin was created within the last week
+        pin_created_time <- as.POSIXct(pin_metadata$created)
+        time_difference <- current_time - pin_created_time
+        if (time_difference <= days_to_delete) {
+            # Add the pin ID to the list
+            pin_ids_to_delete <- c(pin_ids_to_delete, pin)
+        }
+    }
+
+    # Print the list of pin IDs that will be deleted
+    print(pin_ids_to_delete |> unlist())
+
+    # Prompt the user to confirm the deletion
+    confirm_delete <- readline(prompt = "Do you want to delete these pins? (y/n) ")
+
+    # If the user confirms, delete the pins
+    if (confirm_delete == "y") {
+        for (pin_id in pin_ids_to_delete) {
+            pin_delete(board, pin_id)
+        }
+    }
+}
