@@ -444,3 +444,47 @@ sample_sheet |>
     relocate(library_id, patient_id, sample_id, sample_date, tissue, everything()) |>
     distinct() |>
     rio::export("data-raw/flt3_sample_metadata.xlsx")
+
+
+# miRNA
+
+miRNA_sample_sheet <- rbind(
+    parse_metadata_AML.miRNA.2016(),
+    parse_metadata_AML.miRNA.2018(),
+    parse_metadata_AML.miRNA.2020(),
+    parse_metadata_AML.miRNA.2021.RxGroup1(),
+    parse_metadata_AML.miRNA.2021.RxGroups1and2(),
+    parse_metadata_AML.miRNA.2021.RxGroup2_pt2(),
+    parse_metadata_AML.miRNA.2022.RxGroup3()
+) |> mutate(mouse_id = as.integer(mouse_id))
+
+mRNA_sample_sheet <- pins::pin_read(
+    pins::board_folder(
+        "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata",
+        versioned = FALSE
+    ),
+    "metadata_mmu.csv"
+) |>
+    purrr::modify_if(is.factor, as.character)
+
+
+combined <- full_join(mRNA_sample_sheet, miRNA_sample_sheet) |>
+    arrange(mouse_id, tissue, timepoint) |>
+    mutate(mouse_id = as.character(mouse_id)) |>
+    fill(
+        sample_id,
+        treatment,
+        genotype,
+        sex,
+        sample_date,
+        percent_ckit,
+        dob,
+        dod,
+        sample_weeks,
+        age_at_end,
+        age_at_start,
+        age_at_sample
+)
+
+combined |>
+    rio::export("data-raw/combined_sample_metadata.xlsx", overwrite = TRUE)
