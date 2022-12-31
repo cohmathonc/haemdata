@@ -15,9 +15,8 @@ library(tarchetypes)
 # Set target options:
 tar_option_set(
     packages = c("haemdata", "tidyverse", "SummarizedExperiment"), # packages that targets need to run
-    error = "continue", # continue or stop on error
+    error = "abridge", # continue or stop on error
     # format = "qs", # default storage format
-    # # Set other options as needed.
     storage = "worker",
     retrieval = "worker"
     # garbage_collection = TRUE,
@@ -29,18 +28,18 @@ if (!file.exists(nf_core_cache)) {
     stop("This pipeline must be run on Apollo")
 }
 
-# # Get metadata_mmu
+# Get metadata_mmu
 # published_metadata_mmu <- pins::pin_read(
-#     pins::board_ms365(
-#             drive = Microsoft365R::get_team("PSON AML State-Transition", auth_type = "device_code")$get_drive(),
-#             path = "haemdata",
-#             versioned = TRUE
-#         ),
-#     "metadata_mmu.csv",
-#     version = "20221114T215240Z-3eaae"
-# )
-published_metadata_mmu <- readRDS("data-raw/metadata_mmu.rds") |>
-    dplyr::select(library_id = sample, everything())
+#     pins::board_folder(
+#         "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata",
+#         versioned = FALSE
+#     ),
+#     "metadata_mmu.csv"
+# ) |>
+#     purrr::modify_if(is.factor, as.character)
+# saveRDS(published_metadata_mmu, "data-raw/metadata_mmu.rds")
+
+published_metadata_mmu <- readRDS("data-raw/metadata_mmu.rds")
 
 tar_plan(
     # make the package logo
@@ -64,17 +63,17 @@ tar_plan(
         |^AML.mRNA.2021.RxGroup1$|^AML.mRNA.2021.RxGroup2$|^AML.mRNA.2021.RxGroup2_pt2$|
         |^AML.mRNA.2022.RxGroup3$|^CML.mRNA.2021$|^CML.mRNA.2022$|^AML.scRNAseq.2022$",
     sample_sheet_2016_2022 = published_metadata_mmu |>
-        dplyr::filter(str_detect(project, pattern_2016_2022)) |>
+        dplyr::filter(str_detect(cohort, pattern_2016_2022)) |>
         dplyr::select(library_id, fastq_1, fastq_2, strandedness),
     # CML mice
     pattern_cml = "^CML.mRNA.2021$|^CML.mRNA.2022$",
     sample_sheet_CML = published_metadata_mmu |>
-        dplyr::filter(str_detect(project, pattern_cml)) |>
+        dplyr::filter(str_detect(cohort, pattern_cml)) |>
         dplyr::select(library_id, fastq_1, fastq_2, strandedness),
 
     # sample_sheet_CML_3 (CML.mRNA.2022_pt2)
     sample_sheet_CML_3 = published_metadata_mmu |>
-        dplyr::filter(str_detect(project, "^CML.mRNA.2022_pt2$")) |>
+        dplyr::filter(str_detect(cohort, "^CML.mRNA.2022_pt2$")) |>
         dplyr::select(library_id, fastq_1, fastq_2, strandedness),
 
     # Make a sample sheet for the validation sets 2017_1 & 2020_2
@@ -137,7 +136,7 @@ tar_plan(
     # consolidate metadata across human samples
     tar_target(metadata_hsa, make_metadata_hsa(
         dplyr::full_join(sample_sheet_2022_3, sample_sheet_2022_2) |>
-        dplyr::full_join(sample_sheet_2022_4)
+            dplyr::full_join(sample_sheet_2022_4)
     )),
 
     ###############################################################################################
@@ -163,7 +162,8 @@ tar_plan(
     ###############################################################################################
     # Merge SummarisedExperiments
     tar_target(mmu_mrna_all_mice_qc_se, merge_mrna_se(mmu_mrna_2016_2022_qc_se, mmu_mrna_cml3_qc_se,
-        new_name = "mmu_mrna_all_mice_GENCODEm28_HLT_qc")),
+        new_name = "mmu_mrna_all_mice_GENCODEm28_HLT_qc"
+    )),
     # ###############################################################################################
     # Amend metadata_mmu with qc_pass_mapping column
     tar_target(metadata_mmu, flag_lowly_mapped_mmu_se(mmu_mrna_all_mice_qc_se, metadata_mmu_prepub)),
@@ -177,13 +177,34 @@ tar_plan(
     # Publish mRNAseq metadata (with pins package) ----------------------------------------------
     ###############################################################################################
     # save SummarisedExperiments to disk
-    tar_target(mmu_mrna_all_mice_GENCODEm28_pins, publish_se(mmu_mrna_all_mice_qc_se)),
-    tar_target(mmu_mrna_techrep_GENCODEm28_pins, publish_se(mmu_mrna_techrep_qc_se)),
-    tar_target(hsa_mrna_flt3_GENCODEm28_pins, publish_se(hsa_mrna_flt3_qc_se_flt)),
-    tar_target(hsa_mrna_mds_GENCODEm28_pins, publish_se(hsa_mrna_mds_qc_se_flt)),
-    tar_target(hsa_mrna_kim_GENCODEm28_pins, publish_se(hsa_mrna_kim_qc_se_flt)),
-    tar_target(metadata_mmu_pins, publish_metadata(metadata_mmu)),
-    tar_target(metadata_hsa_pins, publish_metadata(metadata_hsa)),
+    tar_change(
+        mmu_mrna_all_mice_GENCODEm28_pins, publish_se(mmu_mrna_all_mice_qc_se),
+        haemdata::haemdata_env$pin_board[["path"]]
+    ),
+    tar_change(
+        mmu_mrna_techrep_GENCODEm28_pins, publish_se(mmu_mrna_techrep_qc_se),
+        haemdata::haemdata_env$pin_board[["path"]]
+    ),
+    tar_change(
+        hsa_mrna_flt3_GENCODEm28_pins, publish_se(hsa_mrna_flt3_qc_se_flt),
+        haemdata::haemdata_env$pin_board[["path"]]
+    ),
+    tar_change(
+        hsa_mrna_mds_GENCODEm28_pins, publish_se(hsa_mrna_mds_qc_se_flt),
+        haemdata::haemdata_env$pin_board[["path"]]
+    ),
+    tar_change(
+        hsa_mrna_kim_GENCODEm28_pins, publish_se(hsa_mrna_kim_qc_se_flt),
+        haemdata::haemdata_env$pin_board[["path"]]
+    ),
+    tar_change(
+        metadata_mmu_pins, publish_metadata(metadata_mmu),
+        haemdata::haemdata_env$pin_board[["path"]]
+    ),
+    tar_change(
+        metadata_hsa_pins, publish_metadata(metadata_hsa),
+        haemdata::haemdata_env$pin_board[["path"]]
+    ),
 
     ###############################################################################################
     # single cell RNA-seq ------------------------------------------------------------------------
@@ -194,7 +215,7 @@ tar_plan(
 
     # # QC filter ---------------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_qc, seurat_perform_cell_qc(mmu_10x_2022_1_GENCODEm28_HLT),
-        resources = apollo_large
+        resources = apollo_bigmem
     ),
     # # # Integrate cells with SCTransform
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct, seurat_sctransform(mmu_10x_2022_1_GENCODEm28_HLT_qc),
@@ -202,19 +223,24 @@ tar_plan(
     ),
     # # Make clusters  ---------------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust, seurat_annotate_clusters_and_umap(
-        mmu_10x_2022_1_GENCODEm28_HLT_sct), resources = apollo_large),
+        mmu_10x_2022_1_GENCODEm28_HLT_sct
+    ), resources = apollo_large),
 
     # # Annotate cell cycle ---------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc, seurat_annotate_cell_cycle(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust),
-        resources = apollo_large),
+        resources = apollo_large
+    ),
 
     # # Annotate cell type -----------------------------------------------------------
     tar_target(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc_ct, seurat_annotate_cell_type(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc),
-        resources = apollo_large),
+        resources = apollo_large
+    ),
 
     # Publish Seurat objects -----------------------------------------------------------
-    tar_target(mmu_10x_2022_1_GENCODEm28_HLT_pins, publish_seurat(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc_ct),
-    resources = apollo_small),
+    tar_change(mmu_10x_2022_1_GENCODEm28_HLT_pins, publish_seurat(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc_ct),
+        change = haemdata::haemdata_env$pin_board[["path"]],
+        resources = apollo_small
+    ),
 
     ######### Collect latest pin versions #########
     # TODO make a function to prune pins not in a release

@@ -2,12 +2,12 @@
 
 # ├ AML.mRNA.2016
 parse_metadata_AML.miRNA.2016 <- function() {
-    project <- "AML.miRNA.2016"
+    cohort <- "AML.miRNA.2016"
     assay <- "miRNA"
     tissue <- "PBMC"
     sample_sheet <- read.csv("data-raw/2016miRNA_new_name_key.csv") |>
         dplyr::mutate(
-            project = project,
+            cohort = cohort,
             assay = assay,
             tissue = tissue,
             fastq_1 = oldname,
@@ -17,12 +17,12 @@ parse_metadata_AML.miRNA.2016 <- function() {
             seq_batch = as.numeric(as.factor(stringr::str_replace(oldname, ".*(?>Seq/)(\\w*)/.*", "\\1"))),
             batch = paste0("2016_", seq_batch)
         ) |>
-        dplyr::select(library_id, fastq_1, mouse_id, timepoint, tissue, batch, project, assay)
+        dplyr::select(library_id, fastq_1, mouse_id, timepoint, tissue, batch, cohort, assay)
     return(sample_sheet)
 }
 # ├ AML.miRNA.2018
 parse_metadata_AML.miRNA.2018 <- function() {
-    project <- "AML.miRNA.2018"
+    cohort <- "AML.miRNA.2018"
     assay <- "miRNA"
     tissue <- "PBMC"
     fastq_paths <- list.files(
@@ -35,7 +35,7 @@ parse_metadata_AML.miRNA.2018 <- function() {
         )
     sample_sheet <- read.csv("data-raw/2018miRNA_new_name_key.txt", sep = "\t") |>
         dplyr::mutate(
-            project = project,
+            cohort = cohort,
             assay = assay,
             tissue = tissue,
             library_id = paste0("COHP_", stringr::str_replace(OldName, "(\\d*)_.*", "\\1")),
@@ -44,14 +44,14 @@ parse_metadata_AML.miRNA.2018 <- function() {
             batch = stringr::str_replace(NewName, "(?:[^_]+_){6}([^_]*).*", "\\1")
         ) |>
         dplyr::left_join(fastq_paths, by = "library_id") |>
-        dplyr::select(library_id, fastq_1 = value, mouse_id, timepoint, tissue, batch, project, assay)
+        dplyr::select(library_id, fastq_1 = value, mouse_id, timepoint, tissue, batch, cohort, assay)
     return(sample_sheet)
 }
 # ├ AML.miRNA.2020
-# * NOTE: Unique to this miRNA project, the samples
+# * NOTE: Unique to this miRNA cohort, the samples
 # * were paired end, but only fastq_1 was used.
 parse_metadata_AML.miRNA.2020 <- function() {
-    project <- "AML.miRNA.2020"
+    cohort <- "AML.miRNA.2020"
     assay <- "miRNA"
     batch <- "2020_U"
     tissue <- "PBMC"
@@ -62,7 +62,7 @@ parse_metadata_AML.miRNA.2020 <- function() {
         dplyr::as_tibble() |>
         dplyr::mutate(
             library_id = paste0("COHP_", stringr::str_replace(value, ".*/(\\d*)_.*", "\\1")),
-            project = project,
+            cohort = cohort,
             assay = assay,
             fastq_1 = value,
             mouse_id = stringr::str_replace(value, ".*/(?:[^_]+_){2}([^_]*).*", "\\1"),
@@ -77,13 +77,13 @@ parse_metadata_AML.miRNA.2020 <- function() {
                 TRUE ~ timepoint
             )
         ) |>
-        dplyr::select(library_id, fastq_1, mouse_id, timepoint, tissue, batch, project, assay)
+        dplyr::select(library_id, fastq_1, mouse_id, timepoint, tissue, batch, cohort, assay)
     return(sample_sheet)
 }
 
 # ├ AML.miRNA.2021.RxGroup1
 parse_metadata_AML.miRNA.2021.RxGroup1 <- function() {
-    project <- "AML.miRNA.2021.RxGroup1"
+    cohort <- "AML.miRNA.2021.RxGroup1"
     assay <- "miRNA"
     tissue <- "PBMC"
     batch <- "2021_G"
@@ -94,7 +94,7 @@ parse_metadata_AML.miRNA.2021.RxGroup1 <- function() {
         dplyr::as_tibble() |>
         dplyr::mutate(
             library_id = paste0("COHP_", stringr::str_replace(value, ".*/(\\d*)_.*", "\\1")),
-            project = project,
+            cohort = cohort,
             assay = assay,
             fastq_1 = value,
             mouse_id = stringr::str_replace(value, ".*/(?:[^_]+_){2}(\\d{4}).*", "\\1"),
@@ -107,13 +107,13 @@ parse_metadata_AML.miRNA.2021.RxGroup1 <- function() {
             ),
             timepoint = sub("BM", NA_character_, timepoint)
         ) |>
-        dplyr::select(library_id, fastq_1, mouse_id, timepoint, tissue, batch, project, assay)
+        dplyr::select(library_id, fastq_1, mouse_id, timepoint, tissue, batch, cohort, assay)
     return(sample_sheet)
 }
 
 # ├ AML.miRNA.2021.RxGroups1and2
 parse_metadata_AML.miRNA.2021.RxGroups1and2 <- function() {
-    project <- "AML.miRNA.2021.RxGroups1and2"
+    cohort <- "AML.miRNA.2021.RxGroups1and2"
     assay <- "miRNA"
     tissue <- "PBMC"
     batch <- "2021_H"
@@ -124,7 +124,7 @@ parse_metadata_AML.miRNA.2021.RxGroups1and2 <- function() {
         dplyr::as_tibble() |>
         dplyr::mutate(
             library_id = paste0("COHP_", stringr::str_replace(value, ".*/(\\d*)_.*", "\\1")),
-            project = project,
+            cohort = cohort,
             assay = assay,
             fastq_1 = value,
             mouse_id = stringr::str_replace(value, ".*/(?:[^_]+_){2}(\\d{4}).*", "\\1"),
@@ -142,13 +142,13 @@ parse_metadata_AML.miRNA.2021.RxGroups1and2 <- function() {
                 TRUE ~ timepoint
             )
         ) |>
-        dplyr::select(library_id, fastq_1, mouse_id, timepoint, tissue, batch, project, assay)
+        dplyr::select(library_id, fastq_1, mouse_id, timepoint, tissue, batch, cohort, assay)
     return(sample_sheet)
 }
 
 # ├ AML.miRNA.2021.RxGroup2_pt2
 parse_metadata_AML.miRNA.2021.RxGroup2_pt2 <- function() {
-    project <- "AML.miRNA.2021.RxGroup2_pt2"
+    cohort <- "AML.miRNA.2021.RxGroup2_pt2"
     assay <- "miRNA"
     tissue <- "PBMC"
     batch <- "2021_I"
@@ -159,7 +159,7 @@ parse_metadata_AML.miRNA.2021.RxGroup2_pt2 <- function() {
         dplyr::as_tibble() |>
         dplyr::mutate(
             library_id = paste0("COHP_", stringr::str_replace(value, ".*/(\\d*)_.*", "\\1")),
-            project = project,
+            cohort = cohort,
             assay = assay,
             fastq_1 = value,
             mouse_id = stringr::str_replace(value, ".*/(?:[^_]+_){2}(\\d{4}).*", "\\1"),
@@ -172,14 +172,14 @@ parse_metadata_AML.miRNA.2021.RxGroup2_pt2 <- function() {
             ),
             timepoint = sub("BM", NA_character_, timepoint)
         ) |>
-        dplyr::select(library_id, fastq_1, mouse_id, timepoint, tissue, batch, project, assay)
+        dplyr::select(library_id, fastq_1, mouse_id, timepoint, tissue, batch, cohort, assay)
     return(sample_sheet)
 }
 
 
 # ├ AML.miRNA.2021.RxGroup3
 parse_metadata_AML.miRNA.2022.RxGroup3 <- function() {
-    project <- "AML.miRNA.2022.RxGroup3"
+    cohort <- "AML.miRNA.2022.RxGroup3"
     assay <- "miRNA"
     tissue <- "PBMC"
     batch <- "2022_D"
@@ -195,7 +195,7 @@ parse_metadata_AML.miRNA.2022.RxGroup3 <- function() {
     readxl::read_excel("data-raw/sample summary_IGC-LZ-20205_miRNA.xlsx") |>
         dplyr::mutate(
             library_id = paste0("COHP_", stringr::str_replace(Sample_ID, "(\\d*)_.*", "\\1")),
-            project = project,
+            cohort = cohort,
             assay = assay,
             mouse_id = stringr::str_replace(Sample_ID, "(?:[^_]+_){2}(\\d{4}).*", "\\1"),
             timepoint = stringr::str_replace(Sample_ID, "(?:[^_]+_){2}\\d{4}(.*)", "\\1"),
@@ -208,6 +208,6 @@ parse_metadata_AML.miRNA.2022.RxGroup3 <- function() {
             timepoint = sub("BM", NA_character_, timepoint)
         ) |>
         dplyr::left_join(fastq_paths, by = "library_id") |>
-        dplyr::select(library_id, fastq_1 = value, mouse_id, timepoint, tissue, batch, project, assay)
+        dplyr::select(library_id, fastq_1 = value, mouse_id, timepoint, tissue, batch, cohort, assay)
     return(sample_sheet)
 }

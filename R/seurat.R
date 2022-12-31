@@ -159,19 +159,19 @@ rotate_umap <- function(seurat_object, x = FALSE, y = FALSE) {
 #' `percent_mt`, `percent_ribo`, `percent_hb`, `percent_platelet`, `percent_xist`, `chrY_counts`, `percent_myh11`.
 #'
 #' Data are read in from file paths recorded in the metadata_mmu table, column `hdf5`.
-#' the `project_regex` parameter is used to select the cohort from by filtering on the 
-#' `project` column of the metadata_mmu table.
+#' the `cohort_regex` parameter is used to select the cohort from by filtering on the 
+#' `cohort` column of the metadata_mmu table.
 #' Sex chromosome genes are parsed from the GTF and cached in `inst/extdata`.
 #'
 #' TODO: Include eg for accessing Y genes from package
 #'
-#' @param project_regex string, optional, regex pattern to match in `project`. Use this to select different
+#' @param cohort_regex string, optional, regex pattern to match in `cohort`. Use this to select different
 #' cohorts.
 #' @return a list of Seurat objects
 #' @author Denis O'Meally
 #' @export
 # Make Seurat objects
-seurat_import_objects <- function(project_regex) {
+seurat_import_objects <- function(cohort_regex) {
     # get a list of ChrY genes from GTF file
     # Parse GTF: https://www.biostars.org/p/140471/
 
@@ -194,21 +194,10 @@ seurat_import_objects <- function(project_regex) {
     use_pinboard("devel")
     h5_paths <- get_pin("metadata_mmu.csv") |> 
         purrr::modify_if(is.factor, as.character) |>
-        dplyr::filter(stringr::str_detect(project, {{ project_regex }})) |>
+        dplyr::filter(stringr::str_detect(cohort, {{ cohort_regex }})) |>
         dplyr::filter(stringr::str_detect(assay, "scRNA")) |>
         dplyr::pull(hdf5)
     message("loaded paths from pinboard")
-
-        # h5_paths <- pins::pin_read(
-        #     pins::board_folder(
-        #     "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata",
-        #     versioned = FALSE
-        # ),
-        #     "metadata_mmu.csv") |>
-        #     purrr::modify_if(is.factor, as.character) |>
-        # dplyr::filter(stringr::str_detect(project, {{ project_regex }})) |>
-        # dplyr::filter(stringr::str_detect(assay, "scRNA")) |>
-        #     dplyr::pull(hdf5)
 
     # Load all the samples
     seurat_object_list <- future.apply::future_lapply(X = h5_paths, FUN = function(x) {

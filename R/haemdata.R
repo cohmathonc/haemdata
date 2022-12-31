@@ -9,11 +9,11 @@ NULL
 globalVariables(c(
     ".", "DOB", "Gender", "Mice", "bam", "cellAmt", "ega_run_accession_id",
     "htbIdPb", "nFeature_RNA", "name", "number", "patient_id", "percent_mt",
-    "percent_ribo", "timepoint_project", "value", "weeks",
+    "percent_ribo", "value", "weeks",
     "width", "csv_pin", "csv_version", "Sample", "basepairs",
     "fastq_1", "fastq_2", "gene_id", "gene_name", "mouse_id",
     "sample_weeks", "strandedness", "cell_type", "cell_type_fine",
-    "pruned.labels", "assay", "hdf5", "project", "library_id", "sample_id"
+    "pruned.labels", "assay", "hdf5", "cohort", "library_id", "sample_id"
 ))
 # setup package environment
 
@@ -26,7 +26,7 @@ globalVariables(c(
 haemdata_env <- new.env(parent = emptyenv())
 
 # Message to display when no pinboard is set
-haemdata_env$pin_board_msg <- "The pinboard is not set up. Please set the pinboard using the use_pinboard() function either in this R session or in the project \".Rprofile\" file.
+haemdata_env$pin_board_msg <- "The pinboard is not set up. Please set the pinboard using the use_pinboard() function either in this R session or in the cohort \".Rprofile\" file.
 See ?use_pinboard() for more information."
 
 # pinboard is set to NULL for building/installing the package
