@@ -21,7 +21,6 @@
 log.file = fs::path_expand(log.file)
 -%>
 
-
 #SBATCH --job-name=<%= job.name %>
 #SBATCH --output=<%= log.file %>
 #SBATCH --error=<%= log.file %>
@@ -32,10 +31,6 @@ log.file = fs::path_expand(log.file)
 <%= if (!is.null(resources$partition)) sprintf(paste0("#SBATCH --partition='", resources$partition, "'")) %>
 <%= if (array.jobs) sprintf("#SBATCH --array=1-%i", nrow(jobs)) else "" %>
 
-## Initialize work environment 
-## source /etc/profile
-## module load singularity
-
 ## Export value of DEBUGME environemnt var to slave
 export DEBUGME=<%= Sys.getenv("DEBUGME") %>
 
@@ -43,7 +38,7 @@ export DEBUGME=<%= Sys.getenv("DEBUGME") %>
 <%= sprintf("export OPENBLAS_NUM_THREADS=%i", resources$blas.threads) -%>
 <%= sprintf("export MKL_NUM_THREADS=%i", resources$blas.threads) -%>
 
-SLURM_BIND="/var/run/munge:/run/munge,/opt/apollo-setup/slurm-singularity/etc:/etc/slurm"
+SLURM_BIND="/var/run/munge:/run/munge,/opt/apollo-setup/slurm-singularity/etc:/etc/slurm,/var/spool/slurmd"
 export SINGULARITY_BIND="/labs,/opt/singularity,/opt/singularity-images/rbioc,${SLURM_BIND}"
 
 ## Run R:

@@ -22,7 +22,7 @@ First, we need to setup the pin-board and download the mouse datasets.
 library(haemdata)
 use_pinboard("onedrive")
 
-all_mice <- get_pin("mmu_mrna_all_mice_GENCODEm28_HLT_qc.rds")
+all_mice <- get_pin("mmu_mrna_all_mice_GENCODEm28_HLT_qc.rds", version = "20221228T232338Z-1c3dc")
 ```
 
 ### 2016 mice
@@ -176,17 +176,18 @@ City of Hope Biobank FLT3 patients
 ```{r }
 se <- get_pin("hsa_mrna_flt3_GENCODEr40_qc.rds")
 
-## Add week_scaled column, where time is scaled for each patient
-SummarizedExperiment::colData(se) <- SummarizedExperiment::colData(se) |>
-    janitor::remove_constant() |>
-    dplyr::as_tibble() |>
-    dplyr::group_by(patient_id) |>
-    dplyr::mutate(weeks_scaled = as.vector(scale(weeks))) |>
-    dplyr::ungroup() |>
-    `rownames<-`(colnames(se)) |>
-    S4Vectors::DataFrame()
+# ## Add week_scaled column, where time is scaled for each patient
+# SummarizedExperiment::colData(se) <- SummarizedExperiment::colData(se) |>
+#     janitor::remove_constant() |>
+#     dplyr::as_tibble() |>
+#     dplyr::group_by(patient_id) |>
+#     dplyr::mutate(weeks_scaled = as.vector(scale(weeks))) |>
+#     dplyr::ungroup() |>
+#     `rownames<-`(colnames(se)) |>
+#     S4Vectors::DataFrame()
 
-pca <- pca_se(se, col_by = "weeks_scaled")
+#pca <- pca_se(se, col_by = "weeks_scaled")
+pca <- pca_se(se, col_by = "sample")
 ```
 
 ```{r }
