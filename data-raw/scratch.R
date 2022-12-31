@@ -426,3 +426,9 @@ sample_ids <- all_mice |>
     relocate(sample_id) |>
     head()
 
+### FLT3
+sample_sheet |>
+    select(-c(fastq_1, fastq_2, strandedness)) |>
+    relocate(library_id, patient_id, sample_id, sample_date, tissue, everything()) |>
+    distinct() |>
+    rio::export("data-raw/flt3_sample_metadata.xlsx")

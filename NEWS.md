@@ -1,9 +1,11 @@
 # haemdata 0.0.0.9010
-* GRCm38 is retired from targets pipeline; GENCODEm28 is the default mmu reference genome going forward
+* fix mislabelled human FLT3 AML samples, add new samples
+* retired GRCm38 from targets pipeline; GENCODEm28 is the default mmu reference genome
 * add a PSON sample identifier for all mmu samples
-* change `sample` to `library_id` in metadata_mmu
-* nf-core sample sheets use `library_id` column for `sample` column
 * add a warning about reproducibility when pins are loaded without stipulating the `version`
+* rename `sample` to `library_id` in metadata_mmu
+* rename `project` to `cohort` in metadata_mmu
+* nf-core sample sheets use `library_id` column for `sample` column
 
 # haemdata 0.0.0.9009
   * fix metadata_mmu 

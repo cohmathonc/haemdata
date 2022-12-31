@@ -17,7 +17,7 @@
 #' @export
 make_metadata_hsa <- function(sample_sheet) {
     metadata_hsa <- sample_sheet |>
-        dplyr::arrange(batch, patient_id, date)
+        dplyr::arrange(batch, patient_id)
 
     return(metadata_hsa)
 }
@@ -27,16 +27,16 @@ make_metadata_hsa <- function(sample_sheet) {
 #' This function prepares the `metadata_mmu` object for all RNAseq libraries from AML and CML mice.
 #' Minimal metadata fields include sample_id, library_id, fastq_1, fastq_2, strandedness,
 #' mouse_id, tissue, sample_date, week, timepoint, batch, treatment, genotype,
-#' sex, dob, dod, project.
+#' sex, dob, dod, cohort.
 #'
 #' Raise an \href{https://github.com/drejom/haemdata/issues}{issue on GitHub}
 #' to report erroneous or missing records.
 #' @details Updates the `metadata_mmu` object for all RNAseq libraries by using
-#' a previously published version, either from a pin or a n excel file, or csv, etc. 
+#' a previously published version, either from a pin or a n excel file, or csv, etc.
 #' The metadata table was assembled by crawling a range of disparate datasources
-#' including emails, CSVs, excel files, etc. and put together by the the 
+#' including emails, CSVs, excel files, etc. and put together by the the
 #' make_metadata_mmu() function, retired in version 0.0.0.0.9008.
-#' 
+#'
 #' @name update_metadata_mmu
 #' @param sample_sheet_all_mice a data.frame produced by row binding all mouse sample sheets
 #' detailed in [R/import_metadata.R](https://github.com/drejom/haemdata/blob/main/R/import_metadata.R).
@@ -47,35 +47,31 @@ update_metadata_mmu <- function() {
     # Update sample and mouse metadata
     # Load in metadata_mmu and modify as needed
 
-    # all_mice <- pins::pin_read(
-    #     pins::board_ms365(
-    #         drive = Microsoft365R::get_team("PSON AML State-Transition", auth_type = "device_code")$get_drive(),
-    #         path = "haemdata",
-    #         versioned = TRUE
-    #     ),
-    #     "metadata_mmu.csv",
-    #     version = "20221114T223607Z-e8d02"
-    #     )|>
-    #     purrr::modify_if(is.factor, as.character)
-
-    all_mice <- pins::pin_read(
+    # v0.0.0.9010 interim
+    sample_sheet <- pins::pin_read(
         pins::board_folder(
-        "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata",
-        versioned = FALSE
-    ),
-        "metadata_mmu.csv") |>
+            "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata",
+            versioned = FALSE
+        ),
+        "metadata_mmu.csv"
+    ) |>
         purrr::modify_if(is.factor, as.character)
 
-    # Assign sample IDs
-    sample_ids <- all_mice |>
-        dplyr::select(mouse_id, tissue, sample_date) |>
-        dplyr::distinct() |>
-        dplyr::arrange(lubridate::date(sample_date)) |>
-        dplyr::mutate(sample_id = sprintf("PSON_%04d", row_number()))
+    # v0.0.0.9010
+    # # Assign sample IDs
+    # sample_ids <- all_mice |>
+    #     dplyr::select(mouse_id, tissue, sample_date) |>
+    #     dplyr::distinct() |>
+    #     dplyr::arrange(lubridate::date(sample_date)) |>
+    #     dplyr::mutate(sample_id = sprintf("PSON_%04d", dplyr::row_number()))
 
-    sample_sheet <- all_mice |>
-        dplyr::left_join(sample_ids, by = c("mouse_id", "tissue", "sample_date")) |>
-        dplyr::relocate(sample_id)
+    # sample_sheet <- all_mice |>
+    #     dplyr::left_join(sample_ids, by = c("mouse_id", "tissue", "sample_date")) |>
+    #     dplyr::relocate(sample_id)
+
+    # rename project to cohort
+    # sample_sheet <- all_mice |>
+    #     dplyr::rename(cohort = project)
 
     return(sample_sheet)
 }
@@ -117,38 +113,36 @@ parse_metadata_AML.validation.2017 <- function() {
 
 # AML.mRNA.HSA_FLT3.2022
 parse_metadata_AML.mRNA.HSA_FLT3.2022 <- function() {
-    project <- "AML.mRNA.HSA_FLT3.2022"
+    cohort <- "AML.mRNA.HSA_FLT3.2022"
+
     fastqs <- data.frame(
-        fastq_1 = system(
-            paste0("find /net/nfs-irwrsrchnas01/labs/ykuo/Seq/220511_IGC-LZ-20342 -name '*.gz'"),
-            intern = TRUE
-        ) %>% grep("_R1_", ., value = TRUE),
-        fastq_2 = system(
-            paste0("find /net/nfs-irwrsrchnas01/labs/ykuo/Seq/220511_IGC-LZ-20342 -name '*.gz'"),
-            intern = TRUE
-        ) %>% grep("_R2_", ., value = TRUE)
+        fastq_1 = list.files(c("/net/nfs-irwrsrchnas01/labs/ykuo/Seq/220511_IGC-LZ-20342", "/net/nfs-irwrsrchnas01/labs/ykuo/Seq/220715_IGC-LZ-20821"),
+                pattern = "_R1_.*\\.gz", full.names = TRUE, recursive = TRUE
+            ),
+        fastq_2 = list.files(c("/net/nfs-irwrsrchnas01/labs/ykuo/Seq/220511_IGC-LZ-20342", "/net/nfs-irwrsrchnas01/labs/ykuo/Seq/220715_IGC-LZ-20821"),
+            pattern = "_R2_.*\\.gz", full.names = TRUE, recursive = TRUE
+        )
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
+
     xls <- "data-raw/FLT3 AML samples information (IGC-LZ-20342).xlsx"
     xls_ss <- "data-raw/sample summary_IGC-LZ-20342.xlsx"
+
     sample_metadata <- readxl::read_excel(xls) |>
         janitor::clean_names("lower_camel") |>
         janitor::remove_constant(na.rm = TRUE) |>
         tidyr::fill(number, .direction = "down") |>
         tidyr::separate(htbIdPb, into = c(NA, NA, "sample_id"), sep = "-") |>
-        dplyr::select(patient_id = number, sample_id, date, cell_amount = cellAmt) |>
+        dplyr::select(patient_id = number, sample_id, sample_date = date, cell_amount = cellAmt) |>
         tidyr::drop_na(sample_id) |>
-        dplyr::arrange(patient_id, date) |>
-        dplyr::group_by(patient_id) |>
+        dplyr::arrange(patient_id, sample_date) |>
         dplyr::mutate(
-            patient_id = gsub("#", "_", patient_id, fixed = TRUE),
-            weeks = as.numeric(round((date - min(date)) / 604800, 2)),
-            first_sample_date = min(date)
-        ) |>
-        dplyr::ungroup()
+            patient_id = gsub("#", "_", patient_id, fixed = TRUE)
+        )
+
     sequencing_metadata <- readxl::read_excel(xls_ss) |>
         tidyr::separate(Sample_ID, into = c(NA, NA, "sample_id"), sep = "_") |>
         dplyr::mutate(
-            project = project,
+            cohort = cohort,
             library_id = TGen_Sample_Name,
             batch = "2022_C",
             strandedness = "reverse",
@@ -157,16 +151,17 @@ parse_metadata_AML.mRNA.HSA_FLT3.2022 <- function() {
             treatment = NA_character_,
             tissue = "PBMC"
         ) |>
-        dplyr::select(sample_id, project, library_id, batch, strandedness, sex, dob, treatment, tissue) |>
+        dplyr::select(sample_id, cohort, library_id, batch, strandedness, sex, dob, treatment, tissue) |>
         dplyr::left_join(fastqs)
+
     sample_sheet <- dplyr::left_join(sequencing_metadata, sample_metadata, by = "sample_id") |>
-        dplyr::arrange(patient_id, weeks) |>
+        dplyr::arrange(patient_id, sample_date) |>
         dplyr::select(library_id, fastq_1, fastq_2, strandedness, dplyr::everything())
     return(sample_sheet)
 }
 # MDS.rnaseq.EGAD00001003891
 parse_metadata_MDS.rnaseq.EGAD00001003891 <- function() {
-    project <- "MDS.rnaseq.EGAD00001003891"
+    cohort <- "MDS.rnaseq.EGAD00001003891"
     fastqs <- data.frame(
         fastq_1 = list.files("/net/nfs-irwrsrchnas01/labs/rrockne/MHO/MDS.rnaseq.EGAD00001003891/data/fastq2/reads",
             pattern = "1.fq.gz", full.names = TRUE
@@ -223,9 +218,9 @@ parse_metadata_MDS.rnaseq.EGAD00001003891 <- function() {
                 stringr::str_detect(sample_name, "day7|day14") ~ "CD34",
                 stringr::str_detect(sample_name, "CD34") ~ "CD34"
             ),
-            project = project
+            cohort = cohort
         ) |>
-        dplyr::select(library_id = ega_run_accession_id, fastq_1, fastq_2, strandedness, dplyr::everything(), project) |>
+        dplyr::select(library_id = ega_run_accession_id, fastq_1, fastq_2, strandedness, dplyr::everything(), cohort) |>
         dplyr::filter(library_strategy == "RNA-Seq")
     return(sample_sheet)
 }
@@ -238,7 +233,7 @@ parse_metadata_AML.PRJEB27973 <- function() {
     ) |>
         tidyr::separate(sample_alias, into = c("genotype", "patient_id", "timepoint"), sep = "-") |>
         dplyr::mutate(
-            project = "AML.PRJEB27973",
+            cohort = "AML.PRJEB27973",
             library_id = sample,
             patient_id = patient_id,
             timepoint = timepoint,
@@ -250,7 +245,6 @@ parse_metadata_AML.PRJEB27973 <- function() {
             genotype = genotype,
             tissue = "BM"
         ) |>
-        dplyr::select(library_id, fastq_1, fastq_2, strandedness, patient_id, tissue, timepoint, batch, treatment, genotype, sex, dob, project, everything())
+        dplyr::select(library_id, fastq_1, fastq_2, strandedness, patient_id, tissue, timepoint, batch, treatment, genotype, sex, dob, cohort, everything())
     return(sample_sheet)
 }
-
