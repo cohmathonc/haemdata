@@ -1,6 +1,8 @@
 #### miRNA -----
 
-# ├ AML.mRNA.2016
+
+
+# ├ AML.miRNA.2016
 parse_metadata_AML.miRNA.2016 <- function() {
     cohort <- "AML.miRNA.2016"
     assay <- "miRNA"
@@ -145,7 +147,8 @@ parse_metadata_AML.miRNA.2021.RxGroups1and2 <- function() {
                 stringr::str_detect(fastq_1, "_T2") ~ "T2",
                 TRUE ~ timepoint
             ),
-            timepoint = sub("PB", "END", timepoint)) |>
+            timepoint = sub("PB", "END", timepoint),
+            mouse_id = sub("4319", "4419", mouse_id)) |> # search outlook "4319"
         dplyr::select(library_id, fastq_1, mouse_id, timepoint, tissue, batch, cohort, assay)
     return(sample_sheet)
 }

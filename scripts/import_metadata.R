@@ -48,7 +48,9 @@ update_metadata_mmu <- function() {
     # Load in metadata_mmu and modify as needed
 
     # v0.0.0.9010 interim
-    sample_sheet <- pins::pin_read(
+    # # # Add miRNA libraries to metadata_mmu ----
+
+    mRNA_sample_sheet <- pins::pin_read(
         pins::board_folder(
             "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata",
             versioned = FALSE
@@ -57,8 +59,35 @@ update_metadata_mmu <- function() {
     ) |>
         purrr::modify_if(is.factor, as.character)
 
-    # v0.0.0.9010
-    # # Assign sample IDs
+    # miRNA_sample_sheet <- rbind(
+    #     parse_metadata_AML.miRNA.2016(),
+    #     parse_metadata_AML.miRNA.2018(),
+    #     parse_metadata_AML.miRNA.2020(),
+    #     parse_metadata_AML.miRNA.2021.RxGroup1(),
+    #     parse_metadata_AML.miRNA.2021.RxGroups1and2(),
+    #     parse_metadata_AML.miRNA.2021.RxGroup2_pt2(),
+    #     parse_metadata_AML.miRNA.2022.RxGroup3()
+    # ) |> mutate(mouse_id = as.integer(mouse_id))
+
+    # sample_sheet <- dplyr::full_join(mRNA_sample_sheet, miRNA_sample_sheet) |>
+    #     dplyr::arrange(mouse_id, tissue, timepoint) |>
+    #     dplyr::mutate(mouse_id = as.character(mouse_id)) |>
+    #     tidyr::fill(
+    #         sample_id,
+    #         treatment,
+    #         genotype,
+    #         sex,
+    #         sample_date,
+    #         percent_ckit,
+    #         dob,
+    #         dod,
+    #         sample_weeks,
+    #         age_at_end,
+    #         age_at_start,
+    #         age_at_sample
+    #     )
+
+    # # # Assign sample IDs ----
     # sample_ids <- all_mice |>
     #     dplyr::select(mouse_id, tissue, sample_date) |>
     #     dplyr::distinct() |>
@@ -69,9 +98,13 @@ update_metadata_mmu <- function() {
     #     dplyr::left_join(sample_ids, by = c("mouse_id", "tissue", "sample_date")) |>
     #     dplyr::relocate(sample_id)
 
-    # rename project to cohort
+    # # # Rename project to cohort ----
     # sample_sheet <- all_mice |>
     #     dplyr::rename(cohort = project)
+
+    # # # Save a copy ----
+    # sample_sheet |>
+    #     rio::export("data-raw/metadata_mmu.rds")
 
     return(sample_sheet)
 }
