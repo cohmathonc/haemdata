@@ -404,13 +404,25 @@ delete_latest_pins <- function(board, days_to_delete = 7) {
     print(pin_ids_to_delete |> unlist())
 
     # Prompt the user to confirm the deletion
-    confirm_delete <- readline(prompt = "Do you want to delete these pins? (y/n) ")
+    confirm_delete <- readline(prompt = "Do you want to delete the most recent versions of these pins? (y/n) ")
 
     # If the user confirms, delete the pins
     if (confirm_delete == "y") {
         for (pin_id in pin_ids_to_delete) {
-            pin_delete(board, pin_id)
+            pin_metadata <- pin_meta(board, pin_id)
+            pin_version_delete(board, pin_id, pin_metadata$local$version)
         }
+    }
+}
+
+
+prune_all_pins <- function(board, days_to_keep = 7) {
+    library(pins)
+    # Get the pins on the specified board
+    pins <- pin_list(board)
+
+    for (pin in pins) {
+        pin_versions_prune(board, pin, days = days_to_delete)
     }
 }
 #### sample ID PSON
