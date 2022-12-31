@@ -9,4 +9,5 @@
 * scRNAseq
   - CML mice 
   - add 10X read metrics for all libraries
+* fix Isilon paths for AML 2016 & 2018 mRNAseq
 * update nf-core version to 3.10+ and remove rRNA
