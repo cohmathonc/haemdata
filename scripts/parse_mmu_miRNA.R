@@ -1,7 +1,5 @@
 #### miRNA -----
 
-
-
 # ├ AML.miRNA.2016
 parse_metadata_AML.miRNA.2016 <- function() {
     cohort <- "AML.miRNA.2016"
@@ -12,7 +10,7 @@ parse_metadata_AML.miRNA.2016 <- function() {
             cohort = cohort,
             assay = assay,
             tissue = tissue,
-            fastq_1 = oldname,
+            fastq_1 = paste0(oldname, ".gz"),
             library_id = paste0("COHP_", stringr::str_replace(oldname, ".*/(\\d*)_.*", "\\1")),
             mouse_id = stringr::str_replace(newname, "(\\d)-.*", "\\1"),
             timepoint = stringr::str_replace(newname, "^\\d*-(.)\\.fq", "\\1"),
@@ -31,7 +29,7 @@ parse_metadata_AML.miRNA.2018 <- function() {
     tissue <- "PBMC"
     fastq_paths <- list.files(
         path = "/labs/ykuo/Seq/AML2018_new_samples/2018_Aug_miRNA/cutadapt_fastq",
-        pattern = ".fastq", full.names = TRUE
+        pattern = ".fastq.gz", full.names = TRUE
     ) |>
         dplyr::as_tibble() |>
         dplyr::mutate(
@@ -62,7 +60,7 @@ parse_metadata_AML.miRNA.2020 <- function() {
     tissue <- "PBMC"
     sample_sheet <- list.files(
         path = "/labs/ykuo/Seq/210211_miRNA",
-        pattern = ".fastq", full.names = TRUE
+        pattern = ".fastq.gz", full.names = TRUE
     ) |>
         dplyr::as_tibble() |>
         dplyr::mutate(
@@ -94,7 +92,7 @@ parse_metadata_AML.miRNA.2021.RxGroup1 <- function() {
     batch <- "2021_G"
     sample_sheet <- list.files(
         path = "/labs/rrockne/Seq/210429_B",
-        pattern = ".fastq", full.names = TRUE
+        pattern = ".fastq.gz", full.names = TRUE
     ) |>
         dplyr::as_tibble() |>
         dplyr::mutate(
@@ -125,7 +123,7 @@ parse_metadata_AML.miRNA.2021.RxGroups1and2 <- function() {
     batch <- "2021_H"
     sample_sheet <- list.files(
         path = "/labs/rrockne/Seq/210528_A",
-        pattern = ".fastq", full.names = TRUE
+        pattern = ".fastq.gz", full.names = TRUE
     ) |>
         dplyr::as_tibble() |>
         dplyr::mutate(
@@ -161,7 +159,7 @@ parse_metadata_AML.miRNA.2021.RxGroup2_pt2 <- function() {
     batch <- "2021_I"
     sample_sheet <- list.files(
         path = "/net/nfs-irwrsrchnas01/labs/ykuo/Seq/210907",
-        pattern = ".fastq", full.names = TRUE
+        pattern = ".fastq.gz", full.names = TRUE
     ) |>
         dplyr::as_tibble() |>
         dplyr::mutate(
@@ -193,7 +191,7 @@ parse_metadata_AML.miRNA.2022.RxGroup3 <- function() {
 
     fastq_paths <- list.files(
         path = "/labs/ykuo/Seq/220620_IGC-LZ-20205",
-        pattern = ".fastq", full.names = TRUE
+        pattern = ".fastq.gz", full.names = TRUE
     ) |>
         dplyr::as_tibble() |>
         dplyr::mutate(library_id = paste0("COHP_", stringr::str_replace(value, ".*/(\\d*)_.*", "\\1")))
