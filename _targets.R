@@ -5,16 +5,18 @@
 ###### PIPELINE SETUP ######
 # nf-core pipeline version
 rnaseq_release <- "3.7"
+smrnaseq_release <- "2.1.0"
 ###########################
 # Load the R scripts & functions:
 for (file in list.files("scripts", full.names = TRUE)) source(file)
+for (file in list.files("R", pattern = "*.R", full.names = TRUE)) source(file)
 
 # Load packages required to define the pipeline:
 library(targets)
 library(tarchetypes)
 # Set target options:
 tar_option_set(
-    packages = c("haemdata", "tidyverse", "SummarizedExperiment"), # packages that targets need to run
+    packages = c("tidyverse", "SummarizedExperiment"), # packages that targets need to run
     error = "abridge", # continue or stop on error
     # format = "qs", # default storage format
     storage = "worker",
@@ -46,7 +48,7 @@ tar_plan(
     tar_target(logo, make_logo()),
 
     ###############################################################################################
-    # Build sample sheets -------------------------------------------------
+    # Build mRNA sample sheets -------------------------------------------------
     # AML validation samples
     tar_target(sample_sheet_2017_1, parse_metadata_AML.validation.2017()),
     tar_target(sample_sheet_2020_2, parse_metadata_AML.mRNA.novaseq_validation.2020()),
@@ -86,9 +88,19 @@ tar_plan(
             sample_sheet_2020_2
         )
     ),
+    # * Build miRNA sample sheets -------------------------------------------------
+    # miRNA_sample_sheet_test (parse_metadata_AML.miRNA.2021.RxGroup2_pt2)
+    miRNA_sample_sheet_test = published_metadata_mmu |>
+        dplyr::filter(str_detect(assay, "miRNA")) |>
+        dplyr::filter(str_detect(cohort, "^AML.miRNA.2021.RxGroup2_pt2$")) |>
+        dplyr::select(sample_id, library_id, fastq_1),
+    # miRNA_sample_sheet_2016_2022
+    miRNA_sample_sheet_2016_2022 = published_metadata_mmu |>
+        dplyr::filter(str_detect(assay, "miRNA")) |>
+        dplyr::select(sample_id, library_id, fastq_1),
 
     ###############################################################################################
-    # run the nf-core pipeline - mRNA -------------------------------------------
+    # * run the nf-core pipeline - mRNA -------------------------------------------
     # Names adhere to the format "species_protocol_cohort_ref-genome_workflow"
     # cohort: {2016_2022, validation, flt3, mds, 2022_1}
     # species: {mmu|hsa}
@@ -125,6 +137,18 @@ tar_plan(
     # Salmon only
     tar_target(CML.mRNA_salmon,
         run_nf_core_rnaseq("mmu_mrna_cml", sample_sheet_CML, "GENCODEm28_HLT", qc = FALSE),
+        format = "file"
+    ),
+
+    # *** nfcore smRNAseq pipeline *** #
+    #test
+    tar_target(mmu_mirna_test,
+        run_nf_core_smrnaseq("mmu_mirna_test", miRNA_sample_sheet_test),
+        format = "file"
+    ),
+    #all
+    tar_target(mmu_mirna_2016_2022,
+        run_nf_core_smrnaseq("mmu_mirna_2016_2022", miRNA_sample_sheet_2016_2022),
         format = "file"
     ),
 
@@ -259,6 +283,7 @@ tar_plan(
             hsa_mrna_mds_GENCODEm28_pins,
             hsa_mrna_kim_GENCODEm28_pins
         ))
-    ),
-    tar_target(built_package, build_package(latest_published_data), resources = apollo_shortmem)
+    )
+    # ,
+    # tar_target(built_package, build_package(latest_published_data), resources = apollo_shortmem)
 )

@@ -50,7 +50,8 @@ update_metadata_mmu <- function() {
     # v0.0.0.9010 interim
     # # # Add miRNA libraries to metadata_mmu ----
 
-    mRNA_sample_sheet <- pins::pin_read(
+    sample_sheet <- pins::pin_read(
+    # mRNA_sample_sheet <- pins::pin_read(
         pins::board_folder(
             "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata",
             versioned = FALSE
@@ -103,8 +104,8 @@ update_metadata_mmu <- function() {
     #     dplyr::rename(cohort = project)
 
     # # # Save a copy ----
-    # sample_sheet |>
-    #     rio::export("data-raw/metadata_mmu.rds")
+    sample_sheet |>
+        rio::export("data-raw/metadata_mmu.rds")
 
     return(sample_sheet)
 }

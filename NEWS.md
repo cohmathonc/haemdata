@@ -1,6 +1,9 @@
 # haemdata 0.0.0.9010
+* miRNAseq uses `sample_id` as sample identifier (in lieu of `library_id`) to aid matching samples across assays
+* harmonise miRNAseq for all AML samples (nf-core/smrnaseq v2.1.0)
+* miRNAseq fastqs gzip compressed in place, keeping originals
 * fix mislabelled human FLT3 AML samples, add new samples
-* retired GRCm38 from targets pipeline; GENCODEm28 is the default mmu reference genome
+* retired GRCm38 mRNAseq pipeline; GENCODEm28 is the default mmu reference genome for mRNAseq
 * add a PSON sample identifier for all mmu samples
 * add a warning about reproducibility when pins are loaded without stipulating the `version`
 * rename `sample` to `library_id` in metadata_mmu

@@ -1,6 +1,5 @@
 # Roadmap
 
-* include miRNA for AML samples
 * include additional mmu 10X libraries from Amber's lab 
 * simplify `metadata_hsa`
 * implement [`pointblank`](https://rich-iannone.github.io/pointblank/index.html) data dictionaries
