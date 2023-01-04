@@ -94,9 +94,10 @@ tar_plan(
         dplyr::filter(str_detect(assay, "miRNA")) |>
         dplyr::filter(str_detect(cohort, "^AML.miRNA.2021.RxGroup2_pt2$")) |>
         dplyr::select(sample_id, library_id, fastq_1),
-    # miRNA_sample_sheet_2016_2022
+    # miRNA_sample_sheets
     miRNA_sample_sheet_2016_2022 = published_metadata_mmu |>
         dplyr::filter(str_detect(assay, "miRNA")) |>
+        dplyr::filter(str_detect(cohort, "2016|2018|2020|2021|2022")) |>
         dplyr::select(sample_id, library_id, fastq_1),
 
     ###############################################################################################
@@ -141,12 +142,7 @@ tar_plan(
     ),
 
     # *** nfcore smRNAseq pipeline *** #
-    #test
-    tar_target(mmu_mirna_test,
-        run_nf_core_smrnaseq("mmu_mirna_test", miRNA_sample_sheet_test),
-        format = "file"
-    ),
-    #all
+    #2016_2021
     tar_target(mmu_mirna_2016_2022,
         run_nf_core_smrnaseq("mmu_mirna_2016_2022", miRNA_sample_sheet_2016_2022),
         format = "file"

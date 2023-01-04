@@ -427,14 +427,35 @@ prune_all_pins <- function(board, days_to_keep = 7) {
 }
 #### sample ID PSON
 
+all_mice <- pins::pin_read(
+    pins::board_folder(
+        "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata",
+        versioned = FALSE
+    ),
+    "metadata_mmu.csv"
+) |>
+    purrr::modify_if(is.factor, as.character)
+
+
 sample_ids <- all_mice |>
     select(mouse_id, tissue, sample_date) |>
     distinct() |>
     arrange(lubridate::date(sample_date)) |>
-    mutate(sample_id = sprintf("PSON_%04d", row_number()))
+    group_by(sample_date, tissue, mouse_id) |>
+    mutate(sample_id = sprintf("PSON_%04d", cur_group_id()))
 
+
+all_mice |>
+    select(-sample_id) |>
+    full_join(sample_ids) |>
+    relocate(sample_id) |>
+    View()
+    
+    distinct() |>
+    rio::export("data-raw/mouse_sample_metadata.xlsx")
  sample_sheet <- all_mice |>
-    left_join(sample_ids, by = c("mouse_id", "tissue", "sample_date")) |>
+     left_join(sample_ids, by = c("mouse_id", "tissue", "sample_date")) |>
+     head()
     relocate(sample_id) |>
     head()
 
@@ -468,7 +489,7 @@ mRNA_sample_sheet <- pins::pin_read(
     purrr::modify_if(is.factor, as.character)
 
 
-combined <- full_join(mRNA_sample_sheet, miRNA_sample_sheet) |>
+combined <- full_join(mRNA_sample_sheet, miRNA_sample_sheet, by = c(mouse_id, tissue, timepoint)) |>
     arrange(mouse_id, tissue, timepoint) |>
     mutate(mouse_id = as.character(mouse_id)) |>
     fill(
@@ -488,3 +509,30 @@ combined <- full_join(mRNA_sample_sheet, miRNA_sample_sheet) |>
 
 combined |>
     rio::export("data-raw/combined_sample_metadata.xlsx", overwrite = TRUE)
+
+
+## scCustomise
+
+scCustomize::Read_Metrics_10X(
+    base_path,
+    secondary_path = NULL,
+    default_10X = TRUE,
+    lib_list = NULL,
+    lib_names = NULL
+)
+
+
+
+nextflow run \
+    -c /net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata-nf-core-cache/nextflow.apollo \
+    nf-core/smrnaseq -r 2.1.0 -profile test,singularity \
+    --email domeally@coh.org 
+
+# Shared sample dates
+#2015-11-06
+12  PSON_0073 COHP_11208  T4       /labs/ykuo/Seq/160122/miRNA/11208_2684-5_CGATGT_L999_cutadapt.fastq.gz
+13  PSON_0073 COHP_11536  T5       /labs/ykuo/Seq/160304/miRNA/orig/11536_2684-6_TAGCTT_L999_R1_001.fastq.gz
+
+#2015-12-25
+76  PSON_0062 COHP_10878 T3     /labs/ykuo/Seq/151219/Jing_Qi_miRNA/orig/10878_2709-4_CCAACA_L999_R1_001.fastq.gz
+77  PSON_0062 COHP_11216 T4     /labs/ykuo/Seq/160122/miRNA/11216_2709-5_TAGCTT_L999_cutadapt.fastq.gz
