@@ -14,7 +14,6 @@ parse_metadata_AML.miRNA.2016 <- function() {
             library_id = paste0("COHP_", stringr::str_replace(oldname, ".*/(\\d*)_.*", "\\1")),
             mouse_id = stringr::str_replace(newname, "(\\d)-.*", "\\1"),
             timepoint = stringr::str_replace(newname, "^\\d*-(.)\\.fq", "\\1"),
-            timepoint = as.character(as.numeric(timepoint) - 1),
             timepoint = case_when(is.na(timepoint) ~ "L", TRUE ~ paste0("T",timepoint)),
             seq_batch = as.numeric(as.factor(stringr::str_replace(oldname, ".*(?>Seq/)(\\w*)/.*", "\\1"))),
             batch = paste0("2016_", seq_batch)
