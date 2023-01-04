@@ -49,7 +49,6 @@ update_metadata_mmu <- function() {
 
     # v0.0.0.9010 interim
     # # # Add miRNA libraries to metadata_mmu ----
-
     sample_sheet <- pins::pin_read(
     # mRNA_sample_sheet <- pins::pin_read(
         pins::board_folder(
@@ -58,52 +57,67 @@ update_metadata_mmu <- function() {
         ),
         "metadata_mmu.csv"
     ) |>
-        purrr::modify_if(is.factor, as.character)
+        purrr::modify_if(is.factor, as.character) |>
+            dplyr::filter(!grepl("miRNA", assay)) |>
+            dplyr::arrange(sample_date, mouse_id, tissue) |>
+            select(-sample_id) # do this until we're happy that the sample_id can be assigned reliably
 
-    # miRNA_sample_sheet <- rbind(
-    #     parse_metadata_AML.miRNA.2016(),
-    #     parse_metadata_AML.miRNA.2018(),
-    #     parse_metadata_AML.miRNA.2020(),
-    #     parse_metadata_AML.miRNA.2021.RxGroup1(),
-    #     parse_metadata_AML.miRNA.2021.RxGroups1and2(),
-    #     parse_metadata_AML.miRNA.2021.RxGroup2_pt2(),
-    #     parse_metadata_AML.miRNA.2022.RxGroup3()
-    # ) |> mutate(mouse_id = as.integer(mouse_id))
-
-    # sample_sheet <- dplyr::full_join(mRNA_sample_sheet, miRNA_sample_sheet) |>
-    #     dplyr::arrange(mouse_id, tissue, timepoint) |>
-    #     dplyr::mutate(mouse_id = as.character(mouse_id)) |>
-    #     tidyr::fill(
-    #         sample_id,
-    #         treatment,
-    #         genotype,
-    #         sex,
-    #         sample_date,
-    #         percent_ckit,
-    #         dob,
-    #         dod,
-    #         sample_weeks,
-    #         age_at_end,
-    #         age_at_start,
-    #         age_at_sample
-    #     )
+    # get miRNA libraries
+    miRNA_sample_sheet <- rbind(
+        parse_metadata_AML.miRNA.2016(),
+        parse_metadata_AML.miRNA.2018(),
+        parse_metadata_AML.miRNA.2020(),
+        parse_metadata_AML.miRNA.2021.RxGroup1(),
+        parse_metadata_AML.miRNA.2021.RxGroups1and2(),
+        parse_metadata_AML.miRNA.2021.RxGroup2_pt2(),
+        parse_metadata_AML.miRNA.2022.RxGroup3()
+    ) |> mutate(mouse_id = as.integer(mouse_id))
 
     # # # Assign sample IDs ----
-    # sample_ids <- all_mice |>
-    #     dplyr::select(mouse_id, tissue, sample_date) |>
-    #     dplyr::distinct() |>
-    #     dplyr::arrange(lubridate::date(sample_date)) |>
-    #     dplyr::mutate(sample_id = sprintf("PSON_%04d", dplyr::row_number()))
+    # make a combined list of samples and assign a number
+    sample_ids <- rbind(
+        select(sample_sheet, c(mouse_id, tissue, timepoint)),
+        select(miRNA_sample_sheet, c(mouse_id, tissue, timepoint))
+    ) |> 
+    dplyr::distinct() |>
+    dplyr::mutate(sample_id = sprintf("PSON_%04d", dplyr::row_number()))
 
-    # sample_sheet <- all_mice |>
-    #     dplyr::left_join(sample_ids, by = c("mouse_id", "tissue", "sample_date")) |>
-    #     dplyr::relocate(sample_id)
+    sample_sheet_w_IDs <- sample_sheet |>
+        dplyr::left_join(sample_ids, by = c("mouse_id", "tissue", "timepoint")) |>
+        dplyr::relocate(sample_id)
+
+    miRNA_sample_sheet_w_IDs <- miRNA_sample_sheet |>
+        dplyr::left_join(sample_ids, by = c("mouse_id", "tissue", "timepoint")) |>
+        dplyr::relocate(sample_id)
+
+    combined_sample_sheet <- bind_rows(
+            sample_sheet_w_IDs,
+            miRNA_sample_sheet_w_IDs) |>
+        dplyr::arrange(mouse_id, tissue, timepoint) |>
+        dplyr::mutate(mouse_id = as.character(mouse_id)) |>
+        dplyr::group_by(mouse_id, tissue, timepoint) |>
+        tidyr::fill(
+            sample_id,
+            treatment,
+            genotype,
+            sex,
+            sample_date,
+            percent_ckit,
+            dob,
+            dod,
+            sample_weeks,
+            age_at_end,
+            age_at_start,
+            age_at_sample,
+            .direction = "updown"
+        )
 
     # # # Rename project to cohort ----
     # sample_sheet <- all_mice |>
     #     dplyr::rename(cohort = project)
 
     # # # Save a copy ----
+    sample_sheet <- combined_sample_sheet
     sample_sheet |>
         rio::export("data-raw/metadata_mmu.rds")
 
