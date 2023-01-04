@@ -56,7 +56,7 @@ run_nf_core_rnaseq <- function(run_folder, sample_sheet, ref_genome, qc = TRUE) 
         # if theres no run script, make one and submit it to the cluster
     } else if (!file.exists(glue::glue("{run_path}/run_{run_mode}_{ref_genome}.sh"))) {
         sample_sheet |>
-            dplyr::select(sample = sample_id, fastq_1, fastq_2, strandedness) |>
+            dplyr::select(sample = library_id, fastq_1, fastq_2, strandedness) |>
             readr::write_csv(paste0(run_path, "/sample_sheet.csv"))
 
         # make a sbatch script

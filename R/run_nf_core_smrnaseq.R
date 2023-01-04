@@ -45,7 +45,7 @@ run_nf_core_smrnaseq <- function(run_folder, sample_sheet, species = "mmu") {
         # if theres no run script, make one and submit it to the cluster
     } else if (!file.exists(glue::glue("{run_path}/run_{ref_genome}.sh"))) {
         sample_sheet |>
-            dplyr::select(sample = sample_id, fastq_1) |>
+            dplyr::select(sample = library_id, fastq_1) |>
             readr::write_csv(paste0(run_path, "/sample_sheet.csv"))
 
         # make a sbatch script
@@ -72,7 +72,7 @@ nextflow run \\
     -c {nf_core_cache}/igenomes.apollo \\
     nf-core/smrnaseq -r {smrnaseq_release} -resume \\
     --input {run_path}/sample_sheet.csv \\
-    --outdir {out_folder} \\
+    --outdir {out_folder} --save_reference \\
     --genome {ref_genome} --igenomes_base /ref_genome/igenomes \\
     --email domeally@coh.org {three_prime_adapter} 
 ", .trim = FALSE),
