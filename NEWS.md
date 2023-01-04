@@ -1,5 +1,4 @@
 # haemdata 0.0.0.9010
-* miRNAseq uses `sample_id` as sample identifier (in lieu of `library_id`) to aid matching samples across assays
 * harmonise miRNAseq for all AML samples (nf-core/smrnaseq v2.1.0)
 * miRNAseq fastqs gzip compressed in place, keeping originals
 * fix mislabelled human FLT3 AML samples, add new samples
