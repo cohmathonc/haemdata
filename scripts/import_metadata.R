@@ -78,7 +78,7 @@ update_metadata_mmu <- function() {
     sample_ids <- rbind(
         select(sample_sheet, c(mouse_id, tissue, timepoint)),
         select(miRNA_sample_sheet, c(mouse_id, tissue, timepoint))
-    ) |> 
+    ) |>
     dplyr::distinct() |>
     dplyr::mutate(sample_id = sprintf("PSON_%04d", dplyr::row_number()))
 
@@ -95,22 +95,27 @@ update_metadata_mmu <- function() {
             miRNA_sample_sheet_w_IDs) |>
         dplyr::arrange(mouse_id, tissue, timepoint) |>
         dplyr::mutate(mouse_id = as.character(mouse_id)) |>
-        dplyr::group_by(mouse_id, tissue, timepoint) |>
-        tidyr::fill(
-            sample_id,
-            treatment,
-            genotype,
-            sex,
-            sample_date,
-            percent_ckit,
-            dob,
-            dod,
-            sample_weeks,
-            age_at_end,
-            age_at_start,
-            age_at_sample,
-            .direction = "updown"
-        )
+        dplyr::group_by(mouse_id) |> #Per mouse metadata
+            tidyr::fill(
+                treatment,
+                genotype,
+                sex,
+                dob,
+                dod,
+                age_at_end,
+                age_at_start,
+                .direction = "updown"
+            ) |>
+        dplyr::group_by(mouse_id, tissue, timepoint) |> # per sample metadata
+            tidyr::fill(
+                sample_id,
+                sample_date,
+                percent_ckit,
+                sample_weeks,
+                age_at_sample,
+                .direction = "updown"
+            ) |>
+        dplyr::ungroup()
 
     # # # Rename project to cohort ----
     # sample_sheet <- all_mice |>

@@ -1,6 +1,7 @@
 # haemdata 0.0.0.9010
-* harmonise miRNAseq for all AML samples (nf-core/smrnaseq v2.1.0)
-* miRNAseq fastqs gzip compressed in place, keeping originals
+* make 2016 miRNA timepoints 0-offset to match mRNA (miRNA labels are 1-based)
+* harmonise miRNA for all AML samples (nf-core/smrnaseq v2.1.0)
+* miRNA fastqs gzip compressed in place, keeping originals
 * fix mislabelled human FLT3 AML samples, add new samples
 * retired GRCm38 mRNAseq pipeline; GENCODEm28 is the default mmu reference genome for mRNAseq
 * add a PSON sample identifier for all mmu samples
