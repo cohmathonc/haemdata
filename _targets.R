@@ -95,9 +95,13 @@ tar_plan(
         dplyr::filter(str_detect(cohort, "^AML.miRNA.2021.RxGroup2_pt2$")) |>
         dplyr::select(sample_id, library_id, fastq_1),
     # miRNA_sample_sheets
-    miRNA_sample_sheet_2016_2022 = published_metadata_mmu |>
+    miRNA_sample_sheet_cutadapt = published_metadata_mmu |>
         dplyr::filter(str_detect(assay, "miRNA")) |>
-        dplyr::filter(str_detect(cohort, "2016|2018|2020|2021|2022")) |>
+        dplyr::filter(str_detect(fastq_1, "cutadapt")) |>
+        dplyr::select(sample_id, library_id, fastq_1),
+    miRNA_sample_sheet_untrimmed = published_metadata_mmu |>
+        dplyr::filter(str_detect(assay, "miRNA")) |>
+        dplyr::filter(str_detect(cohort, "cutadapt", negate = TRUE)) |>
         dplyr::select(sample_id, library_id, fastq_1),
 
     ###############################################################################################
@@ -142,11 +146,24 @@ tar_plan(
     ),
 
     # *** nfcore smRNAseq pipeline *** #
-    #2016_2021
-    tar_target(mmu_mirna_2016_2022,
-        run_nf_core_smrnaseq("mmu_mirna_2016_2022", miRNA_sample_sheet_2016_2022),
+    # cutadapt trimmed reads
+    tar_target(mmu_mirna_cutadapt,
+        run_nf_core_smrnaseq("mmu_mirna_cutadapt", miRNA_sample_sheet_cutadapt),
         format = "file"
     ),
+    # untrimmed reads
+
+    #test - trim the reads
+    tar_target(miRNA_sample_sheet_test_trimmed, run_cutadapt_smrna(miRNA_sample_sheet_test)
+    ),
+    #test - run nf-core smrnaseq
+    tar_target(mmu_mirna_test, run_nf_core_smrnaseq("mmu_mirna_test", miRNA_sample_sheet_test_trimmed),
+        format = "file"
+    ),
+    # tar_target(mmu_mirna_untrimmed,
+    #     run_nf_core_smrnaseq("mmu_mirna_untrimmed", miRNA_sample_sheet_untrimmed, clip_r1 = 3),
+    #     format = "file"
+    #  ),
 
     ############################################################################
     # Consolidate metadata -----------------------------------------------------

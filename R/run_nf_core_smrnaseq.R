@@ -13,18 +13,26 @@
 #' @param run_folder subfolder in which to run nextflow, keeps the pipeline
 #' from overwriting previous runs and enables the `-resume` feature of Nextflow.
 #' @param sample_sheet nf-core sample sheet with the columns `library_id, fastq_1, fastq_2, strandedness` (see [`R/import_metadata.R`](https://github.com/drejom/haemdata/blob/HEAD/R/import_metadata.R))
-#' @param species mmu or hsa. If *mmu*, additionally sets the 3' adapter to TCTGGAATTCTCGGGTGCCAAGGAACTCC. For *hsa*, teh 3' adapter is auto-discovered.
+#' @param species mmu or hsa. If *mmu*, additionally sets the 3' adapter to TCTGGAATTCTCGGGTGCCAAGGAACTCC. For *hsa*, the 3' adapter is auto-discovered.
+#' @param clip_r1_3p number of bases to trim from reads.
 #' @return a path to the run script, or the multiqc report if it exists.
 #' @author Denis O'Meally
 #' @export
 
-run_nf_core_smrnaseq <- function(run_folder, sample_sheet, species = "mmu") {
+run_nf_core_smrnaseq <- function(run_folder, sample_sheet, clip_r1_3p = NULL, species = "mmu") {
     run_path <- glue::glue("{nf_core_cache}/{run_folder}")
     out_folder <- glue::glue("nfcore-smrnaseq-v{smrnaseq_release}-{species}")
 
     if (!dir.exists(run_path)) {
         dir.create(run_path, recursive = TRUE)
     }
+
+    if (!is.null(clip_r1_3p)) {
+        clip_r1 <- glue::glue("--three_prime_clip_r1 '{clip_r1_3p}'")
+    } else {
+        clip_r1 <- ""
+    }
+
     if (species == "mmu") {
             ref_genome <- "GRCm38"
             three_prime_adapter <- "--protocol 'custom' --three_prime_adapter 'TCTGGAATTCTCGGGTGCCAAGGAACTCC'"
@@ -71,10 +79,11 @@ nextflow run \\
     -c {nf_core_cache}/nextflow.apollo \\
     -c {nf_core_cache}/igenomes.apollo \\
     nf-core/smrnaseq -r {smrnaseq_release} -resume \\
+    --publish_dir_mode link \\
     --input {run_path}/sample_sheet.csv \\
     --outdir {out_folder} --save_reference \\
     --genome {ref_genome} --igenomes_base /ref_genome/igenomes \\
-    --email domeally@coh.org {three_prime_adapter} 
+    --email domeally@coh.org {three_prime_adapter} {clip_r1}
 ", .trim = FALSE),
             file = glue::glue("{run_path}/run_{ref_genome}.sh")
         )
