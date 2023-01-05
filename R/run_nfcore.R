@@ -83,6 +83,7 @@ nextflow run \\
     -c {nf_core_cache}/igenomes.apollo \\
     nf-core/rnaseq -r {rnaseq_release} -resume \\
     --input {run_path}/sample_sheet.csv \\
+    --publish_dir_mode link \\
     --outdir {out_folder} {skip} {deseq_transform} \\
     --genome {ref_genome} --igenomes_base /ref_genome/igenomes \\
     --email domeally@coh.org --pseudo_aligner salmon {gencode}
