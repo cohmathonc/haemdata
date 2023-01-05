@@ -146,13 +146,14 @@ tar_plan(
     ),
 
     # *** nfcore smRNAseq pipeline *** #
+
     # cutadapt trimmed reads
     tar_target(mmu_mirna_cutadapt,
         run_nf_core_smrnaseq("mmu_mirna_cutadapt", miRNA_sample_sheet_cutadapt),
         format = "file"
     ),
-    # untrimmed reads
 
+    # untrimmed reads
     #test - trim the reads
     tar_target(miRNA_sample_sheet_test_trimmed, run_cutadapt_smrna(miRNA_sample_sheet_test)
     ),
@@ -160,10 +161,13 @@ tar_plan(
     tar_target(mmu_mirna_test, run_nf_core_smrnaseq("mmu_mirna_test", miRNA_sample_sheet_test_trimmed),
         format = "file"
     ),
-    # tar_target(mmu_mirna_untrimmed,
-    #     run_nf_core_smrnaseq("mmu_mirna_untrimmed", miRNA_sample_sheet_untrimmed, clip_r1 = 3),
-    #     format = "file"
-    #  ),
+    #untrimmed
+    tar_target(miRNA_sample_sheet_trimmed, run_cutadapt_smrna(miRNA_sample_sheet_untrimmed)
+    ),
+    tar_target(mmu_mirna_trimmed,
+        run_nf_core_smrnaseq("mmu_mirna_untrimmed", miRNA_sample_sheet_trimmed, clip_r1 = 3),
+        format = "file"
+    ),
 
     ############################################################################
     # Consolidate metadata -----------------------------------------------------
