@@ -1,5 +1,6 @@
 # Roadmap
-* move pipeline to Target Markdown
+* remove metadata from SummarisedExperiments
+* move {target} script to Target Markdown
 * scRNAseq
   - CML mice 
   - add 10X read metrics for all libraries
