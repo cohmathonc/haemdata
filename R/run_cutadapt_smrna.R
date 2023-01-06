@@ -9,12 +9,12 @@
 #'
 #' @name run_nf_core_rnaseq
 #' @param sample_sheet nf-core sample sheet with the columns `sample_id, library_id, fastq_1`
-#' @return a dataframe with the columns `sample_id, library_id, fastq_1`, ready to be used as input to the nf-core pipeline
+#' @return a data.frame with the columns `library_id, fastq_1`, ready to be used as input to the nf-core pipeline
 #' @author Denis O'Meally
 #' @export
 run_cutadapt_smrna <- function(sample_sheet) {
     run_folder <- rlang::hash(sample_sheet)
-    run_path <- glue::glue("{nf_core_cache}/cutadapt_smrna/{run_folder}")
+    run_path <- glue::glue("{nf_core_cache}/cutadapt_fastq/{run_folder}")
 
     if (!dir.exists(run_path)) {
         dir.create(run_path, recursive = TRUE)
