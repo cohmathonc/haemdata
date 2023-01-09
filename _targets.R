@@ -101,7 +101,7 @@ tar_plan(
         dplyr::select(sample_id, library_id, fastq_1),
     miRNA_sample_sheet_untrimmed = published_metadata_mmu |>
         dplyr::filter(str_detect(assay, "miRNA")) |>
-        dplyr::filter(str_detect(cohort, "cutadapt", negate = TRUE)) |>
+        dplyr::filter(str_detect(fastq_1, "cutadapt", negate = TRUE)) |>
         dplyr::select(sample_id, library_id, fastq_1),
 
     ###############################################################################################
@@ -147,7 +147,7 @@ tar_plan(
 
     # *** nfcore smRNAseq pipeline *** #
 
-    # cutadapt trimmed reads
+    #IGC trimmed cutadapt reads
     tar_target(mmu_mirna_cutadapt,
         run_nf_core_smrnaseq("mmu_mirna_cutadapt", miRNA_sample_sheet_cutadapt),
         format = "file"
