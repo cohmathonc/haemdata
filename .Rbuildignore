@@ -10,6 +10,7 @@
 
 
 ^data-raw$
+^preprocessing$
 ^_targets$
 ^.future$
 ^_targets\.R$

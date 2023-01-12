@@ -12,3 +12,4 @@
 * fix Isilon paths for AML 2016 & 2018 mRNAseq
 * use `sample_id` as sample identifier (in lieu of `library_id`) to aid matching samples across assays
 * update nf-core version to 3.10+ and remove rRNA
+* use {babelwhale} to run cutadapt
