@@ -124,7 +124,7 @@ update_metadata_mmu <- function() {
     # # # Save a copy ----
     sample_sheet <- combined_sample_sheet
     sample_sheet |>
-        rio::export("data-raw/metadata_mmu.rds")
+        rio::export(here::here("data-raw/metadata_mmu.rds"))
 
     return(sample_sheet)
 }
@@ -177,8 +177,8 @@ parse_metadata_AML.mRNA.HSA_FLT3.2022 <- function() {
         )
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
 
-    xls <- "data-raw/FLT3 AML samples information (IGC-LZ-20342).xlsx"
-    xls_ss <- "data-raw/sample summary_IGC-LZ-20342.xlsx"
+    xls <- here::here("data-raw/FLT3 AML samples information (IGC-LZ-20342).xlsx")
+    xls_ss <- here::here("data-raw/sample summary_IGC-LZ-20342.xlsx")
 
     sample_metadata <- readxl::read_excel(xls) |>
         janitor::clean_names("lower_camel") |>
@@ -226,7 +226,7 @@ parse_metadata_MDS.rnaseq.EGAD00001003891 <- function() {
         ega_run_accession_id = gsub("_.*$", "", basename(fastq_1)),
         sample_name = gsub("^.*?_|.1.fq.gz", "", basename(fastq_1))
     )
-    sex <- read.table("data-raw/EGAD00001003891/delimited_maps/Run_Sample_meta_info.map", sep = "\t", header = FALSE) |>
+    sex <- read.table(here::here("data-raw/EGAD00001003891/delimited_maps/Run_Sample_meta_info.map"), sep = "\t", header = FALSE) |>
         dplyr::mutate(
             patient_id = stringr::str_extract(V1, "(?<=subject_id\\=)(.*?)(?=[;])"),
             sex = stringr::str_extract(V1, "(?<=gender\\=)(.*?)(?=[;])"),
@@ -234,12 +234,12 @@ parse_metadata_MDS.rnaseq.EGAD00001003891 <- function() {
         ) |>
         dplyr::select(patient_id, sex) |>
         dplyr::distinct()
-    files <- read.table("data-raw/EGAD00001003891/delimited_maps/Sample_File.map",
+    files <- read.table(here::here("data-raw/EGAD00001003891/delimited_maps/Sample_File.map"),
         sep = "\t", header = FALSE,
         col.names = c("patient_id", "ega_sample_accession_id", "bam", "ega_file_unique_accession_id")
     ) |> dplyr::mutate(sample_name = gsub(".bam.cip", "", bam))
 
-    experiment <- read.csv("data-raw/EGAD00001003891/delimited_maps/Study_Experiment_Run_sample.map",
+    experiment <- read.csv(here::here("data-raw/EGAD00001003891/delimited_maps/Study_Experiment_Run_sample.map"),
         sep = "\t", header = FALSE,
         col.names = c(
             "study_accession", "study_description", "existing_study_type", "platform",

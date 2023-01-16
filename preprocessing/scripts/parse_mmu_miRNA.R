@@ -5,7 +5,7 @@ parse_metadata_AML.miRNA.2016 <- function() {
     cohort <- "AML.miRNA.2016"
     assay <- "miRNA"
     tissue <- "PBMC"
-    sample_sheet <- read.csv("data-raw/2016miRNA_new_name_key.csv") |>
+    sample_sheet <- read.csv(here::here("data-raw/2016miRNA_new_name_key.csv")) |>
         dplyr::mutate(
             cohort = cohort,
             assay = assay,
@@ -35,7 +35,7 @@ parse_metadata_AML.miRNA.2018 <- function() {
             library_id = paste0("COHP_", stringr::str_replace(value, ".*/(\\d*)_.*", "\\1"))
         )
 
-    sample_sheet <- read.csv("data-raw/2018miRNA_new_name_key.csv") |>
+    sample_sheet <- read.csv(here::here("data-raw/2018miRNA_new_name_key.csv")) |>
         dplyr::mutate(
             cohort = cohort,
             assay = assay,

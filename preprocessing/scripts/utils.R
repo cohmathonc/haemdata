@@ -36,12 +36,12 @@ make_logo <- function(url = NULL, text = NULL) {
             s_width = 10, s_height = 10,
             white_around_sticker = TRUE,
             h_color = "#FE2B3F",
-            filename = "data-raw/haemdata_icon.png",
+            filename = here::here("data-raw/haemdata_icon.png"),
             dpi = 600
         )
 
     # use the logo
-    usethis::use_logo("data-raw/haemdata_icon.png", retina = TRUE)
+    usethis::use_logo(here::here("data-raw/haemdata_icon.png"), retina = TRUE)
 
     return(img)
 }
@@ -52,7 +52,7 @@ get_teams_file <- function(filename) {
     drive$download_file(filename)
     file.copy(
         from = basename(filename),
-        to = "data-raw",
+        to = here::here("data-raw"),
         overwrite = TRUE
     )
     file.remove(basename(filename))
@@ -83,6 +83,5 @@ build_package <- function(latest_published_data) {
     # build the pkgdown site
     pkgdown::clean_site()
     devtools::document()
-
     pkgdown::build_site()
 }
