@@ -1,6 +1,6 @@
 #' Run cutadapt for COH miRNAseq "homebrew" on Apollo
 #'
-#' Makes an `sbatch` job script for cutadapt and submits it to the Apollo cluster as an array.
+#' Makes an `sbatch` job script for cutadapt and submits it to the Apollo cluster, one job per library.
 #'
 #' Execution of the pipeline is independent of the package build script, allowing asynchronous development.
 #' If no `run_folder` exists, it will be created along with a `sample_sheet.csv` and `run_{ref_genome}.sh`,
