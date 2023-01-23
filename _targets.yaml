@@ -1,4 +1,0 @@
-main:
-  inherits: store
-  store: /labs/rrockne/MHO/haemdata-nf-core-cache/_targets
-  workers: "250"

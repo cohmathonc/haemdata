@@ -1,0 +1,358 @@
+---
+title: "Preprocessing pipeline"
+theme: simplex
+embed-resources: true
+standalone: true
+---
+
+# Setup
+::: {.panel-tabset}
+
+## In brief
+
+Haemdata is an R package in two-parts: a targets pipeline that preprocesses raw sequencing reads and functions to access processed data. 
+
+The Targets pipeline streamlines data workflows and promotes reproducibility. It skips redundant tasks and abstracts files as R objects to ensure efficient, painless, and trustworthy results.
+
+## Load libraries & options
+
+Set options and load libraries required to run the pipeline.
+```{r setup}
+knitr::opts_chunk$set(collapse = TRUE, warning = FALSE, message = FALSE, comment = "#>")
+library(targets)
+library(tarchetypes)
+tar_unscript()
+```
+
+## Pipeline globals
+Define  global options, functions & variables common to all targets.
+
+### Global options
+
+```{targets global-options, tar_globals = TRUE}
+options(tidyverse.quiet = TRUE)
+
+tar_option_set(
+    packages = c("tidyverse", "SummarizedExperiment"), # packages that targets need to run
+    error = "abridge", # continue with remaining targets on error
+    storage = "worker",
+    retrieval = "worker"
+)
+
+# Load the R scripts & functions:
+for (file in list.files(here::here("preprocessing/scripts"), full.names = TRUE)) source(file)
+
+for (file in list.files(here::here("R"), pattern = "*.R", full.names = TRUE)) source(file)
+
+published_metadata_mmu <- readRDS(here::here("data-raw/metadata_mmu.rds"))
+```
+
+### nf-core pipeline versions 
+```{targets pipeline-variables, tar_globals = TRUE}
+rnaseq_release <- "3.7"
+smrnaseq_release <- "2.1.0"
+```
+
+### Cohort selectors
+```{targets cohort-selectors, tar_globals = TRUE}
+all_mice <- "^AML.mRNA.2016$|^AML.mRNA.2018.all_samples$|^AML.mRNA.2020$|
+        |^AML.mRNA.2021.RxGroup1$|^AML.mRNA.2021.RxGroup2$|^AML.mRNA.2021.RxGroup2_pt2$|
+        |^AML.mRNA.2022.RxGroup3$|^CML.mRNA.2021$|^CML.mRNA.2022$|^CML.mRNA.2022_pt2$"
+
+aml_mice <- "^AML.mRNA.2016$|^AML.mRNA.2018.all_samples$|^AML.mRNA.2020$|
+        |^AML.mRNA.2021.RxGroup1$|^AML.mRNA.2021.RxGroup2$|^AML.mRNA.2021.RxGroup2_pt2$|
+        |^AML.mRNA.2022.RxGroup3$"
+
+chemo_mice <- "^AML.mRNA.2020$"
+
+treatment_mice <- "^AML.mRNA.2021.RxGroup1$|^AML.mRNA.2021.RxGroup2$|^AML.mRNA.2021.RxGroup2_pt2$|
+        |^AML.mRNA.2022.RxGroup3$"
+
+cml_mice <- "^CML.mRNA.2021$|^CML.mRNA.2022$|^CML.mRNA.2022_pt2$"
+```
+:::
+
+# Metadata 
+::: {.panel-tabset}
+
+## In brief
+
+Haemdata includes sample metadata, such as sex, age, and treatment information for mice, and a range of other biological and technical metrics.
+
+For **mmu**, the sample metadata is largely complete. These data were collated from multiple sequencing run sheets, directly from sequencing folders, emails, and so forth. The code is complex and ugly and undoubtedly some errors will have made it through. Errors or omissions can be reported on [GihHub](https://github.com/drejom/haemdata/issues).
+
+For **hsa** metadata, `make_metadata_hsa()` row binds all available metadata in to an ugly and largely incomplete table.
+
+## Mouse metadata
+
+The current implementation of `update_metadata_mmu()` adds miRNAseq samples and metadata, and adds a "sample_id" that uniquely identifies each tissue sample, some of which are subject to multiple assays. 
+
+```{targets metadata_mmu_prepub}
+tar_target(metadata_mmu_prepub, update_metadata_mmu())
+```
+
+## Human metadata 
+
+Consolidate metadata across human samples
+
+```{targets metadata_hsa}
+tar_target(
+    metadata_hsa, make_metadata_hsa(
+        dplyr::full_join(sample_sheet_2022_3, sample_sheet_2022_2) |>
+        dplyr::full_join(sample_sheet_2022_4))
+    )
+```
+:::
+
+# Assays 
+::: {.panel-tabset}
+
+## In brief
+
+The workflows for all assays begin with raw sequencing reads, either fastq files for mRNA and miRNA, or h5ad files for 10x reads.
+
+Raw data are stored on COH's Isilon storage by the Integrative Genomics Core, organized across multiple investigator's `Seq` folders. Since v0.0.0.9008 (2022-11-14), file paths are stored in the metadata table.
+
+Functions in this section format sample sheets for nf-core pipelines, submit pipelines to the Apollo cluster, look for completed runs and extract processed results. 
+
+## mRNA
+
+### Sample sheets
+
+RNAseq libraries were constructed using the KapaHyper with RiboErase kit and run on a Illumina sequencer, as [described](https://doi.org/10.1158/0008-5472.CAN-20-0354).
+
+To assess library quality control metrics and produce unified expression matrices, we use the nf-core/rnaseq pipeline. The following targets prepare sample sheets for the pipeline as described in the documentation <https://nf-co.re/rnaseq/usage#samplesheet-input>.
+
+Samples from `CML.mRNA.2022_pt2` became available after the 2016-2022 combined run and so are run separately and joined in a later step with other samples as *all_mice*. 
+
+```{targets sample_sheet_2016_2022}
+list(
+    tar_target(sample_sheet_2016_2022, published_metadata_mmu |>
+        dplyr::filter(str_detect(cohort, all_mice)) |>
+        dplyr::select(library_id, fastq_1, fastq_2, strandedness)),
+
+    tar_target(sample_sheet_CML_3, published_metadata_mmu |>
+        dplyr::filter(str_detect(cohort, "^CML.mRNA.2022_pt2$")) |>
+        dplyr::select(library_id, fastq_1, fastq_2, strandedness))
+)        
+```
+
+Two datasets have not been integrated into sample metadata tables: the "validation mice" and human AML data. 
+
+The mouse samples are from a sequencing validation run and can be considered technical replicates.
+
+Human samples have metadata that's inconsistent between experiments. Until we decide on the minimum metadata to collect for human samples, these datasets will remain separate. The following targets locate the fastq files on Isilon and make sample sheets for the nf-core/rnaseq pipeline.
+
+```{targets mrna_validation_mmu_and_hsa_aml}
+list(
+# AML validation samples
+    tar_target(sample_sheet_2017_1, parse_metadata_AML.validation.2017()),
+    tar_target(sample_sheet_2020_2, parse_metadata_AML.mRNA.novaseq_validation.2020()),
+    tar_target(
+        sample_sheet_techrep,
+        rbind(
+            sample_sheet_2017_1,
+            sample_sheet_2020_2
+        )
+    ),
+# AML & MDS patients (COH Biobank); MDS from EGAD00001003891; AML patients from PRJEB27973
+    tar_target(sample_sheet_2022_2, parse_metadata_AML.mRNA.HSA_FLT3.2022()),
+    tar_target(sample_sheet_2022_3, parse_metadata_MDS.rnaseq.EGAD00001003891()),
+    tar_target(sample_sheet_2022_4, parse_metadata_AML.PRJEB27973())
+)
+```
+
+### Run nf-core/rnaseq 
+
+Target names and their outputs adhere to the format *species_protocol_cohort_ref-genome_workflow*
+
+*cohort*: {2016_2022, validation, flt3, mds, 2022_1} \
+*species*: {mmu\|hsa} \
+*protocol*: {mrna\|10x\|mirna} \
+*ref-genome*: {GENCODEr40\|GENCODEm28_HLT\|GRCm38_HLT\|GRCh38} \
+*workflow*: {qc\|salmon\|seurat}}
+
+Construct the `run_folder` parameter for `run_nf_core_rnaseq()` using the tokens *species_protocol_cohort*. 
+
+::: {.callout-tip}
+## Code suggestion
+
+This would be a good spot to implement `tar_map()`.
+:::
+
+```{targets mrna_sample_sheets}
+list(
+    tar_target(mmu_mrna_2016_2022_qc,
+        run_nf_core_rnaseq("mmu_mrna_2016_2022", sample_sheet_2016_2022, "GENCODEm28_HLT"),
+        format = "file"
+    ),
+    tar_target(mmu_mrna_techrep_qc,
+        run_nf_core_rnaseq("mmu_mrna_techrep", sample_sheet_techrep, "GENCODEm28_HLT"),
+        format = "file"
+    ),
+    tar_target(mmu_mrna_cml3_qc,
+        run_nf_core_rnaseq("mmu_mrna_cml3_qc", sample_sheet_CML_3, "GENCODEm28_HLT"),
+        format = "file"
+    ),
+    tar_target(hsa_mrna_flt3_qc,
+        run_nf_core_rnaseq("hsa_mrna_flt3", sample_sheet_2022_2, "GENCODEr40"),
+        format = "file"
+    ),
+    tar_target(hsa_mrna_mds_qc,
+        run_nf_core_rnaseq("hsa_mrna_mds", sample_sheet_2022_3, "GENCODEr40"),
+        format = "file"
+    ),
+    tar_target(hsa_mrna_kim_qc,
+        run_nf_core_rnaseq("hsa_mrna_kim", sample_sheet_2022_4, "GENCODEr40"),
+        format = "file"
+    )
+)
+```
+
+### Make SummarisedExperiments
+
+From each nf-core/rnaseq pipeline run, annotate the `salmon/salmon.merged.gene_counts.rds` SummarizedExperiment with sample metadata and QC metrics
+
+#### Human datasets
+
+```{targets mrna_hsa_summarised_experiments_1}
+tar_target(hsa_mrna_flt3_qc_se_bare, get_rnaseq_se(hsa_mrna_flt3_qc))
+```
+
+```{targets mrna_hsa_summarised_experiments}
+list(
+    tar_target(hsa_mrna_flt3_qc_se, annotate_se(hsa_mrna_flt3_qc_se_bare, metadata_hsa, hsa_mrna_flt3_qc)),
+    tar_target(hsa_mrna_mds_qc_se, annotate_se(get_rnaseq_se(hsa_mrna_mds_qc), metadata_hsa, hsa_mrna_mds_qc)),
+    tar_target(hsa_mrna_kim_qc_se, annotate_se(get_rnaseq_se(hsa_mrna_kim_qc), metadata_hsa, hsa_mrna_kim_qc))
+)
+```
+
+#### Mouse datasets
+
+```{targets mrna_mmu_summarised_experiments}
+list(
+    tar_target(mmu_mrna_2016_2022_qc_se, annotate_se(
+        get_rnaseq_se(mmu_mrna_2016_2022_qc), metadata_mmu_prepub, mmu_mrna_2016_2022_qc
+    )),
+    tar_target(mmu_mrna_techrep_qc_se, annotate_se(
+        get_rnaseq_se(mmu_mrna_techrep_qc), metadata_mmu_prepub, mmu_mrna_techrep_qc
+    )),
+    tar_target(mmu_mrna_cml3_qc_se, annotate_se(
+        get_rnaseq_se(mmu_mrna_cml3_qc), metadata_mmu_prepub, mmu_mrna_cml3_qc
+    ))
+)
+```
+
+### Merge SummarisedExperiments
+
+Merge the late-coming CML samples with all other mice into a single SummarisedExperiment.
+
+```{targets mrna_merge_summarised_experiments}
+tar_target(mmu_mrna_all_mice_qc_se, merge_mrna_se(mmu_mrna_2016_2022_qc_se, mmu_mrna_cml3_qc_se,
+    new_name = "mmu_mrna_all_mice_GENCODEm28_HLT_qc")
+)
+```
+
+### Quality control
+
+Flag mouse samples that fail the STAR uniquely mapped reads threshold of 5%; any other changes to the metadata table can be made here, prior to publishing the final version.  
+
+```{targets mrna_flag_lowly_mapped_mmu_se}
+tar_target(metadata_mmu, flag_lowly_mapped_mmu_se(mmu_mrna_all_mice_qc_se, metadata_mmu_prepub))
+```
+
+Remove human samples that fail the STAR uniquely mapped reads threshold of 5%
+
+```{targets mrna_qc_filter_se}
+list(
+    tar_target(hsa_mrna_flt3_qc_se_flt, qc_filter_se(hsa_mrna_flt3_qc_se)),
+    tar_target(hsa_mrna_mds_qc_se_flt, qc_filter_se(hsa_mrna_mds_qc_se)),
+    tar_target(hsa_mrna_kim_qc_se_flt, qc_filter_se(hsa_mrna_kim_qc_se))
+)
+```
+
+## miRNA
+
+### Sample sheets
+The integrative genomics core uses a custom "home brew" miRNAseq protocol that uses a modified Illumina adapter and requires additional clipping, accomplished with `cutadapt`, eg:
+
+```{sh eval=FALSE}
+cutadapt -a TCTGGAATTCTCGGGTGCCAAGGAACTCC -m 16 -u 3 -o OUT.cutadapt.fq.gz IN.fq.gz
+```
+
+Some libraries were delivered by the Integrative Genomics Core their "homebrew" adapter already removed and 3' 3bp clipped prior to processing here.
+Somewhere along the line, the original, unedited fastqs were lost from the Isilon storage and now only the trimmed fastqs are available, so two independent runs are required. 
+
+#### Pre-trimmed
+```{targets mirna-sample-sheets_pretrimmed}
+    miRNA_sample_sheet_pretrimmed = published_metadata_mmu |>
+        dplyr::filter(stringr::str_detect(assay, "miRNA")) |>
+        dplyr::filter(stringr::str_detect(fastq_1, "cutadapt")) |>
+        dplyr::select(sample_id, library_id, fastq_1)
+```
+
+#### Untrimmed
+```{targets mirna-sample-sheets_untrimmed}
+    miRNA_sample_sheet_untrimmed = published_metadata_mmu |>
+        dplyr::filter(stringr::str_detect(assay, "miRNA")) |>
+        dplyr::filter(stringr::str_detect(fastq_1, "cutadapt", negate = TRUE)) |>
+        dplyr::select(sample_id, library_id, fastq_1)
+```
+
+For untrimmed libraries, we use a function that loads the Apollo `cutadapt` module and spawns
+a job for each fastq file on the cluster. The trimmed files are cached in {nf_core_cache} and
+a sample sheet for the nf-core/smrnaseq pipeline is returned. 
+
+```{targets run_cutadapt_smrna}
+    tar_target(miRNA_sample_sheet_trimmed, run_cutadapt_smrna(miRNA_sample_sheet_untrimmed))
+```
+
+### nf-core/smRNAseq pipeline
+
+```{targets nf-core-smrnaseq, eval=FALSE}
+    tar_target(mmu_mirna_pretrimmed,
+        run_nf_core_smrnaseq("mmu_mirna_pretrimmed", miRNA_sample_sheet_pretrimmed),
+        format = "file"
+    ),
+    tar_target(mmu_mirna_trimmed,
+        run_nf_core_smrnaseq("mmu_mirna_untrimmed", miRNA_sample_sheet_trimmed),
+        format = "file"
+    )
+```
+
+In a future release, all samples could be run together after preprocessing. 
+
+### Merge pretrimmed & trimmed libreries
+
+Finally we merge the output of the two runs, including a raw counts table, CPM table, and a merged isomir object. 
+
+:::
+
+# Pipeline
+
+If you ran all the `{targets}` chunks in non-interactive mode, then your R scripts are set up to run the pipeline.
+
+```{r, eval = TRUE}
+system(glue::glue("srun -J run_haemdata --time 48:00 /opt/singularity/3.7.0/bin/singularity exec \\
+    --env R_LIBS_SITE=/opt/singularity-images/rbioc/rlibs/bioc-3.16 \\
+    -B /labs,/opt/singularity,/opt/singularity-images \\
+    --pwd {getwd()} \\
+    /opt/singularity-images/rbioc/vscode-rbioc_3.16.sif Rscript -e 'targets::tar_make_future\\(\\)'"))
+```
+
+# Output
+
+You can retrieve results from the `_targets/` data store using `tar_read()` or `tar_load()`.
+
+```{r, message = FALSE}
+# library(SummarisedExperiment)
+# tar_read(fit)
+```
+
+The `targets` dependency graph helps in understanding the steps of the pipeline at a high level.
+
+```{r}
+tar_visnetwork(targets_only = TRUE )
+```
+
+At this point, you can go back and run `{targets}` chunks in interactive mode without interfering with the code or data of the non-interactive pipeline.
