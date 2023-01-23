@@ -546,3 +546,6 @@ PSON_0852
 /labs/ykuo/Seq/160304/miRNA/orig/11536_2684-6_TAGCTT_L999_R1_001.fastq.gz
 COHP_11536
 PSON_0853
+
+
+Haemdata is composed of two parts: a targets pipeline for preprocessing raw sequencing reads and functions for accessing the processed data. The pipeline is designed to be efficient and reproducible, allowing users to focus on their data analysis rather than the tedious task of data preprocessing. With Haemdata, you can easily import and manipulate large sequencing datasets, streamlining your workflow and allowing you to quickly answer important biological questions. Give Haemdata a try and see how it can improve your research.
