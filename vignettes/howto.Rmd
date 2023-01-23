@@ -25,8 +25,8 @@ col_data <- SummarizedExperiment::colData(se) |>
 SummarizedExperiment::assay(se, "abundance") |>
     tibble::rownames_to_column("gene_id") |>
     dplyr::filter(stringr::str_detect(gene_id, gene_of_interest)) |>
-    tidyr::pivot_longer(!gene_id, names_to = "library_id") |>
-    dplyr::left_join(col_data, by = "library_id") |>
+    tidyr::pivot_longer(!gene_id, names_to = "sample") |>
+    dplyr::left_join(col_data) |>
     ggplot2::ggplot(ggplot2::aes(y = log2(value + 0.1), x = sample_weeks, group = mouse_id, col = treatment)) +
     ggplot2::geom_line(alpha = 0.3) +
     ggplot2::geom_point(alpha = 0.3) +

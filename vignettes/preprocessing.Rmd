@@ -1,42 +1,6 @@
 ---
 title: "Preprocessing"
 ---
-To build the `SummarizedExperiments` and expression matrices, raw sequence reads were processed using nf-core pipelines, poorly mapped samples were removed and outlying samples flagged using [`OUTRIDER`](https://doi.org/10.1016/j.ajhg.2018.10.025). Single-cell RNAseq was preprocessed with 10X Cellranger and annotated `Seurat` and `Scanpy` objects produced with Seurat. Sample metadata was collated from a range of supplied excel sheets. Package [functions](http://cgt.coh.org/haemdata/reference/index.html) assist in visualizing and sub-setting `SummarizedExperiment` and `Seurat` objects and should facilitate most types of analyses. If something is incorrect or lacking, please [contribute](http://cgt.coh.org/haemdata/CONTRIBUTING.html) a solution or raise an [issue](https://github.com/drejom/haemdata/issues).
-
-## Targets 
-
-## fastq-screen
-Raw data are screened for contamination against a panel of reference genomes
-that includes mouse, human, yeast, rDNA, *E. coli* and some common laboratory
-reagents. For each cohort, a MultiQC report details the `fastq-screen` results.
-
-## nf-core pipelines
-To assess the quality of the sequencing libraries, we used the default parameters
-of the nf-core RNASeq pipeline [PMID: 32055031](doi: 10.5281/zenodo.1400710). Briefly,
-trimmed reads were mapped to the GRCm38 reference using STAR [PMID: 23104886](https://doi.org/10.1093/bioinformatics/bts635) and
-abundance of transcripts from the Ensembl annotation was estimated using Salmon
-[PMID: 28263959](https://doi.org/10.1038/nmeth.4197). Each library was subjected to extensive quality control,
-including estimation of library complexity, sequence quality, read length and depth,
-among other metrics detailed in the pipeline repository (https://nf-co.re/rnaseq).
-Pseudocounts were merged into a matrix of counts per million per gene for each sample
-using the tximport R package [PMID: 26925227](https://doi.org/10.12688/f1000research.7563.2).
-
-## Availability
-The preprocessing pipelines produce a multitude of in ancillary reports and files
-available in the `MHO` folder. Currently these data are difficult to access programmatically. 
-In a future release, they'll be accessible in the `colData` slot of
-the `SummarizedExperiment` objects produced.
-
-## Installation
-
-```
-^aml_datasets.Rmd$
-^genomes.Rmd$       
-^cml_datasets.Rmd$ 
-^mds_datasets.Rmd$ 
-^preprocessing.Rmd$
-^version_control\.Rmd$
-^missing_metadata\.Rmd$
-^scRNAseq\.Rmd$
-```
+<iframe src="../_targets.html">
+</iframe>
 

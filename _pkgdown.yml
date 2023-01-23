@@ -9,7 +9,7 @@ navbar:
     left: [intro, reference, articles, tutorials, news]
     right: [search, github]
 reference:
-- title: Available data
+- title: Available datasets
   contents:
   - published_pins
   - matches("metadata")
