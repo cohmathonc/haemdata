@@ -2,4 +2,4 @@ main:
   inherits: store
   store: /labs/rrockne/MHO/haemdata-nf-core-cache/_targets_markdown
   workers: "250"
-  script: preprocessing/_targets.R
+  script: ~/workspaces/haemdata/preprocessing/_targets.R
