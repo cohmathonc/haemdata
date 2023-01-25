@@ -7929,25 +7929,28 @@ HTMLWidgets.widget({
 
 </header>
 
+<p>Source: <a href="https://github.com/drejom/haemdata/blob/main/preprocessing/_targets.qmd">preprocessing/_targets.qmd</a></p>
+<hr>
 <section id="setup" class="level1">
 <h1>Setup</h1>
 <div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href>In brief</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href>Load libraries &amp; options</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href>Pipeline globals</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href>In brief</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href>Load libraries &amp; options</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <p>Haemdata is an R package in two-parts: a targets pipeline that preprocesses raw sequencing reads and functions to access processed data.</p>
 <p>The Targets pipeline streamlines data workflows and promotes reproducibility. It skips redundant tasks and abstracts files as R objects to ensure efficient, painless, and trustworthy results.</p>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<p>Set options and load libraries required to run the pipeline.</p>
-<div class="cell">
+<p>Set options and load libraries required to run the pipeline. ::: {.cell}</p>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">collapse =</span> <span class="cn">TRUE</span>, <span class="at">warning =</span> <span class="cn">FALSE</span>, <span class="at">message =</span> <span class="cn">FALSE</span>, <span class="at">comment =</span> <span class="st">&quot;#&gt;&quot;</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(targets)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tarchetypes)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tar_unscript</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
-<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+</div>
+<section id="pipeline-globals" class="level2">
+<h2 class="anchored" data-anchor-id="pipeline-globals">Pipeline globals</h2>
 <p>Define global options, functions &amp; variables common to all targets.</p>
 <section id="global-options" class="level3">
 <h3 class="anchored" data-anchor-id="global-options">Global options</h3>
@@ -7994,10 +7997,9 @@ HTMLWidgets.widget({
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>cml_mice <span class="ot">&lt;-</span> <span class="st">&quot;^CML.mRNA.2021$|^CML.mRNA.2022$|^CML.mRNA.2022_pt2$&quot;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>:::</p>
 </section>
-</div>
-</div>
-</div>
+</section>
 </section>
 <section id="metadata" class="level1">
 <h1>Metadata</h1>
@@ -8132,41 +8134,41 @@ Code suggestion
 <section id="make-summarisedexperiments" class="level3">
 <h3 class="anchored" data-anchor-id="make-summarisedexperiments">Make SummarisedExperiments</h3>
 <p>From each nf-core/rnaseq pipeline run, annotate the <code>salmon/salmon.merged.gene_counts.rds</code> SummarizedExperiment with sample metadata and QC metrics</p>
-<section id="human-datasets" class="level4">
-<h4 class="anchored" data-anchor-id="human-datasets">Human datasets</h4>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tar_target</span>(hsa_mrna_flt3_qc_se_bare, <span class="fu">get_rnaseq_se</span>(hsa_mrna_flt3_qc))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tar_target</span>(hsa_mrna_flt3_qc_se, <span class="fu">annotate_se</span>(hsa_mrna_flt3_qc_se_bare, metadata_hsa, hsa_mrna_flt3_qc)),</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tar_target</span>(hsa_mrna_mds_qc_se, <span class="fu">annotate_se</span>(<span class="fu">get_rnaseq_se</span>(hsa_mrna_mds_qc), metadata_hsa, hsa_mrna_mds_qc)),</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tar_target</span>(hsa_mrna_kim_qc_se, <span class="fu">annotate_se</span>(<span class="fu">get_rnaseq_se</span>(hsa_mrna_kim_qc), metadata_hsa, hsa_mrna_kim_qc))</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
 <section id="mouse-datasets" class="level4">
 <h4 class="anchored" data-anchor-id="mouse-datasets">Mouse datasets</h4>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tar_target</span>(mmu_mrna_2016_2022_qc_se,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate_se</span>(<span class="fu">get_rnaseq_se</span>(mmu_mrna_2016_2022_qc),</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        metadata_mmu_prepub,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        mmu_mrna_2016_2022_qc</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    )),</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tar_target</span>(</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        mmu_mrna_techrep_qc_se,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate_se</span>(<span class="fu">get_rnaseq_se</span>(mmu_mrna_techrep_qc),</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>        metadata_mmu_prepub,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        mmu_mrna_techrep_qc</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    )),</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tar_target</span>(</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        mmu_mrna_cml3_qc_se,</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate_se</span>(<span class="fu">get_rnaseq_se</span>(mmu_mrna_cml3_qc),</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        metadata_mmu_prepub,</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>        mmu_mrna_cml3_qc</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="human-datasets" class="level4">
+<h4 class="anchored" data-anchor-id="human-datasets">Human datasets</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tar_target</span>(hsa_mrna_flt3_qc_se_bare, <span class="fu">get_rnaseq_se</span>(hsa_mrna_flt3_qc))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tar_target</span>(mmu_mrna_2016_2022_qc_se,</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate_se</span>(<span class="fu">get_rnaseq_se</span>(mmu_mrna_2016_2022_qc),</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>        metadata_mmu_prepub,</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        mmu_mrna_2016_2022_qc</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    )),</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tar_target</span>(</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>        mmu_mrna_techrep_qc_se,</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate_se</span>(<span class="fu">get_rnaseq_se</span>(mmu_mrna_techrep_qc),</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        metadata_mmu_prepub,</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>        mmu_mrna_techrep_qc</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    )),</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tar_target</span>(</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>        mmu_mrna_cml3_qc_se,</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">annotate_se</span>(<span class="fu">get_rnaseq_se</span>(mmu_mrna_cml3_qc),</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>        metadata_mmu_prepub,</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>        mmu_mrna_cml3_qc</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    ))</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tar_target</span>(hsa_mrna_flt3_qc_se, <span class="fu">annotate_se</span>(hsa_mrna_flt3_qc_se_bare, metadata_hsa, hsa_mrna_flt3_qc)),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tar_target</span>(hsa_mrna_mds_qc_se, <span class="fu">annotate_se</span>(<span class="fu">get_rnaseq_se</span>(hsa_mrna_mds_qc), metadata_hsa, hsa_mrna_mds_qc)),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tar_target</span>(hsa_mrna_kim_qc_se, <span class="fu">annotate_se</span>(<span class="fu">get_rnaseq_se</span>(hsa_mrna_kim_qc), metadata_hsa, hsa_mrna_kim_qc))</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -8237,15 +8239,18 @@ Code suggestion
 </section>
 <section id="nf-coresmrnaseq-pipeline" class="level3">
 <h3 class="anchored" data-anchor-id="nf-coresmrnaseq-pipeline">nf-core/smRNAseq pipeline</h3>
+<p>The nf-core/smrnaseq pipeline includes several tools that provide a comprehensive analysis of microRNAseq data including <a href="https://github.com/friedlanderlab/mirtrace">mirTrace</a> for QC and contamination, <a href>mirTop</a> for count matrices of miRNA and isomiRs, and <a href="https://www.mdc-berlin.de/content/mirdeep2-documentation">miRDeep2</a> for quantification and discovery of novel miRNAs.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tar_target</span>(mmu_mirna_pretrimmed,</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">run_nf_core_smrnaseq</span>(<span class="st">&quot;mmu_mirna_pretrimmed&quot;</span>, miRNA_sample_sheet_pretrimmed),</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">format =</span> <span class="st">&quot;file&quot;</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>),</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tar_target</span>(mmu_mirna_trimmed,</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">run_nf_core_smrnaseq</span>(<span class="st">&quot;mmu_mirna_untrimmed&quot;</span>, miRNA_sample_sheet_trimmed),</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">format =</span> <span class="st">&quot;file&quot;</span></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tar_target</span>(mmu_mirna_pretrimmed_multiqc,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">run_nf_core_smrnaseq</span>(<span class="st">&quot;mmu_mirna_pretrimmed&quot;</span>, miRNA_sample_sheet_pretrimmed),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">format =</span> <span class="st">&quot;file&quot;</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tar_target</span>(mmu_mirna_trimmed_multiqc,</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">run_nf_core_smrnaseq</span>(<span class="st">&quot;mmu_mirna_untrimmed&quot;</span>, miRNA_sample_sheet_trimmed),</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">format =</span> <span class="st">&quot;file&quot;</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout-tip callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
@@ -8261,9 +8266,23 @@ Code suggestion
 </div>
 </div>
 </section>
+<section id="mirtop-counts" class="level3">
+<h3 class="anchored" data-anchor-id="mirtop-counts">mirTop counts</h3>
+<p>Extract the mirTop csv Merge Mirtop</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tar_target</span>(mmu_mirna_pretrimmed_mirtop_counts, <span class="fu">nfcore_mirtop_counts</span>(mmu_mirna_pretrimmed_multiqc)),</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tar_target</span>(mmu_mirna_trimmed_mirtop_counts, <span class="fu">nfcore_mirtop_counts</span>(mmu_mirna_trimmed_multiqc))</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="mirtrace-qc-and-contamination-metrics" class="level3">
+<h3 class="anchored" data-anchor-id="mirtrace-qc-and-contamination-metrics">mirTrace QC and contamination metrics</h3>
+<p>Extract mirTrace Merge mirTace</p>
+</section>
 <section id="merge-pre-trimmed-trimmed-libraries" class="level3">
 <h3 class="anchored" data-anchor-id="merge-pre-trimmed-trimmed-libraries">Merge pre-trimmed &amp; trimmed libraries</h3>
-<p>Finally we merge the output of the two runs, including a raw counts table, CPM table, and a merged isomir object.</p>
+<p>Finally we merge the output of the two runs, including a raw counts table, and a merged isomir object.</p>
 </section>
 </div>
 </div>
@@ -8273,21 +8292,22 @@ Code suggestion
 <h1>Targets pipeline</h1>
 <p>Having defined the pipeline targets above, R scripts are run using <code>tar_make_future()</code>. This distributes individual targets across the HPC Cluster in parallel, accounting for interdependencies.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    glue<span class="sc">::</span><span class="fu">glue</span>(</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;srun -J run_haemdata --time 48:00 /opt/singularity/3.7.0/bin/singularity exec </span><span class="sc">\\</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="st">    --env R_LIBS_SITE=/opt/singularity-images/rbioc/rlibs/bioc-3.16 </span><span class="sc">\\</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="st">    -B /labs,/opt/singularity,/opt/singularity-images </span><span class="sc">\\</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="st">    --pwd {getwd()} </span><span class="sc">\\</span></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="st">    /opt/singularity-images/rbioc/vscode-rbioc_3.16.sif Rscript -e &#39;targets::tar_make_future</span><span class="sc">\\</span><span class="st">(</span><span class="sc">\\</span><span class="st">)&#39;&quot;</span>)</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  glue<span class="sc">::</span><span class="fu">glue</span>(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;srun -J run_haemdata --time 48:00 /opt/singularity/3.7.0/bin/singularity exec </span><span class="sc">\\</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="st">        --env R_LIBS_SITE=/opt/singularity-images/rbioc/rlibs/bioc-3.16 </span><span class="sc">\\</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="st">        -B /labs,/opt/singularity,/opt/singularity-images </span><span class="sc">\\</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="st">        --pwd {getwd()} </span><span class="sc">\\</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="st">        /opt/singularity-images/rbioc/vscode-rbioc_3.16.sif Rscript -e &#39;targets::tar_make_future</span><span class="sc">\\</span><span class="st">(</span><span class="sc">\\</span><span class="st">)&#39;&quot;</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The dependency graph helps in understanding the steps of the pipeline. Its interactive and you can zoom/pan to explore the <code>targets</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tar_visnetwork</span>(<span class="at">targets_only =</span> <span class="cn">TRUE</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tar_visnetwork</span>(<span class="at">targets_only =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div class="visNetwork html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-e0afb7c5165aa1586ddc" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-e0afb7c5165aa1586ddc">{"x":{"nodes":{"name":["hsa_mrna_flt3_qc","hsa_mrna_flt3_qc_se","hsa_mrna_flt3_qc_se_bare","hsa_mrna_flt3_qc_se_flt","hsa_mrna_kim_qc","hsa_mrna_kim_qc_se","hsa_mrna_kim_qc_se_flt","hsa_mrna_mds_qc","hsa_mrna_mds_qc_se","hsa_mrna_mds_qc_se_flt","metadata_hsa","metadata_mmu","metadata_mmu_prepub","miRNA_sample_sheet_pretrimmed","miRNA_sample_sheet_trimmed","miRNA_sample_sheet_untrimmed","mmu_mrna_2016_2022_qc","mmu_mrna_2016_2022_qc_se","mmu_mrna_all_mice_qc_se","mmu_mrna_cml3_qc","mmu_mrna_cml3_qc_se","mmu_mrna_techrep_qc","mmu_mrna_techrep_qc_se","sample_sheet_2016_2022","sample_sheet_2017_1","sample_sheet_2020_2","sample_sheet_2022_2","sample_sheet_2022_3","sample_sheet_2022_4","sample_sheet_CML_3","sample_sheet_techrep"],"type":["stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem"],"status":["uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate"],"seconds":[0.014,3.283,66.932,1.503,0.014,67.253,1.488,0.014,87.007,2.045,0.152,0.151,9.944,15.378,1.039,15.639,0.014,84.376,0.409,0.015,42.332,0.014,42.634,8.726,8.264,8.613,9.254,8.262,8.751,8.296,0.004],"bytes":[11902435,16571263,16558090,16571272,10368801,8371271,8371267,35042600,115424535,115424555,38470,50902,50902,2282,5107,6186,35570124,198710611,215568397,13076438,17972825,3315935,6012751,28414,449,368,3283,15140,16865,1824,604],"branches":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"label":["hsa_mrna_flt3_qc","hsa_mrna_flt3_qc_se","hsa_mrna_flt3_qc_se_bare","hsa_mrna_flt3_qc_se_flt","hsa_mrna_kim_qc","hsa_mrna_kim_qc_se","hsa_mrna_kim_qc_se_flt","hsa_mrna_mds_qc","hsa_mrna_mds_qc_se","hsa_mrna_mds_qc_se_flt","metadata_hsa","metadata_mmu","metadata_mmu_prepub","miRNA_sample_sheet_pretrimmed","miRNA_sample_sheet_trimmed","miRNA_sample_sheet_untrimmed","mmu_mrna_2016_2022_qc","mmu_mrna_2016_2022_qc_se","mmu_mrna_all_mice_qc_se","mmu_mrna_cml3_qc","mmu_mrna_cml3_qc_se","mmu_mrna_techrep_qc","mmu_mrna_techrep_qc_se","sample_sheet_2016_2022","sample_sheet_2017_1","sample_sheet_2020_2","sample_sheet_2022_2","sample_sheet_2022_3","sample_sheet_2022_4","sample_sheet_CML_3","sample_sheet_techrep"],"color":["#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823"],"id":["hsa_mrna_flt3_qc","hsa_mrna_flt3_qc_se","hsa_mrna_flt3_qc_se_bare","hsa_mrna_flt3_qc_se_flt","hsa_mrna_kim_qc","hsa_mrna_kim_qc_se","hsa_mrna_kim_qc_se_flt","hsa_mrna_mds_qc","hsa_mrna_mds_qc_se","hsa_mrna_mds_qc_se_flt","metadata_hsa","metadata_mmu","metadata_mmu_prepub","miRNA_sample_sheet_pretrimmed","miRNA_sample_sheet_trimmed","miRNA_sample_sheet_untrimmed","mmu_mrna_2016_2022_qc","mmu_mrna_2016_2022_qc_se","mmu_mrna_all_mice_qc_se","mmu_mrna_cml3_qc","mmu_mrna_cml3_qc_se","mmu_mrna_techrep_qc","mmu_mrna_techrep_qc_se","sample_sheet_2016_2022","sample_sheet_2017_1","sample_sheet_2020_2","sample_sheet_2022_2","sample_sheet_2022_3","sample_sheet_2022_4","sample_sheet_CML_3","sample_sheet_techrep"],"level":[2,4,3,5,2,3,4,2,3,4,2,5,1,0,2,1,2,3,4,2,3,3,4,1,1,1,1,1,1,1,2],"shape":["dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot"]},"edges":{"from":["hsa_mrna_mds_qc_se","hsa_mrna_kim_qc","metadata_hsa","hsa_mrna_kim_qc_se","sample_sheet_2022_4","hsa_mrna_flt3_qc","hsa_mrna_flt3_qc_se_bare","metadata_hsa","mmu_mrna_2016_2022_qc_se","mmu_mrna_cml3_qc_se","metadata_mmu_prepub","mmu_mrna_techrep_qc","sample_sheet_2022_2","sample_sheet_CML_3","hsa_mrna_flt3_qc","hsa_mrna_flt3_qc_se","sample_sheet_techrep","sample_sheet_2016_2022","hsa_mrna_mds_qc","metadata_hsa","metadata_mmu_prepub","mmu_mrna_all_mice_qc_se","sample_sheet_2022_3","metadata_mmu_prepub","mmu_mrna_cml3_qc","sample_sheet_2017_1","sample_sheet_2020_2","metadata_mmu_prepub","mmu_mrna_2016_2022_qc","miRNA_sample_sheet_untrimmed","sample_sheet_2022_2","sample_sheet_2022_3","sample_sheet_2022_4"],"to":["hsa_mrna_mds_qc_se_flt","hsa_mrna_kim_qc_se","hsa_mrna_kim_qc_se","hsa_mrna_kim_qc_se_flt","hsa_mrna_kim_qc","hsa_mrna_flt3_qc_se","hsa_mrna_flt3_qc_se","hsa_mrna_flt3_qc_se","mmu_mrna_all_mice_qc_se","mmu_mrna_all_mice_qc_se","mmu_mrna_techrep_qc_se","mmu_mrna_techrep_qc_se","hsa_mrna_flt3_qc","mmu_mrna_cml3_qc","hsa_mrna_flt3_qc_se_bare","hsa_mrna_flt3_qc_se_flt","mmu_mrna_techrep_qc","mmu_mrna_2016_2022_qc","hsa_mrna_mds_qc_se","hsa_mrna_mds_qc_se","metadata_mmu","metadata_mmu","hsa_mrna_mds_qc","mmu_mrna_cml3_qc_se","mmu_mrna_cml3_qc_se","sample_sheet_techrep","sample_sheet_techrep","mmu_mrna_2016_2022_qc_se","mmu_mrna_2016_2022_qc_se","miRNA_sample_sheet_trimmed","metadata_hsa","metadata_hsa","metadata_hsa"],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot","physics":false},"manipulation":{"enabled":false},"edges":{"smooth":{"type":"cubicBezier","forceDirection":"horizontal"}},"physics":{"stabilization":false},"interaction":{"zoomSpeed":1},"layout":{"hierarchical":{"enabled":true,"direction":"LR"}}},"groups":null,"width":null,"height":null,"idselection":{"enabled":false,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":{"text":"","style":"font-family:Georgia, Times New Roman, Times, serif;font-weight:bold;font-size:20px;text-align:center;"},"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","highlight":{"enabled":true,"hoverNearest":false,"degree":{"from":1,"to":1},"algorithm":"hierarchical","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":true,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"},"legend":{"width":0.2,"useGroups":false,"position":"right","ncol":1,"stepX":100,"stepY":100,"zoom":true,"nodes":{"label":["Up to date","Stem"],"color":["#354823","#899DA4"],"shape":["dot","dot"]},"nodesToDataframe":true},"tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);"},"evals":[],"jsHooks":[]}</script>
+<div class="visNetwork html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-80c15c0288102f853c68" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-80c15c0288102f853c68">{"x":{"nodes":{"name":["hsa_mrna_flt3_qc","hsa_mrna_flt3_qc_se","hsa_mrna_flt3_qc_se_bare","hsa_mrna_flt3_qc_se_flt","hsa_mrna_kim_qc","hsa_mrna_kim_qc_se","hsa_mrna_kim_qc_se_flt","hsa_mrna_mds_qc","hsa_mrna_mds_qc_se","hsa_mrna_mds_qc_se_flt","metadata_hsa","metadata_mmu","metadata_mmu_prepub","miRNA_sample_sheet_pretrimmed","miRNA_sample_sheet_trimmed","miRNA_sample_sheet_untrimmed","mmu_mirna_pretrimmed_multiqc","mmu_mirna_trimmed_multiqc","mmu_mrna_2016_2022_qc","mmu_mrna_2016_2022_qc_se","mmu_mrna_all_mice_qc_se","mmu_mrna_cml3_qc","mmu_mrna_cml3_qc_se","mmu_mrna_techrep_qc","mmu_mrna_techrep_qc_se","sample_sheet_2016_2022","sample_sheet_2017_1","sample_sheet_2020_2","sample_sheet_2022_2","sample_sheet_2022_3","sample_sheet_2022_4","sample_sheet_CML_3","sample_sheet_techrep","mmu_mirna_pretrimmed_mirtop_counts","mmu_mirna_trimmed_mirtop_counts"],"type":["stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem","stem"],"status":["uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","uptodate","outdated","outdated"],"seconds":[0.014,3.283,66.932,1.503,0.014,67.253,1.488,0.014,87.007,2.045,0.152,0.151,9.944,15.378,1.039,15.639,0.005,0.008,0.014,84.376,0.409,0.015,42.332,0.014,42.634,8.726,8.264,8.613,9.254,8.262,8.751,8.296,0.004,null,null],"bytes":[11902435,16571263,16558090,16571272,10368801,8371271,8371267,35042600,115424535,115424555,38470,50902,50902,2282,5107,6186,11204038,10539272,35570124,198710611,215568397,13076438,17972825,3315935,6012751,28414,449,368,3283,15140,16865,1824,604,null,null],"branches":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"label":["hsa_mrna_flt3_qc","hsa_mrna_flt3_qc_se","hsa_mrna_flt3_qc_se_bare","hsa_mrna_flt3_qc_se_flt","hsa_mrna_kim_qc","hsa_mrna_kim_qc_se","hsa_mrna_kim_qc_se_flt","hsa_mrna_mds_qc","hsa_mrna_mds_qc_se","hsa_mrna_mds_qc_se_flt","metadata_hsa","metadata_mmu","metadata_mmu_prepub","miRNA_sample_sheet_pretrimmed","miRNA_sample_sheet_trimmed","miRNA_sample_sheet_untrimmed","mmu_mirna_pretrimmed_multiqc","mmu_mirna_trimmed_multiqc","mmu_mrna_2016_2022_qc","mmu_mrna_2016_2022_qc_se","mmu_mrna_all_mice_qc_se","mmu_mrna_cml3_qc","mmu_mrna_cml3_qc_se","mmu_mrna_techrep_qc","mmu_mrna_techrep_qc_se","sample_sheet_2016_2022","sample_sheet_2017_1","sample_sheet_2020_2","sample_sheet_2022_2","sample_sheet_2022_3","sample_sheet_2022_4","sample_sheet_CML_3","sample_sheet_techrep","mmu_mirna_pretrimmed_mirtop_counts","mmu_mirna_trimmed_mirtop_counts"],"color":["#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#354823","#78B7C5","#78B7C5"],"id":["hsa_mrna_flt3_qc","hsa_mrna_flt3_qc_se","hsa_mrna_flt3_qc_se_bare","hsa_mrna_flt3_qc_se_flt","hsa_mrna_kim_qc","hsa_mrna_kim_qc_se","hsa_mrna_kim_qc_se_flt","hsa_mrna_mds_qc","hsa_mrna_mds_qc_se","hsa_mrna_mds_qc_se_flt","metadata_hsa","metadata_mmu","metadata_mmu_prepub","miRNA_sample_sheet_pretrimmed","miRNA_sample_sheet_trimmed","miRNA_sample_sheet_untrimmed","mmu_mirna_pretrimmed_multiqc","mmu_mirna_trimmed_multiqc","mmu_mrna_2016_2022_qc","mmu_mrna_2016_2022_qc_se","mmu_mrna_all_mice_qc_se","mmu_mrna_cml3_qc","mmu_mrna_cml3_qc_se","mmu_mrna_techrep_qc","mmu_mrna_techrep_qc_se","sample_sheet_2016_2022","sample_sheet_2017_1","sample_sheet_2020_2","sample_sheet_2022_2","sample_sheet_2022_3","sample_sheet_2022_4","sample_sheet_CML_3","sample_sheet_techrep","mmu_mirna_pretrimmed_mirtop_counts","mmu_mirna_trimmed_mirtop_counts"],"level":[2,4,3,5,2,3,4,2,3,4,2,5,1,1,2,1,2,3,2,3,4,2,3,3,4,1,1,1,1,1,1,1,2,3,4],"shape":["dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot"]},"edges":{"from":["hsa_mrna_flt3_qc_se","hsa_mrna_mds_qc_se","miRNA_sample_sheet_untrimmed","sample_sheet_2017_1","sample_sheet_2020_2","metadata_mmu_prepub","mmu_mrna_all_mice_qc_se","miRNA_sample_sheet_pretrimmed","hsa_mrna_kim_qc","metadata_hsa","metadata_mmu_prepub","mmu_mrna_cml3_qc","mmu_mirna_trimmed_multiqc","metadata_mmu_prepub","mmu_mrna_2016_2022_qc","mmu_mrna_2016_2022_qc_se","mmu_mrna_cml3_qc_se","sample_sheet_CML_3","sample_sheet_2022_2","sample_sheet_2022_3","hsa_mrna_flt3_qc","sample_sheet_2022_2","sample_sheet_2022_3","sample_sheet_2022_4","sample_sheet_techrep","hsa_mrna_kim_qc_se","hsa_mrna_mds_qc","metadata_hsa","hsa_mrna_flt3_qc","hsa_mrna_flt3_qc_se_bare","metadata_hsa","sample_sheet_2016_2022","sample_sheet_2022_4","miRNA_sample_sheet_trimmed","metadata_mmu_prepub","mmu_mrna_techrep_qc","mmu_mirna_pretrimmed_multiqc"],"to":["hsa_mrna_flt3_qc_se_flt","hsa_mrna_mds_qc_se_flt","miRNA_sample_sheet_trimmed","sample_sheet_techrep","sample_sheet_techrep","metadata_mmu","metadata_mmu","mmu_mirna_pretrimmed_multiqc","hsa_mrna_kim_qc_se","hsa_mrna_kim_qc_se","mmu_mrna_cml3_qc_se","mmu_mrna_cml3_qc_se","mmu_mirna_trimmed_mirtop_counts","mmu_mrna_2016_2022_qc_se","mmu_mrna_2016_2022_qc_se","mmu_mrna_all_mice_qc_se","mmu_mrna_all_mice_qc_se","mmu_mrna_cml3_qc","hsa_mrna_flt3_qc","hsa_mrna_mds_qc","hsa_mrna_flt3_qc_se_bare","metadata_hsa","metadata_hsa","metadata_hsa","mmu_mrna_techrep_qc","hsa_mrna_kim_qc_se_flt","hsa_mrna_mds_qc_se","hsa_mrna_mds_qc_se","hsa_mrna_flt3_qc_se","hsa_mrna_flt3_qc_se","hsa_mrna_flt3_qc_se","mmu_mrna_2016_2022_qc","hsa_mrna_kim_qc","mmu_mirna_trimmed_multiqc","mmu_mrna_techrep_qc_se","mmu_mrna_techrep_qc_se","mmu_mirna_pretrimmed_mirtop_counts"],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot","physics":false},"manipulation":{"enabled":false},"edges":{"smooth":{"type":"cubicBezier","forceDirection":"horizontal"}},"physics":{"stabilization":false},"interaction":{"zoomSpeed":1},"layout":{"hierarchical":{"enabled":true,"direction":"LR"}}},"groups":null,"width":null,"height":null,"idselection":{"enabled":false,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":{"text":"","style":"font-family:Georgia, Times New Roman, Times, serif;font-weight:bold;font-size:20px;text-align:center;"},"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","highlight":{"enabled":true,"hoverNearest":false,"degree":{"from":1,"to":1},"algorithm":"hierarchical","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":true,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"},"legend":{"width":0.2,"useGroups":false,"position":"right","ncol":1,"stepX":100,"stepY":100,"zoom":true,"nodes":{"label":["Up to date","Outdated","Stem"],"color":["#354823","#78B7C5","#899DA4"],"shape":["dot","dot","dot"]},"nodesToDataframe":true},"tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>At this point, you can go back and run <code>{targets}</code> chunks in interactive mode without interfering with the code or data of the non-interactive pipeline.</p>

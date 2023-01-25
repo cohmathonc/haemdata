@@ -4,7 +4,8 @@ theme: simplex
 embed-resources: true
 standalone: true
 ---
-
+Source: [preprocessing/_targets.qmd](https://github.com/drejom/haemdata/blob/main/preprocessing/_targets.qmd)
+---
 # Setup
 ::: {.panel-tabset}
 
@@ -214,20 +215,6 @@ list(
 
 From each nf-core/rnaseq pipeline run, annotate the `salmon/salmon.merged.gene_counts.rds` SummarizedExperiment with sample metadata and QC metrics
 
-#### Human datasets
-
-```{targets mrna_hsa_summarised_experiments_1}
-tar_target(hsa_mrna_flt3_qc_se_bare, get_rnaseq_se(hsa_mrna_flt3_qc))
-```
-
-```{targets mrna_hsa_summarised_experiments}
-list(
-    tar_target(hsa_mrna_flt3_qc_se, annotate_se(hsa_mrna_flt3_qc_se_bare, metadata_hsa, hsa_mrna_flt3_qc)),
-    tar_target(hsa_mrna_mds_qc_se, annotate_se(get_rnaseq_se(hsa_mrna_mds_qc), metadata_hsa, hsa_mrna_mds_qc)),
-    tar_target(hsa_mrna_kim_qc_se, annotate_se(get_rnaseq_se(hsa_mrna_kim_qc), metadata_hsa, hsa_mrna_kim_qc))
-)
-```
-
 #### Mouse datasets
 
 ```{targets mrna_mmu_summarised_experiments}
@@ -249,6 +236,20 @@ list(
         metadata_mmu_prepub,
         mmu_mrna_cml3_qc
     ))
+)
+```
+
+#### Human datasets
+
+```{targets mrna_hsa_summarised_experiments_1}
+tar_target(hsa_mrna_flt3_qc_se_bare, get_rnaseq_se(hsa_mrna_flt3_qc))
+```
+
+```{targets mrna_hsa_summarised_experiments}
+list(
+    tar_target(hsa_mrna_flt3_qc_se, annotate_se(hsa_mrna_flt3_qc_se_bare, metadata_hsa, hsa_mrna_flt3_qc)),
+    tar_target(hsa_mrna_mds_qc_se, annotate_se(get_rnaseq_se(hsa_mrna_mds_qc), metadata_hsa, hsa_mrna_mds_qc)),
+    tar_target(hsa_mrna_kim_qc_se, annotate_se(get_rnaseq_se(hsa_mrna_kim_qc), metadata_hsa, hsa_mrna_kim_qc))
 )
 ```
 
@@ -327,26 +328,46 @@ tar_target(miRNA_sample_sheet_trimmed, run_cutadapt_smrna(miRNA_sample_sheet_unt
 
 ### nf-core/smRNAseq pipeline
 
-```{targets nf-core-smrnaseq, eval=FALSE}
-tar_target(mmu_mirna_pretrimmed,
-    run_nf_core_smrnaseq("mmu_mirna_pretrimmed", miRNA_sample_sheet_pretrimmed),
-    format = "file"
-),
-tar_target(mmu_mirna_trimmed,
-    run_nf_core_smrnaseq("mmu_mirna_untrimmed", miRNA_sample_sheet_trimmed),
-    format = "file"
+The nf-core/smrnaseq pipeline includes several tools that provide a comprehensive analysis of microRNAseq data including [mirTrace](https://github.com/friedlanderlab/mirtrace) for QC and contamination, [mirTop]() for count matrices of miRNA and isomiRs,  and [miRDeep2](https://www.mdc-berlin.de/content/mirdeep2-documentation) for quantification and discovery of novel miRNAs. 
+
+```{targets nf-core-smrnaseq, eval=TRUE}
+list(
+    tar_target(mmu_mirna_pretrimmed_multiqc,
+        run_nf_core_smrnaseq("mmu_mirna_pretrimmed", miRNA_sample_sheet_pretrimmed),
+        format = "file"
+        ),
+    tar_target(mmu_mirna_trimmed_multiqc,
+        run_nf_core_smrnaseq("mmu_mirna_untrimmed", miRNA_sample_sheet_trimmed),
+        format = "file"
+    )
 )
 ```
-
 ::: {.callout-tip}
 ## Code suggestion
 In a future release, all samples could be run together after preprocessing. 
 :::
 
+### mirTop counts
+
+Extract the mirTop TSV from [seqcluster](https://seqcluster.readthedocs.io/) and merge the matrices.
+
+```{targets nf-core-smrnaseq-mirtop, eval=TRUE}
+list(
+    tar_target(mmu_mirna_pretrimmed_mirtop_counts, nfcore_mirtop_counts(mmu_mirna_pretrimmed_multiqc)),
+    tar_target(mmu_mirna_trimmed_mirtop_counts, nfcore_mirtop_counts(mmu_mirna_trimmed_multiqc)),
+    tar_target(mmu_mirna_mirtop_counts, dplyr::left_join(mmu_mirna_pretrimmed_mirtop_counts, mmu_mirna_trimmed_mirtop_counts, by = "miRNA" ))
+)
+```
+
+### mirTrace QC and contamination metrics
+
+Extract mirTrace 
+Merge mirTace
+
 
 ### Merge pre-trimmed & trimmed libraries
 
-Finally we merge the output of the two runs, including a raw counts table, CPM table, and a merged isomir object. 
+Finally we merge the output of the two runs, including a raw counts table, and a merged isomir object. 
 
 :::
 
@@ -354,21 +375,22 @@ Finally we merge the output of the two runs, including a raw counts table, CPM t
 
 Having defined the pipeline targets above, R scripts are run using `tar_make_future()`. This distributes individual targets across the HPC Cluster in parallel, accounting for interdependencies. 
 
-```{r, eval = TRUE}
+```{r, eval = FALSE}
 system(
-    glue::glue(
+  glue::glue(
     "srun -J run_haemdata --time 48:00 /opt/singularity/3.7.0/bin/singularity exec \\
-    --env R_LIBS_SITE=/opt/singularity-images/rbioc/rlibs/bioc-3.16 \\
-    -B /labs,/opt/singularity,/opt/singularity-images \\
-    --pwd {getwd()} \\
-    /opt/singularity-images/rbioc/vscode-rbioc_3.16.sif Rscript -e 'targets::tar_make_future\\(\\)'")
-    )
+        --env R_LIBS_SITE=/opt/singularity-images/rbioc/rlibs/bioc-3.16 \\
+        -B /labs,/opt/singularity,/opt/singularity-images \\
+        --pwd {getwd()} \\
+        /opt/singularity-images/rbioc/vscode-rbioc_3.16.sif Rscript -e 'targets::tar_make_future\\(\\)'"
+  )
+)
 ```
 
 The  dependency graph helps in understanding the steps of the pipeline. Its interactive and you can zoom/pan to explore the `targets`. 
 
 ```{r}
-tar_visnetwork(targets_only = TRUE )
+tar_visnetwork(targets_only = TRUE)
 ```
 
 At this point, you can go back and run `{targets}` chunks in interactive mode without interfering with the code or data of the non-interactive pipeline.

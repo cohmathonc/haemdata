@@ -19,7 +19,7 @@
 #' @author Denis O'Meally
 #' @export
 
-run_nf_core_smrnaseq <- function(run_folder, sample_sheet, clip_r1_3p = NULL, species = "mmu") {
+run_nfcore_smrnaseq <- function(run_folder, sample_sheet, clip_r1_3p = NULL, species = "mmu") {
     run_path <- glue::glue("{nf_core_cache}/{run_folder}")
     out_folder <- glue::glue("nfcore-smrnaseq-v{smrnaseq_release}-{species}")
 
