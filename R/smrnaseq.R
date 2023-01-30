@@ -3,7 +3,7 @@
 #' Given the path of a multiqc pipeline report file, this function will read in `mirna.tsv` from the miRTop folder and return a tibble of counts.
 #'
 #' @title nfcore_mirtop_counts
-#' @param multiqc_path the full path to a multiqc pipeline report from a nfcore/smrnaseq run 
+#' @param multiqc_path the full path to a multiqc pipeline report from a nfcore/smrnaseq run
 #' on COH Isilon storage
 #' @return a tibble of counts, with genes as rows, and samples as columns
 #' @author Denis O'Meally
@@ -16,15 +16,55 @@ nfcore_mirtop_counts <- function(multiqc_path) {
     mirtop_counts_tsv <- gsub("multiqc/multiqc_report.html", "mirtop/mirna.tsv", multiqc_path)
 
     mirtop_counts <- readr::read_delim(mirtop_counts_tsv, show_col_types = FALSE) |>
-        rename_all(~ gsub("_seqcluster", "", .))
+        dplyr::rename_all(~ gsub("_seqcluster", "", .))
 
     return(mirtop_counts)
 
 }
 
+#' Get the mirTrace and samtools QC tables
+#'
+#' Given the path of a multiqc pipeline report file, this function will read in mirTrace and samtools stats from the multiqc folder and return a tibble.
+#'
+#' @title nfcore_smrna_qc
+#' @param multiqc_path the full path to a multiqc pipeline report from a nfcore/smrnaseq run
+#' on COH Isilon storage
+#' @return a tibble of counts, with samples as rows, and QC metrics as columns
+#' @author Denis O'Meally
+#' @export
+nfcore_smrna_qc <- function(multiqc_path) {
+    # Test if the multiqc is from a smrnaseq run
+    if (!stringr::str_detect(multiqc_path, "nfcore-smrnaseq-v2.1.0-mmu")) stop("The multiqc report is not from a nf-core/smrnaseq v2.1.0 run")
+
+    mirtrace_summary_txt <- gsub("multiqc_report.html", "multiqc_data/multiqc_mirtrace_summary.txt", multiqc_path)
+    mirtrace_contamination_txt <- gsub("multiqc_report.html", "multiqc_data/multiqc_mirtrace_contamination.txt", multiqc_path)
+    samtools_summary_txt <- gsub("multiqc_report.html", "multiqc_data/multiqc_samtools_stats.txt", multiqc_path)
+
+    mirtrace_summary <- readr::read_delim(mirtrace_summary_txt, show_col_types = FALSE) |>
+        mutate(library_id = paste0("COHP_", gsub("_.*", "", Sample)), .before = everything()) |>
+        select(-c(Sample, filename))
+
+    mirtrace_contamination <- readr::read_delim(mirtrace_contamination_txt, show_col_types = FALSE) |>
+        mutate(library_id = paste0("COHP_", gsub("_.*", "", Sample)), .before = everything()) |>
+        select(-c(Sample))
+
+    mirtrace_qc <- left_join(mirtrace_summary, mirtrace_contamination, by = "library_id") %>%
+        setNames(paste0("mirtrace_", names(.))) |>
+        dplyr::rename(library_id = "mirtrace_library_id")
+
+    samtools_mature_summary <- readr::read_delim(samtools_summary_txt, show_col_types = FALSE) |>
+        dplyr::filter(!grepl("hairpin", Sample)) |>
+        mutate(Sample = gsub("_mature", "", Sample)) %>%
+        setNames(paste0("samtools_", names(.))) |>
+        dplyr::rename(library_id = "samtools_Sample")
+
+    smrnaseq_qc <- left_join(mirtrace_qc, samtools_mature_summary, by = "library_id")
+
+    return(smrnaseq_qc)
+}
 #' Get the counts table from edgeR CPM file
 #'
-#' Given the path of a multiqc pipeline report file, this function will read in `hairpin_normalized_CPM.Ttxt` from the edger folder and return a tibble of counts per million.
+#' Given the path of a multiqc pipeline report file, this function will read in `hairpin_normalized_CPM.txt` from the edger folder and return a tibble of counts per million.
 #'
 #' @title nfcore_smrna_cpm
 #' @param multiqc_path the full path to a multiqc pipeline report from a nfcore/smrnaseq run
@@ -41,6 +81,57 @@ nfcore_smrna_cpm <- function(multiqc_path) {
     edger_norm_cpm <- read.table(edger_norm_cpm_txt, header = TRUE, row.names = 1, sep = "\t")
 
     return(edger_norm_cpm)
+}
+
+#' Get the isomiRs table from mirtop_rawData.tsv file
+#'
+#' Given the path of a multiqc pipeline report file, this function will read in `mirtop.tsv`
+#' from the mirtop folder and return a tibble mirtop isomiRs suitable for input to the
+#' [`isomiRs`](https://www.bioconductor.org/packages/release/bioc/html/isomiRs.html) package.
+#'
+#' @title nfcore_mirtop_isomir
+#' @param multiqc_path the full path to a multiqc pipeline report from a nfcore/smrnaseq run
+#' on COH Isilon storage
+#' @return a data.frame of counts per million, with genes as rows, and samples as columns
+#' @author Denis O'Meally
+#' @export
+nfcore_mirtop_isomir <- function(multiqc_path) {
+    # Test if the multiqc is from a smrnaseq run
+    if (!stringr::str_detect(multiqc_path, "nfcore-smrnaseq")) stop("The multiqc report is not from a nf-core/smrnaseq run")
+
+    mirtop_tsv <- gsub("multiqc/multiqc_report.html", "mirtop/mirtop_rawData.tsv", multiqc_path)
+
+    mirtop <- readr::read_tsv(mirtop_tsv, show_col_types = FALSE) |>
+        dplyr::rename_all(~ gsub("_seqcluster", "", .))
+
+    return(mirtop)
+}
+#' Make an isomiRs object from the mirtop isomir table and a metadata table
+#'
+#' Given a mirtop isomir table and a metadata table, this will return an
+#' [`isomiRs`](https://www.bioconductor.org/packages/release/bioc/html/isomiRs.html)
+#' SummarizedExperiment object.
+#'
+#' @title make_isomir
+#' @param mirtop_isomirs a data.frame containing the mirtop isomiR table
+#' @param metadata a data.frame containing the colData to bind
+#' @return an IsomirDataSeq object (a subclass of SummarizedExperiment)
+#' @author Denis O'Meally
+#' @export
+make_isomir <- function(mirtop_isomirs, metadata) {
+    # mirtop_isomirs <- mmu_mirna_mirtop_isomir
+    # metadata <- published_metadata_mmu
+
+    metadata_df <- metadata |>
+        dplyr::filter(grepl("miRNA", assay)) |>
+        column_to_rownames("library_id")
+    # need to check if this is an appropriate way to merge tables? 
+    # we just replace na with 0 for isomiRs that are absent from a sample
+    mirtop_isomirs_rm_na <- mirtop_isomirs |> mutate_if(is.numeric, coalesce, 0)
+
+    isomir <- isomiRs::IsomirDataSeqFromMirtop(mirtop_isomirs, metadata_df)
+
+    return(isomir)
 }
 
 #' Run nf-core/smrnaseq pipeline on Apollo
