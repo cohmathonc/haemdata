@@ -1,6 +1,6 @@
 # Roadmap
+* simplify Isilon paths (`/net/nfs-irwrsrchnas01/labs` -> `/labs`)
 * remove metadata from SummarisedExperiments
-* move {target} script to Target Markdown
 * scRNAseq
   - CML mice 
   - add 10X read metrics for all libraries

@@ -1,4 +1,6 @@
 # haemdata 0.0.0.9010
+* move {target} script to Target Markdown
+* add treatment mice metadata from @luechi
 * make 2016 miRNA timepoints 0-offset to match mRNA (miRNA labels are 1-based)
 * harmonise miRNA for all AML samples (nf-core/smrnaseq v2.1.0)
 * miRNA fastqs gzip compressed in place, keeping originals
@@ -8,6 +10,7 @@
 * add a warning about reproducibility when pins are loaded without stipulating the `version`
 * rename `sample` to `library_id` in metadata_mmu
 * rename `project` to `cohort` in metadata_mmu
+* add `ref_dim1` & `2` to metadata_mmu, for PC, UMAP or other coordinates from dimension reduction
 * nf-core sample sheets use `library_id` column for `sample` column
 
 # haemdata 0.0.0.9009
