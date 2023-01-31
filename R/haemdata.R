@@ -26,7 +26,7 @@ globalVariables(c(
 haemdata_env <- new.env(parent = emptyenv())
 
 # Message to display when no pinboard is set
-haemdata_env$pin_board_msg <- "The pinboard is not set up. Please set the pinboard using the use_pinboard() function either in this R session or in the cohort \".Rprofile\" file.
+haemdata_env$pin_board_msg <- "The pinboard is not set up. Please set the pinboard using the use_pinboard() function either in this R session or in the project \".Rprofile\" file.
 See ?use_pinboard() for more information."
 
 # pinboard is set to NULL for building/installing the package
