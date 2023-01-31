@@ -83,7 +83,42 @@ publish_metadata <- function(metadata) {
         return(data.frame("pin_name" = c(csv_pin), "version" = c(csv_version)))
     }
 }
+#' Publish mirtop counts
+#'
+#' Publishes mirtopcounts table to the  Haemdata Teams channel or to the `MHO/haemdata`
+#' folder on devel storage in `.csv` format.
+#'
+#' @name publish_mirtop_counts
+#' @param mirtop_counts a data.frame ready to publish
+#' @return a data.frame of the pins and version numbers for the published object
+#' @author Denis O'Meally
+#' @export
+publish_mirtop_counts <- function(mirtop_counts) {
+    if (is.null(haemdata::haemdata_env$pin_board)) {
+        stop(haemdata::haemdata_env$pin_board_msg)
+    } else {
+        # extract name
+        name <- deparse(substitute(mirtop_counts))
 
+        # make description
+        description <- glue::glue(
+            "A table of miR counts from the nfcore/smrnaseq pipeline [script](https://github.com/nf-core/smrnaseq/blob/master/bin/collapse_mirtop.r) that collapses mirtop output to a matrix"
+        )
+
+        csv_pin <- pins::pin_write(
+            haemdata::haemdata_env$pin_board,
+            mirtop_counts,
+            name = glue::glue("{name}.csv"),
+            type = "csv",
+            title = name,
+            description = description
+        )
+
+        csv_version <- get_latest_pin_version(csv_pin)
+
+        return(data.frame("pin_name" = c(csv_pin), "version" = c(csv_version)))
+    }
+}
 # --- Writing pins to the pin_board --- ####
 
 # write a SummarisedExperiment pin, with name, description, and metadata
