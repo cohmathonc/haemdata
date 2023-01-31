@@ -30,11 +30,13 @@
 #'  | `age_at_sample` | Age at sample collection, in weeks (`sample_date - dob`) |
 #'  | `age_at_end` | Age at end of of the experiment, in weeks (`max(sample_date) - dob`) |
 #'  | `qc_pass_mapping` | `mRNA` samples only. `TRUE` if STAR uniquely mapped reads >= `mapping_threshold` (5% by default), or `FALSE` if not. |
+#'  | `ref_dim1` | reference dimension 1 - typically PC1; can be UMAP or any other dimension reduction coordinate. |
+#'  | `ref_dim1` | reference dimension 2 - typically PC2 |
 #'
-#' #TODO The [`update_metadata_mmu()`](https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24)
+#' The [`update_metadata_mmu()`](https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24)
 #' function assembles the metadata for all RNAseq libraries from AML and CML mice, by consolidating
 #' data scraped from multiple sequencing run sheets, directly from sequencing folders, emails, and so forth.
-#' The code is complex and ugly and undoubetly some errors will have made it through.
+#' The code is complex and ugly and undoubtedly some errors will have made it through.
 #'
 #' Raise an [issue on GitHub](https://github.com/drejom/haemdata/issues)
 #' to report erroneous or missing records.

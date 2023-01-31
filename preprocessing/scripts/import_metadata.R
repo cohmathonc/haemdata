@@ -48,7 +48,6 @@ update_metadata_mmu <- function() {
     # Load in metadata_mmu and modify as needed
 
     # v0.0.0.9010 interim
-    # # # Add miRNA libraries to metadata_mmu ----
     sample_sheet <- pins::pin_read(
     # mRNA_sample_sheet <- pins::pin_read(
         pins::board_folder(
@@ -60,8 +59,35 @@ update_metadata_mmu <- function() {
         purrr::modify_if(is.factor, as.character) |>
             dplyr::filter(!grepl("miRNA", assay)) |>
             dplyr::arrange(sample_date, mouse_id, tissue) |>
+            # add columns ref_dim1/2 for PC, UMAP or other coordinates from dimension reduction
+            dplyr::mutate(ref_dim1 = NA_real_, ref_dim2 = NA_real_) |>
             select(-sample_id) # do this until we're happy that the sample_id can be assigned reliably
 
+    # # # Lisa's Treatment mice metadata
+    treatment_meatadata <- readxl::read_excel("data-raw/pcs_time_id_pc1_pc2_timepoints_ckitp_COHP.xlsx") |>
+        mutate(timepoint = case_when(
+            tissue == "BM" ~ NA_character_,
+            TRUE ~ timepoint)
+        ) |>
+        unite("sample", c(ID:tissue)) |>
+        mutate(
+            percent_ckit = as.numeric(ckitp),
+            ref_dim1 = pc1,
+            ref_dim2 = pc2
+        ) |>
+    select(sample, percent_ckit, ref_dim1, ref_dim2)
+
+    treatment_sample_sheet <- sample_sheet |>
+        dplyr::filter(grepl(treatment_mice, cohort)) |>
+        unite("sample", c(mouse_id, timepoint, tissue), remove = FALSE) |>
+        rows_update(treatment_meatadata, by = c("sample")) |>
+        select(-c(sample, fastq_1, fastq_2)) |>
+        distinct()
+
+    sample_sheet <- sample_sheet |>
+        rows_update(treatment_sample_sheet, by = c("library_id"))
+
+    # # # Add miRNA libraries to metadata_mmu ----
     # get miRNA libraries
     miRNA_sample_sheet <- rbind(
         parse_metadata_AML.miRNA.2016(),
@@ -75,10 +101,13 @@ update_metadata_mmu <- function() {
 
     # # # Assign sample IDs ----
     # make a combined list of samples and assign a number
+    # transiently sort by library_id, so that we have a constant property to arrange samples by
     sample_ids <- rbind(
-        select(sample_sheet, c(mouse_id, tissue, timepoint)),
-        select(miRNA_sample_sheet, c(mouse_id, tissue, timepoint))
+        select(sample_sheet, c(library_id, mouse_id, tissue, timepoint)),
+        select(miRNA_sample_sheet, c(library_id, mouse_id, tissue, timepoint))
     ) |>
+    dplyr::arrange(library_id) |>
+    dplyr::select(-library_id) |>
     dplyr::distinct() |>
     dplyr::mutate(sample_id = sprintf("PSON_%04d", dplyr::row_number()))
 
@@ -115,7 +144,8 @@ update_metadata_mmu <- function() {
                 age_at_sample,
                 .direction = "updown"
             ) |>
-        dplyr::ungroup()
+        dplyr::ungroup() |>
+        dplyr::arrange(sample_date)
 
     # # # Rename project to cohort ----
     # sample_sheet <- all_mice |>
