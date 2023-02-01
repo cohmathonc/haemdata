@@ -1,10 +1,8 @@
 # Roadmap
 * simplify Isilon paths (`/net/nfs-irwrsrchnas01/labs` -> `/labs`)
 * remove metadata from SummarisedExperiments
-* scRNAseq
-  - CML mice 
-  - add 10X read metrics for all libraries
-  - include additional mmu 10X libraries from Amber's lab 
+* add 10X read metrics for all libraries
+* CML miR-142 KO T & LMPP cells (scRNA & mRNA)
 * simplify `metadata_hsa`
 * implement [`pointblank`](https://rich-iannone.github.io/pointblank/index.html) data dictionaries
 * revised colour scheme

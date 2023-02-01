@@ -548,4 +548,9 @@ COHP_11536
 PSON_0853
 
 
-Haemdata is composed of two parts: a targets pipeline for preprocessing raw sequencing reads and functions for accessing the processed data. The pipeline is designed to be efficient and reproducible, allowing users to focus on their data analysis rather than the tedious task of data preprocessing. With Haemdata, you can easily import and manipulate large sequencing datasets, streamlining your workflow and allowing you to quickly answer important biological questions. Give Haemdata a try and see how it can improve your research.
+fastq_paths <- read.csv("data-raw/mmu_mir142_ko_10Xfastqs.csv")
+
+# filter df of paths in column fastq for rows contains the string "48631", using tidyverse
+fastq_paths |>
+    filter(str_detect(fastq, "48631")) %>%
+    gsub("/labs/gmarcucci/Seq", "", .$fastq)

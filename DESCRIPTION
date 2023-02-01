@@ -34,6 +34,7 @@ Suggests:
     grid,
     hdf5r,
     hexSticker,
+    isomiRs,
     janitor,
     knitr,
     magick,
@@ -72,8 +73,8 @@ Collate:
     'haemdata.R'
     'access_data.R'
     'data.R'
-    'run_cutadapt_smrna.R'
-    'run_nf_core_smrnaseq.R'
-    'run_nfcore.R'
+    'rnaseq.R'
+    'run_nfcore_scrnaseq.R'
     'seurat.R'
+    'smrnaseq.R'
     'summarised_experiments.R'
