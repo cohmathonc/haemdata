@@ -106,8 +106,9 @@ update_metadata_mmu <- function() {
         select(sample_sheet, c(library_id, mouse_id, tissue, timepoint)),
         select(miRNA_sample_sheet, c(library_id, mouse_id, tissue, timepoint))
     ) |>
-    dplyr::arrange(library_id) |>
-    dplyr::select(-library_id) |>
+    dplyr::mutate(library_id_num = as.numeric(gsub("[^[:digit:]\\.]", "", library_id))) |>
+    dplyr::arrange(library_id_num) |>
+    dplyr::select(-c(library_id, library_id_num)) |>
     dplyr::distinct() |>
     dplyr::mutate(sample_id = sprintf("PSON_%04d", dplyr::row_number()))
 
