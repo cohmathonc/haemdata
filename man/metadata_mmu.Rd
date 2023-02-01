@@ -34,13 +34,15 @@
    \code{age_at_sample} \tab Age at sample collection, in weeks (\code{sample_date - dob}) \cr
    \code{age_at_end} \tab Age at end of of the experiment, in weeks (\code{max(sample_date) - dob}) \cr
    \code{qc_pass_mapping} \tab \code{mRNA} samples only. \code{TRUE} if STAR uniquely mapped reads >= \code{mapping_threshold} (5\% by default), or \code{FALSE} if not. \cr
+   \code{ref_dim1} \tab reference dimension 1 - typically PC1; can be UMAP or any other dimension reduction coordinate. \cr
+   \code{ref_dim1} \tab reference dimension 2 - typically PC2 \cr
 }
 }
 \details{
-#TODO The \href{https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24}{\code{update_metadata_mmu()}}
+The \href{https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24}{\code{update_metadata_mmu()}}
 function assembles the metadata for all RNAseq libraries from AML and CML mice, by consolidating
 data scraped from multiple sequencing run sheets, directly from sequencing folders, emails, and so forth.
-The code is complex and ugly and undoubetly some errors will have made it through.
+The code is complex and ugly and undoubtedly some errors will have made it through.
 
 Raise an \href{https://github.com/drejom/haemdata/issues}{issue on GitHub}
 to report erroneous or missing records.
