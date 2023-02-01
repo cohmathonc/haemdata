@@ -119,6 +119,42 @@ publish_mirtop_counts <- function(mirtop_counts) {
         return(data.frame("pin_name" = c(csv_pin), "version" = c(csv_version)))
     }
 }
+#' Publish bowtie cpm (nf-core/smrnaseq)
+#'
+#' Publishes nf-core/smrnaseq bowtie cpm table to the  Haemdata Teams channel or to the `MHO/haemdata`
+#' folder on devel storage in `.csv` format.
+#'
+#' @name publish_bowtie_cpm
+#' @param bowtie_cpm a data.frame ready to publish
+#' @return a data.frame of the pins and version numbers for the published object
+#' @author Denis O'Meally
+#' @export
+publish_bowtie_cpm <- function(bowtie_cpm) {
+    if (is.null(haemdata::haemdata_env$pin_board)) {
+        stop(haemdata::haemdata_env$pin_board_msg)
+    } else {
+        # extract name
+        name <- deparse(substitute(bowtie_cpm))
+
+        # make description
+        description <- glue::glue(
+            "A table of CPM from the nfcore/smrnaseq pipeline [script](https://github.com/nf-core/smrnaseq/blob/master/bin/edgeR_miRBase.r) that uses edgeR to make a matrix from bowtie counts of mature miRs"
+        )
+
+        csv_pin <- pins::pin_write(
+            haemdata::haemdata_env$pin_board,
+            bowtie_cpm,
+            name = glue::glue("{name}.csv"),
+            type = "csv",
+            title = name,
+            description = description
+        )
+
+        csv_version <- get_latest_pin_version(csv_pin)
+
+        return(data.frame("pin_name" = c(csv_pin), "version" = c(csv_version)))
+    }
+}
 # --- Writing pins to the pin_board --- ####
 
 # write a SummarisedExperiment pin, with name, description, and metadata
