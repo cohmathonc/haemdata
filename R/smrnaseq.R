@@ -120,16 +120,29 @@ nfcore_mirtop_isomir <- function(multiqc_path) {
 #' @export
 make_isomir <- function(mirtop_isomirs, metadata) {
     # mirtop_isomirs <- mmu_mirna_mirtop_isomir
+    # mirtop_isomirs <- mmu_mirna_pretrimmed_mirtop_isomir
     # metadata <- published_metadata_mmu
 
-    metadata_df <- metadata |>
-        dplyr::filter(grepl("miRNA", assay)) |>
-        column_to_rownames("library_id")
-    # need to check if this is an appropriate way to merge tables? 
-    # we just replace na with 0 for isomiRs that are absent from a sample
-    mirtop_isomirs_rm_na <- mirtop_isomirs |> mutate_if(is.numeric, coalesce, 0)
+    keep <- grep("COHP", names(mirtop_isomirs), value = TRUE)
+    keep <- c("COHP_9750", "COHP_9751", "COHP_9752")
+    keep <- c("COHP_21146", "COHP_21147", "COHP_21148")
 
-    isomir <- isomiRs::IsomirDataSeqFromMirtop(mirtop_isomirs, metadata_df)
+
+    metadata_df <- metadata |>
+        dplyr::filter(library_id %in% keep) |>
+        tibble::column_to_rownames("library_id") |>
+        select(sample_id, mouse_id, tissue, cohort, batch, treatment, genotype, sex, percent_ckit, sample_weeks, age_at_sample)
+
+    mirtop_isomirs_df <- mirtop_isomirs |>
+        select(names(mirtop_isomirs)[1:6], all_of(keep))
+
+
+
+    # need to check if this is an appropriate way to merge tables?
+    # we just replace na with 0 for isomiRs that are absent from a sample
+    #mirtop_isomirs_rm_na <- mirtop_isomirs_df |> mutate_if(is.numeric, coalesce, 0)
+
+    isomir <- isomiRs::IsomirDataSeqFromMirtop(mirtop_isomirs_df, metadata_df)
 
     return(isomir)
 }
