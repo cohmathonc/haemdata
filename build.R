@@ -22,6 +22,29 @@ targets::tar_invalidate(matches("built_package"))
 # run the pipeline
 targets::tar_make_future()
 
+# function to test, build, install
+tbi<-function(){
+    # Check the package
+    devtools::check(error_on = "error", vignettes = FALSE)
+
+    # Make a release on GitHub
+    ## put fields in standard order and alphabetises dependencies
+    usethis::use_tidy_description()
+    # use_tidy_eval()
+    # use_version()
+
+    # build the package
+    tgz <- devtools::build(vignettes = FALSE)
+    # Publish to cgt.coh.org
+    drat::insertPackage(tgz, "/net/nfs-irwrsrchnas01/labs/rrockne/MHO")
+
+    # install locally
+    # devtools::install()
+    install.packages("haemdata", repo = "http://cgt.coh.org/MHO")
+
+}
+
+
 # Check the package
 devtools::check(error_on = "error", vignettes = FALSE)
 
