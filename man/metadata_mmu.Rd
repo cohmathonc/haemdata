@@ -10,8 +10,8 @@
 \description{
 \href{../metadata_mmu_template.xlsx}{Download} a template for new samples\tabular{ll}{
    Column \tab Description \cr
-   \code{sample_id} \tab A unique sample identifier with the format \code{PSON_XXXX} that uniquely identifies a tissue sample with respect to the mouse, tissue type and sample date. Use this number to match samples across assays (eg mRNA & miRNA.) \cr
-   \code{library_id} \tab Integrative Genomics Core \emph{CLN} with the format \code{COHP_XXXXX}. This identifier is used to match sequence reads, QC metrics, raw counts and metadata, for each sequencing library. \code{library_id} is not unique as some libraries are split across multiple sequencing runs. \cr
+   \code{sample_id} \tab Unique identifier with the format \code{PSON_XXXX} that identifies a tissue sample with respect to the mouse, tissue type and sample date. Used to match samples across assays. \cr
+   \code{library_id} \tab Integrative Genomics Core \emph{CLN} with the format \code{COHP_XXXXX}. Matches sequence reads, QC metrics, raw counts and metadata for each sequencing library. Not unique as some libraries are split across multiple sequencing runs. \cr
    \code{fastq_1} \tab Full path of fastq1, unique in the table \cr
    \code{fastq_2} \tab Full path of fastq2, unique in the table, or blank for single-end reads \cr
    \code{hdf5} \tab Full path of h5 file, Cell Rangers's HDF5 Feature-Barcode Matrix Format \cr
@@ -22,11 +22,11 @@
    \code{timepoint} \tab Timepoint label; formatting is inconsistent across cohorts \cr
    \code{treatment} \tab Experimental treatment group \cr
    \code{genotype} \tab Mouse genotype \cr
-   \code{sex} \tab Sex, \code{M} or \code{F} \cr
-   \code{dob} \tab Date of birth of the mouse, YYYY-MM-DD \cr
-   \code{project} \tab Cohorts of mice collected and processed together; a project may contain multiple \code{batches} \cr
-   \code{batch} \tab Groups of samples sequenced together \cr
-   \code{dod} \tab Date of death of the mouse, YYYY-MM-DD. \code{NA} if the mouse survived the experiment. \cr
+   \code{sex} \tab Sex (\code{M}/\code{F}) \cr
+   \code{dob} \tab Date of birth, YYYY-MM-DD \cr
+   \code{cohort} \tab Logical groups of samples, generally corresponding to experimental cohorts \cr
+   \code{batch} \tab Groups of samples from the sequencing run \cr
+   \code{dod} \tab Date of death, YYYY-MM-DD. \code{NA} if the mouse survived the experiment. \cr
    \code{sample_date} \tab Date the sample was collected, YYYY-MM-DD \cr
    \code{percent_ckit} \tab Percentage of c-KIT+ cells, measured by flow cytometry (CD117) \cr
    \code{sample_weeks} \tab Timepoint in weeks (\code{sample_date - min(sample_date)}). Post treatment chemo samples begin at week 0, pretreatment samples < 0. \cr
