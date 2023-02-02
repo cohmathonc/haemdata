@@ -17,17 +17,24 @@ reference:
 - title: Accessing data 
   contents:
   - matches("pin")
-- title: SummarisedExperiment functions
+- title: mRNA SummarisedExperiment functions
 - contents:
   - ends_with("_se")
   - make_tpm_matrix
-- title: Suerat functions
+- title: miRNAseq functions
+- contents:
+  - matches("mirtop")
+  - matches("smrna")
+  - matches("make_isomir")
+- title: 10X scRNAseq functions
 - contents:
   - starts_with("seurat_")
   - rotate_umap
   - make_seurat_objects
   - find_elbow
+  - run_nf_core_scrnaseq
 - title: Other functions
 - contents:
   - run_nf_core_rnaseq
   - write_data
+

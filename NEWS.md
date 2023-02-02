@@ -1,5 +1,6 @@
 # haemdata 0.0.0.9010
-* move {target} script to Target Markdown
+* move target pipeline to `./preprocessing`
+* move _target.R script to _target.qmd
 * add treatment mice metadata from @luechi
 * make 2016 miRNA timepoints 0-offset to match mRNA (miRNA labels are 1-based)
 * harmonise miRNA for all AML samples (nf-core/smrnaseq v2.1.0)
@@ -7,10 +8,10 @@
 * fix mislabelled human FLT3 AML samples, add new samples
 * retired GRCm38 mRNAseq pipeline; GENCODEm28 is the default mmu reference genome for mRNAseq
 * add a PSON sample identifier for all mmu samples
-* add a warning about reproducibility when pins are loaded without stipulating the `version`
+* add a warning about reproducibility when pins are loaded without setting `version`
 * rename `sample` to `library_id` in metadata_mmu
 * rename `project` to `cohort` in metadata_mmu
-* add `ref_dim1` & `2` to metadata_mmu, for PC, UMAP or other coordinates from dimension reduction
+* add `ref_dim1` & `2` to metadata_mmu, for PC, UMAP or other coordinates from dimensionality reduction
 * nf-core sample sheets use `library_id` column for `sample` column
 
 # haemdata 0.0.0.9009
