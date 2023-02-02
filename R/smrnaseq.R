@@ -41,11 +41,11 @@ nfcore_smrna_qc <- function(multiqc_path) {
     samtools_summary_txt <- gsub("multiqc_report.html", "multiqc_data/multiqc_samtools_stats.txt", multiqc_path)
 
     mirtrace_summary <- readr::read_delim(mirtrace_summary_txt, show_col_types = FALSE) |>
-        mutate(library_id = paste0("COHP_", gsub("_.*", "", Sample)), .before = everything()) |>
+        mutate(library_id = paste0("COHP_", gsub("_.*", "", Sample)), .before = dplyr::everything()) |>
         select(-c(Sample, filename))
 
     mirtrace_contamination <- readr::read_delim(mirtrace_contamination_txt, show_col_types = FALSE) |>
-        mutate(library_id = paste0("COHP_", gsub("_.*", "", Sample)), .before = everything()) |>
+        mutate(library_id = paste0("COHP_", gsub("_.*", "", Sample)), .before = dplyr::everything()) |>
         select(-c(Sample))
 
     mirtrace_qc <- left_join(mirtrace_summary, mirtrace_contamination, by = "library_id") %>%
@@ -134,7 +134,7 @@ make_isomir <- function(mirtop_isomirs, metadata) {
         select(sample_id, mouse_id, tissue, cohort, batch, treatment, genotype, sex, percent_ckit, sample_weeks, age_at_sample)
 
     mirtop_isomirs_df <- mirtop_isomirs |>
-        select(names(mirtop_isomirs)[1:6], all_of(keep))
+        select(names(mirtop_isomirs)[1:6], dplyr::all_of(keep))
 
 
 
