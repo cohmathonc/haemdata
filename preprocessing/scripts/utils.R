@@ -71,6 +71,9 @@ build_package <- function(latest_published_data) {
     # usethis::use_version("dev")
     # usethis::use_dev_version("minor")
 
+    # cp over target markdown
+    fs::file_copy(here::here("preprocessing/_targets.html"), "~/MHO/haemdata-www", overwrite = TRUE)
+
     # build the package
     tgz <- devtools::build(vignettes = FALSE)
     # Publish to cgt.coh.org
