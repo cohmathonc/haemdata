@@ -153,9 +153,9 @@ rotate_umap <- function(seurat_object, x = FALSE, y = FALSE) {
 }
 
 #' @title Make a Seurat object from 10X Cellranger CellPlex data
-#' @name make_seurat_objects
+#' @name seurat_import_cellplex
 #' @description
-#' Loads 10X Cellranger CellPlex h5 data, builds Seurat objects and adds the following metatdata columns:
+#' Loads 10X Cellranger CellPlex h5ad data, builds Seurat objects and adds the following metatdata columns:
 #' `percent_mt`, `percent_ribo`, `percent_hb`, `percent_platelet`, `percent_xist`, `chrY_counts`, `percent_myh11`.
 #'
 #' Data are read in from file paths recorded in the metadata_mmu table, column `hdf5`.
@@ -171,7 +171,7 @@ rotate_umap <- function(seurat_object, x = FALSE, y = FALSE) {
 #' @author Denis O'Meally
 #' @export
 # Make Seurat objects
-seurat_import_objects <- function(cohort_regex) {
+seurat_import_cellplex <- function(cohort_regex) {
     # get a list of ChrY genes from GTF file
     # Parse GTF: https://www.biostars.org/p/140471/
 
@@ -191,13 +191,14 @@ seurat_import_objects <- function(cohort_regex) {
         )
     }
 
-    use_pinboard("devel")
-    h5_paths <- get_pin("metadata_mmu.csv") |> 
-        purrr::modify_if(is.factor, as.character) |>
+    h5_paths <- readRDS(here::here("data-raw/metadata_mmu.rds")) |>
         dplyr::filter(stringr::str_detect(cohort, {{ cohort_regex }})) |>
         dplyr::filter(stringr::str_detect(assay, "scRNA")) |>
         dplyr::pull(hdf5)
     message("loaded paths from pinboard")
+    if (length(h5_paths) == 0) {
+        stop("No matching samples have h5ad file paths in the metadata_mmu table; check the cohort_regex.")
+    }
 
     # Load all the samples
     seurat_object_list <- future.apply::future_lapply(X = h5_paths, FUN = function(x) {
