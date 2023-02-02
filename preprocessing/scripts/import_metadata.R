@@ -31,129 +31,53 @@ make_metadata_hsa <- function(sample_sheet) {
 #'
 #' Raise an \href{https://github.com/drejom/haemdata/issues}{issue on GitHub}
 #' to report erroneous or missing records.
-#' @details Updates the `metadata_mmu` object for all RNAseq libraries by using
-#' a previously published version, either from a pin or a n excel file, or csv, etc.
-#' The metadata table was assembled by crawling a range of disparate datasources
-#' including emails, CSVs, excel files, etc. and put together by the the
-#' make_metadata_mmu() function, retired in version 0.0.0.0.9008.
 #'
+#' @details This function updates the `metadata_mmu` object for all RNAseq libraries
+#' by using a previously published version from a pin, excel file, csv, etc. The metadata
+#' table was assembled by crawling a range of disparate datasources including emails,
+#' CSVs, excel files, etc. and was originally put together by the make_metadata_mmu()
+#' function (which has been retired since version 0.0.0.0.9008).
+#'
+#' This function is really just a place holder for code that manipulates the metadata table
+#' for each release. See previous releases on GihUb to track down how raw metadata was prepared.
+#' #'
 #' @name update_metadata_mmu
-#' @param sample_sheet_all_mice a data.frame produced by row binding all mouse sample sheets
-#' detailed in [R/import_metadata.R](https://github.com/drejom/haemdata/blob/main/R/import_metadata.R).
 #' @return a data.frame
 #' @author Denis O'Meally
 
 update_metadata_mmu <- function() {
     # Update sample and mouse metadata
-    # Load in metadata_mmu and modify as needed
+    # Load in metadata_mmu from the devel pinboard and modify as needed
 
-    # v0.0.0.9010 interim
+    # v0.0.0.9011 interim
     sample_sheet <- pins::pin_read(
-    # mRNA_sample_sheet <- pins::pin_read(
         pins::board_folder(
-            "/net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata",
+            "/labs/rrockne/MHO/haemdata",
             versioned = FALSE
         ),
         "metadata_mmu.csv"
     ) |>
-        purrr::modify_if(is.factor, as.character) |>
-            dplyr::filter(!grepl("miRNA", assay)) |>
-            dplyr::arrange(sample_date, mouse_id, tissue) |>
-            # add columns ref_dim1/2 for PC, UMAP or other coordinates from dimension reduction
-            dplyr::mutate(ref_dim1 = NA_real_, ref_dim2 = NA_real_) |>
-            select(-sample_id) # do this until we're happy that the sample_id can be assigned reliably
+        purrr::modify_if(is.factor, as.character)
 
-    # # # Lisa's Treatment mice metadata
-    treatment_meatadata <- readxl::read_excel("data-raw/pcs_time_id_pc1_pc2_timepoints_ckitp_COHP.xlsx") |>
-        mutate(timepoint = case_when(
-            tissue == "BM" ~ NA_character_,
-            TRUE ~ timepoint)
-        ) |>
-        unite("sample", c(ID:tissue)) |>
-        mutate(
-            percent_ckit = as.numeric(ckitp),
-            ref_dim1 = pc1,
-            ref_dim2 = pc2
-        ) |>
-    select(sample, percent_ckit, ref_dim1, ref_dim2)
-
-    treatment_sample_sheet <- sample_sheet |>
-        dplyr::filter(grepl(treatment_mice, cohort)) |>
-        unite("sample", c(mouse_id, timepoint, tissue), remove = FALSE) |>
-        rows_update(treatment_meatadata, by = c("sample")) |>
-        select(-c(sample, fastq_1, fastq_2)) |>
-        distinct()
-
+    # # # change sample_id prefix to MHO from PSON
     sample_sheet <- sample_sheet |>
-        rows_update(treatment_sample_sheet, by = c("library_id"))
+        mutate(sample_id = str_replace(sample_id, "PSON", "MHO"))
 
-    # # # Add miRNA libraries to metadata_mmu ----
-    # get miRNA libraries
-    miRNA_sample_sheet <- rbind(
-        parse_metadata_AML.miRNA.2016(),
-        parse_metadata_AML.miRNA.2018(),
-        parse_metadata_AML.miRNA.2020(),
-        parse_metadata_AML.miRNA.2021.RxGroup1(),
-        parse_metadata_AML.miRNA.2021.RxGroups1and2(),
-        parse_metadata_AML.miRNA.2021.RxGroup2_pt2(),
-        parse_metadata_AML.miRNA.2022.RxGroup3()
-    ) |> mutate(mouse_id = as.integer(mouse_id))
+    # # # update Cellplex file paths to Cellranger v7.0.0
+    sample_sheet <- sample_sheet |>
+        mutate(
+            hdf5 = str_replace(hdf5, "(GENCODEm28_HLT_lib[1-9])/outs", "\\1_v7/outs"),
+            hdf5 = str_replace(hdf5, "/net/nfs-irwrsrchnas01/labs", "/labs"),
+            hdf5 = str_replace(hdf5, "sample_feature_bc_matrix.h5", "sample_filtered_feature_bc_matrix.h5"))
 
-    # # # Assign sample IDs ----
-    # make a combined list of samples and assign a number
-    # transiently sort by library_id, so that we have a constant property to arrange samples by
-    sample_ids <- rbind(
-        select(sample_sheet, c(library_id, mouse_id, tissue, timepoint)),
-        select(miRNA_sample_sheet, c(library_id, mouse_id, tissue, timepoint))
-    ) |>
-    dplyr::mutate(library_id_num = as.numeric(gsub("[^[:digit:]\\.]", "", library_id))) |>
-    dplyr::arrange(library_id_num) |>
-    dplyr::select(-c(library_id, library_id_num)) |>
-    dplyr::distinct() |>
-    dplyr::mutate(sample_id = sprintf("PSON_%04d", dplyr::row_number()))
-
-    sample_sheet_w_IDs <- sample_sheet |>
-        dplyr::left_join(sample_ids, by = c("mouse_id", "tissue", "timepoint")) |>
-        dplyr::relocate(sample_id)
-
-    miRNA_sample_sheet_w_IDs <- miRNA_sample_sheet |>
-        dplyr::left_join(sample_ids, by = c("mouse_id", "tissue", "timepoint")) |>
-        dplyr::relocate(sample_id)
-
-    combined_sample_sheet <- bind_rows(
-            sample_sheet_w_IDs,
-            miRNA_sample_sheet_w_IDs) |>
-        dplyr::arrange(mouse_id, tissue, timepoint) |>
-        dplyr::mutate(mouse_id = as.character(mouse_id)) |>
-        dplyr::group_by(mouse_id) |> #Per mouse metadata
-            tidyr::fill(
-                treatment,
-                genotype,
-                sex,
-                dob,
-                dod,
-                age_at_end,
-                age_at_start,
-                .direction = "updown"
-            ) |>
-        dplyr::group_by(mouse_id, tissue, timepoint) |> # per sample metadata
-            tidyr::fill(
-                sample_id,
-                sample_date,
-                percent_ckit,
-                sample_weeks,
-                age_at_sample,
-                .direction = "updown"
-            ) |>
-        dplyr::ungroup() |>
-        dplyr::arrange(sample_date)
-
-    # # # Rename project to cohort ----
-    # sample_sheet <- all_mice |>
-    #     dplyr::rename(cohort = project)
+    # # # simplify fastq_1 & fastq_2 paths
+    sample_sheet <- sample_sheet |>
+        mutate(
+            fastq_1 = str_replace(fastq_1, "/net/nfs-irwrsrchnas01/labs", "/labs"),
+            fastq_2 = str_replace(fastq_2, "/net/nfs-irwrsrchnas01/labs", "/labs")
+        )
 
     # # # Save a copy ----
-    sample_sheet <- combined_sample_sheet
     sample_sheet |>
         rio::export(here::here("data-raw/metadata_mmu.rds"))
 
