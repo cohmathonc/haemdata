@@ -33,6 +33,7 @@ Suggests:
     ggsci,
     grid,
     hdf5r,
+    here,
     hexSticker,
     isomiRs,
     janitor,
