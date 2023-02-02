@@ -2,7 +2,7 @@
 title: "Preprocessing"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{preprocessing}
+  %\VignetteIndexEntry{Preprocessing}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
