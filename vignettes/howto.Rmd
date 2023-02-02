@@ -1,6 +1,9 @@
 ---
 title: "How do I..."
 ---
+```{r setup, include=FALSE}
+thematic::thematic_rmd(bg = "white", fg = "black", accent = "red")
+```
 
 # How do I...?
 
@@ -35,7 +38,7 @@ SummarizedExperiment::assay(se, "abundance") |>
     ggplot2::ggtitle(glue::glue("Abundance of {gene_of_interest}")) +
     ggplot2::ylab("log2(TPM)") +
     ggplot2::xlab("Weeks") +
-    ggsci::scale_color_d3("category20") +
+    #ggsci::scale_color_d3("category20") +
     ggplot2::theme_minimal() +
     ggplot2::theme(
         axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),

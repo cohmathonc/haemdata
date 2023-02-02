@@ -48,6 +48,7 @@ Suggests:
     readxl,
     rlang,
     rmarkdown,
+    thematic,
     rtracklayer,
     S4Vectors,
     sctransform,

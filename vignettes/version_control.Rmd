@@ -1,6 +1,9 @@
 ---
 title: "Version control"
 ---
+```{r setup, include=FALSE}
+thematic::thematic_rmd(bg = "white", fg = "black", accent = "red")
+```
 
 The package uses git tags to "stamp" different releases, useful for tracking both the 
 nf-core pipeline version and the genome reference used for a build. A release is made

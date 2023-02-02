@@ -9,6 +9,7 @@ knitr::opts_chunk$set(
     warning = FALSE,
     message = FALSE
 )
+thematic::thematic_rmd(bg = "white", fg = "black", accent = "red")
 ```
 
 ```{r  message=FALSE, warning=FALSE}
