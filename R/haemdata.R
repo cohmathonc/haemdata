@@ -13,7 +13,9 @@ globalVariables(c(
     "width", "csv_pin", "csv_version", "Sample", "basepairs",
     "fastq_1", "fastq_2", "gene_id", "gene_name", "mouse_id",
     "sample_weeks", "strandedness", "cell_type", "cell_type_fine",
-    "pruned.labels", "assay", "hdf5", "cohort", "library_id", "sample_id"
+    "pruned.labels", "assay", "hdf5", "cohort", "library_id", "sample_id",
+    "age_at_sample", "batch", "genotype", "percent_ckit",
+    "sex", "tissue", "treatment"
 ))
 # setup package environment
 
