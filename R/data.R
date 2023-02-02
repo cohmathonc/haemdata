@@ -6,8 +6,8 @@
 #' [Download](../metadata_mmu_template.xlsx) a template for new samples
 #'  | Column | Description |
 #'  |---|---|
-#'  | `sample_id` | A unique sample identifier with the format `PSON_XXXX` that uniquely identifies a tissue sample with respect to the mouse, tissue type and sample date. Use this number to match samples across assays (eg mRNA & miRNA.) |
-#'  | `library_id` | Integrative Genomics Core *CLN* with the format `COHP_XXXXX`. This identifier is used to match sequence reads, QC metrics, raw counts and metadata, for each sequencing library. `library_id` is not unique as some libraries are split across multiple sequencing runs.|
+#'  | `sample_id` | Unique identifier with the format `PSON_XXXX` that identifies a tissue sample with respect to the mouse, tissue type and sample date. Used to match samples across assays. |
+#'  | `library_id` | Integrative Genomics Core *CLN* with the format `COHP_XXXXX`. Matches sequence reads, QC metrics, raw counts and metadata for each sequencing library. Not unique as some libraries are split across multiple sequencing runs.|
 #'  | `fastq_1` | Full path of fastq1, unique in the table |
 #'  | `fastq_2` | Full path of fastq2, unique in the table, or blank for single-end reads |
 #'  | `hdf5` | Full path of h5 file, Cell Rangers's HDF5 Feature-Barcode Matrix Format |
@@ -18,11 +18,11 @@
 #'  | `timepoint` | Timepoint label; formatting is inconsistent across cohorts |
 #'  | `treatment` | Experimental treatment group |
 #'  | `genotype` | Mouse genotype |
-#'  | `sex` | Sex, `M` or `F` |
-#'  | `dob` | Date of birth of the mouse, YYYY-MM-DD |
-#'  | `project` | Cohorts of mice collected and processed together; a project may contain multiple `batches` |
-#'  | `batch` | Groups of samples sequenced together |
-#'  | `dod` | Date of death of the mouse, YYYY-MM-DD. `NA` if the mouse survived the experiment. |
+#'  | `sex` | Sex (`M`/`F`) |
+#'  | `dob` | Date of birth, YYYY-MM-DD |
+#'  | `cohort` | Logical groups of samples, generally corresponding to experimental cohorts |
+#'  | `batch` | Groups of samples from the sequencing run |
+#'  | `dod` | Date of death, YYYY-MM-DD. `NA` if the mouse survived the experiment. |
 #'  | `sample_date` | Date the sample was collected, YYYY-MM-DD |
 #'  | `percent_ckit` | Percentage of c-KIT+ cells, measured by flow cytometry (CD117) |
 #'  | `sample_weeks` | Timepoint in weeks (`sample_date - min(sample_date)`). Post treatment chemo samples begin at week 0, pretreatment samples < 0. |
@@ -82,7 +82,7 @@ NULL
 #' @name published_pins
 #' @docType data
 #' @usage data(published_pins)
-#' @examples published_pins |> knitr::kable()
+#' @examples print(published_pins, n = Inf)
 NULL
 # # hsa_mrna_mds_GENCODEr40_qc -----------------------------------------------------
 # se <- get_pin("hsa_mrna_mds_GENCODEr40_qc.rds")
