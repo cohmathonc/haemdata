@@ -155,6 +155,42 @@ publish_bowtie_cpm <- function(bowtie_cpm) {
         return(data.frame("pin_name" = c(csv_pin), "version" = c(csv_version)))
     }
 }
+#' Publish miRTrace and samtools metrics (nf-core/smrnaseq)
+#'
+#' Publishes nf-core/smrnaseq mirTrace and samtools metrics to the  Haemdata Teams channel or to the `MHO/haemdata`
+#' folder on devel storage in `.csv` format.
+#'
+#' @name publish_mirna_qc
+#' @param mirna_qc a data.frame ready to publish
+#' @return a data.frame of the pins and version numbers for the published object
+#' @author Denis O'Meally
+#' @export
+publish_mirna_qc <- function(mirna_qc) {
+    if (is.null(haemdata::haemdata_env$pin_board)) {
+        stop(haemdata::haemdata_env$pin_board_msg)
+    } else {
+        # extract name
+        name <- deparse(substitute(mirna_qc))
+
+        # make description
+        description <- glue::glue(
+            "A table of QC metrics from the nfcore/smrnaseq pipeline (https://github.com/nf-core/smrnaseq) miRTrace and samtools modules"
+        )
+
+        csv_pin <- pins::pin_write(
+            haemdata::haemdata_env$pin_board,
+            mirna_qc,
+            name = glue::glue("{name}.csv"),
+            type = "csv",
+            title = name,
+            description = description
+        )
+
+        csv_version <- get_latest_pin_version(csv_pin)
+
+        return(data.frame("pin_name" = c(csv_pin), "version" = c(csv_version)))
+    }
+}
 # --- Writing pins to the pin_board --- ####
 
 # write a SummarisedExperiment pin, with name, description, and metadata
