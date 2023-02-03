@@ -51,7 +51,7 @@ are parsed by functions in [`import_metadata.R`](https://github.com/drejom/haemd
 
 ## Missingness
 ```{r echo=FALSE, img.width=8, message=FALSE}
-naniar::gg_miss_fct(metadata_mmu, project) +
+naniar::gg_miss_fct(metadata_mmu, cohort) +
     ggplot2::scale_fill_gradient(limits = c(0, 10), na.value = "#56B1F7")
 ```
 
