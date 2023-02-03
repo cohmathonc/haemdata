@@ -19,5 +19,5 @@ Lists the name and version of each dataset published to the Haemdata pinboard in
 Pins can be retrieved with the \code{\link[=get_pin]{get_pin()}} function.
 }
 \examples{
-head(published_pins, n = Inf)
+published_pins |> knitr::kable()
 }
