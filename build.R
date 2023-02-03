@@ -71,7 +71,7 @@ pkgdown::build_site()
 # Draft a release for GitHub
 usethis::use_github_release()
 
-fs.copy
+fs::file_copy(here::here("preprocessing/_targets.html"), "~/MHO/haemdata-www", overwrite = TRUE)
 
 devtools::document()
 pkgdown::build_reference()

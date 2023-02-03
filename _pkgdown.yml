@@ -8,6 +8,7 @@ navbar:
   structure:
     left: [intro, reference, articles, tutorials, news]
     right: [search, github]
+
 reference:
 - title: Available datasets
   contents:
@@ -21,6 +22,7 @@ reference:
 - contents:
   - ends_with("_se")
   - make_tpm_matrix
+  - run_nf_core_rnaseq
 - title: miRNAseq functions
 - contents:
   - matches("mirtop")
@@ -30,11 +32,10 @@ reference:
 - contents:
   - starts_with("seurat_")
   - rotate_umap
-  - make_seurat_objects
+  - seurat_import_cellplex
   - find_elbow
   - run_nf_core_scrnaseq
 - title: Other functions
 - contents:
-  - run_nf_core_rnaseq
   - write_data
 
