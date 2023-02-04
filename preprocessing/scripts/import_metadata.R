@@ -57,7 +57,8 @@ update_metadata_mmu <- function() {
         ),
         "metadata_mmu.csv"
     ) |>
-        purrr::modify_if(is.factor, as.character)
+        purrr::modify_if(is.factor, as.character) |>
+        purrr::modify_at("mouse_id", as.character)
 
     # # # change sample_id prefix to MHO from PSON
     sample_sheet <- sample_sheet |>
@@ -76,6 +77,61 @@ update_metadata_mmu <- function() {
             fastq_1 = str_replace(fastq_1, "/net/nfs-irwrsrchnas01/labs", "/labs"),
             fastq_2 = str_replace(fastq_2, "/net/nfs-irwrsrchnas01/labs", "/labs")
         )
+
+    # # # @yufu1120 sample metadata
+    updates <- data.frame(
+        stringsAsFactors = FALSE,
+        library_id = c(
+            "COHP_11548", "COHP_11536",
+            "COHP_9755", "COHP_10068", "COHP_10387", "COHP_11216",
+            "COHP_9771", "COHP_10052", "COHP_10819"
+        ),
+        sample_date = c(
+            "1/19/16", "1/19/16", "7/22/15",
+            "9/4/15", "10/5/15", "12/25/15", "7/22/15", "9/4/15",
+            "10/5/15"
+        ),
+        percent_ckit = c(49.3, 49.3, NA, NA, NA, 0.694, NA, NA, NA)
+    ) |> mutate(sample_date = as.character(lubridate::mdy(sample_date)))
+
+    sample_sheet <- dplyr::rows_update(sample_sheet, updates, by = "library_id") |>
+        dplyr::group_by(mouse_id) |>
+        mutate(
+            sample_weeks = case_when(
+                library_id %in% c("COHP_11536", "COHP_11216") ~ as.numeric(round(difftime(as.Date(sample_date), min(as.Date(sample_date)), units = "weeks"), digits = 1)),
+                TRUE ~ sample_weeks
+            ),
+            age_at_sample = case_when(
+                library_id %in% c("COHP_11536", "COHP_11216") ~ as.numeric(round(difftime(as.Date(sample_date), min(as.Date(sample_date)), units = "weeks"), digits = 1)),
+                TRUE ~ age_at_sample
+            )
+        ) |>
+        ungroup()
+
+    # # # CML miR-142 KO scRNAseq (LMPP & T cells)
+
+    fastqs_rnaseq <- data.frame(
+        fastq_1 = list.files("/labs/gmarcucci/Seq/220908_0481_IGC-BZ-20894 LMPP and T RNA-seq",
+            pattern = "_R1_.*\\.gz$", full.names = TRUE, recursive = TRUE
+        )) |>
+        dplyr::filter(! grepl("READS", fastq_1)) |> # Remove IGC preprocessing
+        dplyr::mutate(
+            library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"),
+            fastq_2 = gsub("_R1_", "_R2_", fastq_1))
+
+    fastq_10X <- parse_10x_mir142_ko()
+
+    mir142ko_metadata <- readxl::read_xlsx(here::here("data-raw/CML_mir142_ko_scRNAseq_summary.xlsx")) |>
+        select(library_id, tissue, assay, treatment, genotype, sample_date, mouse_id, dob, dod, cohort) |>
+        mutate(strandedness = "reverse") |>
+        purrr::modify_if(lubridate::is.timepoint, as.character)
+
+    mir142ko_metadata_sample_sheet <- left_join(mir142ko_metadata, fastq_10X, by = "library_id") |>
+        rows_update(fastqs_rnaseq, by = "library_id")
+
+    sample_sheet <- rows_insert(sample_sheet, mir142ko_metadata_sample_sheet, by = "library_id") |>
+        add_age_and_weeks_columns() |>
+        assign_new_sample_ids()
 
     # # # Save a copy ----
     sample_sheet |>
