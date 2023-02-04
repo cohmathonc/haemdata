@@ -1,3 +1,10 @@
+# haemdata 0.0.0.9011
+* add CML miR-142 KO scRNAseq (LMPP & T cells) 18 samples; RNAseq 25 samples ("mir142ko" cohort)
+* update AML Cellplex analysis - Cellranger v7.0.0 (includes intron counts)
+* change sample_id prefix to MHO from PSON
+* add miRNA sample metadata from @yufu1120
+* simplify Isilon paths (`/net/nfs-irwrsrchnas01/labs` -> `/labs`)
+
 # haemdata 0.0.0.9010
 * move target pipeline to `./preprocessing`
 * move _target.R script to _target.qmd
@@ -11,7 +18,7 @@
 * add a warning about reproducibility when pins are loaded without setting `version`
 * rename `sample` to `library_id` in metadata_mmu
 * rename `project` to `cohort` in metadata_mmu
-* add `ref_dim1` & `2` to metadata_mmu, for PC, UMAP or other coordinates from dimensionality reduction
+* add `ref_dim1` & `ref_dim2` to metadata_mmu, for PC, UMAP or other coordinates from dimensionality reduction
 * nf-core sample sheets use `library_id` column for `sample` column
 
 # haemdata 0.0.0.9009
@@ -32,7 +39,7 @@
   
 # haemdata 0.0.0.9006
 * add ROADMAP.md
-* add `percent_ckit`, `qc_pass_mapping` to mmu_metadata.csv
+* add `percent_ckit`, `qc_pass_mapping` to metadata_mmu.csv
 * flag rather than drop mouse samples that fail mapping (`qc_pass_mapping`)
 * fix erroneous AML mouse sample metadata identified by Yu-Husan Fu (@yufu1120)
 * other small fixes

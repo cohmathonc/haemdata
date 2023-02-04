@@ -1,6 +1,5 @@
 # Roadmap
 * add notebooks
-* simplify Isilon paths (`/net/nfs-irwrsrchnas01/labs` -> `/labs`)
 * remove metadata from SummarisedExperiments
 * add 10X read metrics for all libraries
 * CML miR-142 KO T & LMPP cells (scRNA & mRNA)
