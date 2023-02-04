@@ -1,7 +1,7 @@
 #### 10X -----
 
 # ├ cml_mir142_ko
-parse_cml_mir142_ko <- function() {
+parse_10x_mir142_ko <- function() {
 
     cml_mir142_ko_fastq_paths <- c(
         "/labs/gmarcucci/Seq/221122_IGC-BZ-21028_Test_RUN",
