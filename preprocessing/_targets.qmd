@@ -70,7 +70,9 @@ smrnaseq_release <- "2.1.0"
 scrnaseq_release <- "2.1.0"
 ```
 
-### Cohort selectors
+### Cohort aliases
+Regex patterns to select cohorts using dplyr::filter() or similar functions.
+
 ```{targets cohort-selectors, tar_globals = TRUE}
 all_mice <- "^AML.mRNA.2016$|^AML.mRNA.2018.all_samples$|^AML.mRNA.2020$|
         |^AML.mRNA.2021.RxGroup1$|^AML.mRNA.2021.RxGroup2$|^AML.mRNA.2021.RxGroup2_pt2$|
@@ -86,6 +88,8 @@ treatment_mice <- "^AML.mRNA.2021.RxGroup1$|^AML.mRNA.2021.RxGroup2$|
         |^AML.mRNA.2021.RxGroup2_pt2$|^AML.mRNA.2022.RxGroup3$"
 
 cml_mice <- "^CML.mRNA.2021$|^CML.mRNA.2022$|^CML.mRNA.2022_pt2$"
+
+aml_sc_mice <- "^AML.scRNAseq.2022$"
 ```
 :::
 
@@ -148,7 +152,11 @@ Functions in this section format sample sheets for nf-core pipelines, submit pip
 
 To assess library quality control metrics and produce unified expression matrices, we use the nf-core/rnaseq pipeline. The following targets prepare sample sheets as described in the [pipeline documentation](https://nf-co.re/rnaseq/usage#samplesheet-input).
 
-Samples from `CML.mRNA.2022_pt2` became available after the 2016-2022 combined run and so are run separately and joined in a later step with other samples as *all_mice*.
+Samples can be combined in a single sample sheet before a major release or nf-core pipeline update. In the interim, cohorts can be processed in separate nf-core/rnaseq runs and combined. In the current release, we have:
+
+- All mice from 2016 ~ mid 2022, (except *sequencing validation mice*, see below)
+- 2022 CML mice (`CML.mRNA.2022_pt2`)
+- 2023 CML miR142-KO mice 
 
 ```{targets sample_sheet_2016_2022}
 list(
@@ -159,8 +167,18 @@ list(
     tar_target(sample_sheet_CML_3,
         published_metadata_mmu |>
         dplyr::filter(str_detect(cohort, "^CML.mRNA.2022_pt2$")) |>
+        dplyr::select(library_id, fastq_1, fastq_2, strandedness)),
+    tar_target(sample_sheet_mrna_mir142ko,
+        published_metadata_mmu |>
+        dplyr::filter(str_detect(cohort, "^CML.mRNA.mir142ko$")) |>
         dplyr::select(library_id, fastq_1, fastq_2, strandedness))
 )        
+```
+
+Spaces are not permitted in filenames, so for this cohort, we need to cache and symlink fastqs:
+
+```{targets link_fastqs_mRNA_mir142, eval=TRUE}
+tar_target(sample_sheet_mir142ko_mrna_cache, symlink_mrna_fastqs("mmu_mrna_mir142ko/fastq", sample_sheet_mrna_mir142ko))
 ```
 
 Two datasets have not been integrated into sample metadata tables: 
@@ -223,6 +241,10 @@ list(
         run_nf_core_rnaseq("mmu_mrna_cml3_qc", sample_sheet_CML_3, "GENCODEm28_HLT"),
         format = "file"
     ),
+    tar_target(mmu_mrna_mir142ko_qc,
+        run_nf_core_rnaseq("mmu_mrna_mir142ko", sample_sheet_mir142ko_mrna_cache, "GENCODEm28_HLT"),
+        format = "file"
+    ),
     tar_target(hsa_mrna_flt3_qc,
         run_nf_core_rnaseq("hsa_mrna_flt3", sample_sheet_2022_2, "GENCODEr40"),
         format = "file"
@@ -266,6 +288,14 @@ list(
             metadata_mmu_prepub,
             mmu_mrna_cml3_qc
     ))
+    #,
+    # tar_target(
+    #     mmu_mrna_mir142ko_qc_se,
+    #     annotate_se(
+    #         get_rnaseq_se(mmu_mrna_mir142_qc),
+    #         metadata_mmu_prepub,
+    #         mmu_mrna_mir142_qc
+    # ))
 )
 ```
 
@@ -457,7 +487,7 @@ The [`make_seurat_objects()`](http://cgt.coh.org/haemdata/reference/make_seurat_
 ```{targets seurat_import_objects_2022, eval=TRUE}
 tar_target(
     mmu_10x_2022_1_GENCODEm28_HLT,
-    seurat_import_objects("^AML.scRNAseq.2022$"),
+    seurat_import_cellplex("^AML.scRNAseq.2022$"),
     resources = apollo_medium
     )
 ```
@@ -469,22 +499,23 @@ tar_target(
 Metadata for these samples is forthcoming (2023-1-27), so for now, we make a sample sheet by scraping file paths. 
 
 ```{targets cml_mir142_ko_sample_sheet, eval=TRUE}
-tar_target(
-    cml_mir142_ko_sample_sheet,
-    parse_cml_mir142_ko()
+tar_target(sample_sheet_mir142ko_10x,
+    published_metadata_mmu |>
+    dplyr::filter(str_detect(cohort, "^CML.10x.mir142ko$")) |>
+    dplyr::select(library_id, fastq_1, fastq_2)
     )
 ```
 
 An nf-core/scrnaseq pipeline allows running Cellranger with single-sample libraries, but does not support Cellplex libraries at this stage. Nor does it permit spaces in file paths, so we first link fastq files to the {nf_core_cache}:
 
-```{targets link_fastqs_mir412, eval=TRUE}
-tar_target(cml_mir142_ko_sample_sheet_cache, symlink_fastqs("mmu_10X_mir142_ko/fastq", cml_mir142_ko_sample_sheet))
+```{targets link_fastqs_10x_mir142, eval=TRUE}
+tar_target(sample_sheet_mir142ko_10x_cache, symlink_10x_fastqs("mmu_10X_mir142_ko/fastq", sample_sheet_mir142ko_10x))
 ```
 
 ```{targets run_nfcore_scrnaseq, eval=TRUE}
 tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_qc,
-    run_nfcore_scrnaseq("mmu_10X_mir142_ko", cml_mir142_ko_sample_sheet_cache)
+    run_nfcore_scrnaseq("mmu_10X_mir142_ko", sample_sheet_mir142ko_10x_cache)
     )
 ```
 
@@ -555,6 +586,8 @@ tar_target(
 :::
 
 # Publish pins
+
+#TODO What are pins?
 
 ::: panel-tabset
 
@@ -641,8 +674,7 @@ tarchetypes::tar_change(
     mmu_10x_2022_1_GENCODEm28_HLT_pins,
     publish_seurat(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc_ct),
     change = haemdata::haemdata_env$pin_board[["path"]],
-    resources = apollo_small,
-    deployment = "main"
+    resources = apollo_small
     ) 
 ```
 
@@ -676,6 +708,8 @@ tar_target(
 ::: 
 
 # Build package
+
+#TODO what happens here
 
 ```{targets build_package, eval=TRUE}
 tar_target(
