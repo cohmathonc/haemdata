@@ -51,7 +51,7 @@ options(tidyverse.quiet = TRUE)
 
 tar_option_set(
     packages = c("tidyverse", "SummarizedExperiment", "haemdata", "tarchetypes"),
-    error = "abridge", # continue with remaining targets on error
+    error = "abridge", # continue with running targets on error
     storage = "worker",
     retrieval = "worker"
 )
@@ -60,6 +60,8 @@ tar_option_set(
 for (file in list.files(here::here("preprocessing/scripts"), full.names = TRUE)) source(file)
 
 # for (file in list.files(here::here("R"), pattern = "*.R", full.names = TRUE)) source(file)
+
+haemdata::use_pinboard("devel")
 ```
 
 ### nf-core pipeline versions
@@ -89,8 +91,9 @@ treatment_mice <- "^AML.mRNA.2021.RxGroup1$|^AML.mRNA.2021.RxGroup2$|
 
 cml_mice <- "^CML.mRNA.2021$|^CML.mRNA.2022$|^CML.mRNA.2022_pt2$"
 
-aml_sc_mice <- "^AML.scRNAseq.2022$"
+published_metadata_mmu <- readRDS(here::here("data-raw/metadata_mmu.rds"))
 ```
+
 :::
 
 # Metadata
@@ -102,17 +105,12 @@ Haemdata includes comprehensive metadata about samples, such as collection date,
 
 The code to collate it has been through multiple iterations, is complex and ugly and undoubtedly some mistakes will have made it through. Errors or omissions can be reported on [GitHub](https://github.com/drejom/haemdata/issues).
 
-```{targets published_metadata_mmu}
-tar_target(
-    published_metadata_mmu,
-    readRDS(here::here("data-raw/metadata_mmu.rds")))
-```
-
 ## Mouse metadata
 
 For **mmu**, the sample metadata is largely complete. These data were collated from multiple sequencing run sheets, directly from sequencing folders, emails, and so forth.
 
-The current implementation of `update_metadata_mmu()` adds metadata for treatment mice, miRNAseq samples and metadata, and adds a "sample_id" that uniquely identifies each tissue sample, some of which are subject to multiple assays.
+The current implementation of `update_metadata_mmu()` changes `sample_id` prefix to MHO from PSON, 
+simplifies `fastq_1` & `fastq_2` paths, add @yufu1120 sample metadata and adds CML miR-142 KO scRNAseq (LMPP & T cells) metadata.
 
 ```{targets metadata_mmu_prepub}
 tar_target(metadata_mmu_prepub, update_metadata_mmu())
@@ -160,18 +158,9 @@ Samples can be combined in a single sample sheet before a major release or nf-co
 
 ```{targets sample_sheet_2016_2022}
 list(
-    tar_target(sample_sheet_2016_2022,
-        published_metadata_mmu |>
-        dplyr::filter(str_detect(cohort, all_mice)) |>
-        dplyr::select(library_id, fastq_1, fastq_2, strandedness)),
-    tar_target(sample_sheet_CML_3,
-        published_metadata_mmu |>
-        dplyr::filter(str_detect(cohort, "^CML.mRNA.2022_pt2$")) |>
-        dplyr::select(library_id, fastq_1, fastq_2, strandedness)),
-    tar_target(sample_sheet_mrna_mir142ko,
-        published_metadata_mmu |>
-        dplyr::filter(str_detect(cohort, "^CML.mRNA.mir142ko$")) |>
-        dplyr::select(library_id, fastq_1, fastq_2, strandedness))
+    tar_target(sample_sheet_2016_2022, make_rnaseq_sample_sheet(all_mice)),
+    tar_target(sample_sheet_CML_3, make_rnaseq_sample_sheet("^CML.mRNA.2022_pt2$")),
+    tar_target(sample_sheet_mrna_mir142ko, make_rnaseq_sample_sheet("^CML.mRNA.mir142ko$"))
 )        
 ```
 
@@ -360,24 +349,14 @@ Somewhere along the line, the original, unedited fastqs were lost from the Isilo
 #### Pre-trimmed
 
 ```{targets mirna-sample-sheets_pretrimmed}
-tar_target(miRNA_sample_sheet_pretrimmed,
-    published_metadata_mmu |>
-        dplyr::filter(stringr::str_detect(assay, "miRNA")) |>
-        dplyr::filter(stringr::str_detect(fastq_1, "cutadapt")) |>
-        dplyr::select(sample_id, library_id, fastq_1)
-        )
+tar_target(miRNA_sample_sheet_pretrimmed, pretrimmed_sample_sheet())
 ```
 
 #### Untrimmed
 
 ```{targets mirna-sample-sheets_untrimmed}
 tar_target(
-    miRNA_sample_sheet_untrimmed,
-    published_metadata_mmu |>
-        dplyr::filter(stringr::str_detect(assay, "miRNA")) |>
-        dplyr::filter(stringr::str_detect(fastq_1, "cutadapt", negate = TRUE)) |>
-        dplyr::select(sample_id, library_id, fastq_1)
-    )
+    miRNA_sample_sheet_untrimmed, untrimmed_sample_sheet())
 ```
 
 For untrimmed libraries, we use a function that loads the Apollo `cutadapt` module and spawns a job for each fastq file on the cluster. The trimmed files are cached in {nf_core_cache} and a sample sheet for the nf-core/smrnaseq pipeline is returned using the cached, trimmed and compressed fastqs.
@@ -417,7 +396,7 @@ Extract [mature miRNA normalised CPM](https://nf-co.re/smrnaseq/2.1.0/output#edg
 list(
     tar_target(mmu_mirna_pretrimmed_cpm, nfcore_smrna_cpm(mmu_mirna_pretrimmed_multiqc)),
     tar_target(mmu_mirna_trimmed_cpm, nfcore_smrna_cpm(mmu_mirna_trimmed_multiqc)),
-    tar_target(mmu_mirna_bowtie_cpm, merge(mmu_mirna_pretrimmed_cpm, mmu_mirna_trimmed_cpm, by = 'row.names', all = TRUE))
+    tar_target(mmu_mirna_all_mice_miRBase22_bowtie_cpm, merge(mmu_mirna_pretrimmed_cpm, mmu_mirna_trimmed_cpm, by = 'row.names', all = TRUE))
 )
 ```
 
@@ -431,7 +410,7 @@ The nfcore/smrnaseq pipeline includes a [script](https://github.com/nf-core/smrn
 list(
     tar_target(mmu_mirna_pretrimmed_mirtop_counts, nfcore_mirtop_counts(mmu_mirna_pretrimmed_multiqc)),
     tar_target(mmu_mirna_trimmed_mirtop_counts, nfcore_mirtop_counts(mmu_mirna_trimmed_multiqc)),
-    tar_target(mmu_mirna_mirtop_counts, 
+    tar_target(mmu_mirna_all_mice_miRBase22_mirtop_counts, 
         dplyr::left_join(
             mmu_mirna_pretrimmed_mirtop_counts, mmu_mirna_trimmed_mirtop_counts, by = "miRNA"))
 )
@@ -465,7 +444,7 @@ Extract mirTrace and samtools QC metrics
 list(
     tar_target(mmu_mirna_pretrimmed_qc, nfcore_smrna_qc(mmu_mirna_pretrimmed_multiqc)),
     tar_target(mmu_mirna_trimmed_qc, nfcore_smrna_qc(mmu_mirna_trimmed_multiqc)),
-    tar_target(mmu_mirna_qc, rbind(mmu_mirna_pretrimmed_qc, mmu_mirna_trimmed_qc))
+    tar_target(mmu_mirna_all_mice_mirna_qc, rbind(mmu_mirna_pretrimmed_qc, mmu_mirna_trimmed_qc))
 )
 ```
 
@@ -478,15 +457,17 @@ As currently written, the 10X workflow chains together some resource-intensive f
 
 ### Load data
 
+::: panel-tabset
+
 #### Multiplexed samples
 
 The *2022 AML scRNAseq cohort* was sequenced using the 10X [CellPlex](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/algorithms/cellplex) cell multiplexing protocol. 
 
-The [`make_seurat_objects()`](http://cgt.coh.org/haemdata/reference/make_seurat_objects.html) function builds Seurat objects and adds cell metadata columns indicating the percent expression of mitochondrial, ribosomal, haemoglobin, platelet, _Xist_ & chrY genes, and the transgene _MYH11_.
+The [`seurat_import_cellplex()`](http://cgt.coh.org/haemdata/reference/seurat_import_cellplex.html) function builds Seurat objects and adds cell metadata columns indicating the percent expression of mitochondrial, ribosomal, haemoglobin, platelet, _Xist_ & chrY genes, and the transgene _MYH11_.
 
 ```{targets seurat_import_objects_2022, eval=TRUE}
 tar_target(
-    mmu_10x_2022_1_GENCODEm28_HLT,
+    mmu_10x_aml2022_GENCODEm28_HLT,
     seurat_import_cellplex("^AML.scRNAseq.2022$"),
     resources = apollo_medium
     )
@@ -496,13 +477,10 @@ tar_target(
 
 10X libraries are typically prepared for a single sample and sequenced, as for the *CML miR-142 KO cohort* from the Zhang/Marcucci lab (T-cell scRNAseq).  The Cellranger protocol is essentially the same for Cellplex libraries, without the demultiplexing steps. 
 
-Metadata for these samples is forthcoming (2023-1-27), so for now, we make a sample sheet by scraping file paths. 
+Begin by preparing a sample sheet for the nf-core/smrnaseq pipeline:
 
 ```{targets cml_mir142_ko_sample_sheet, eval=TRUE}
-tar_target(sample_sheet_mir142ko_10x,
-    published_metadata_mmu |>
-    dplyr::filter(str_detect(cohort, "^CML.10x.mir142ko$")) |>
-    dplyr::select(library_id, fastq_1, fastq_2)
+tar_target(sample_sheet_mir142ko_10x, make_scrnaseq_sample_sheet("^CML.10x.mir142ko$")
     )
 ```
 
@@ -512,27 +490,49 @@ An nf-core/scrnaseq pipeline allows running Cellranger with single-sample librar
 tar_target(sample_sheet_mir142ko_10x_cache, symlink_10x_fastqs("mmu_10X_mir142_ko/fastq", sample_sheet_mir142ko_10x))
 ```
 
+Run the pipeline:
+
 ```{targets run_nfcore_scrnaseq, eval=TRUE}
 tar_target(
-    mmu_10x_mir142ko_GENCODEm28_HLT_qc,
+    mmu_10x_mir142ko_GENCODEm28_HLT_multiqc,
     run_nfcore_scrnaseq("mmu_10X_mir142_ko", sample_sheet_mir142ko_10x_cache)
     )
 ```
+
+The [`seurat_import_cellranger()`](http://cgt.coh.org/haemdata/reference/seurat_import_cellranger.html) function builds Seurat objects and adds cell metadata columns indicating the percent expression of mitochondrial, ribosomal, haemoglobin, platelet, _Xist_ & chrY genes, and the transgene _MYH11_.
+
+```{targets seurat_import_objects_cellranger, eval=TRUE}
+tar_target(
+    mmu_10x_mir142ko_GENCODEm28_HLT,
+    seurat_import_cellranger(mmu_10x_mir142ko_GENCODEm28_HLT_multiqc),
+    resources = apollo_medium
+    )
+```
+
+:::
 
 ### QC filter 
 
 See [`haemdata::seurat_perform_cell_qc()`](http://cgt.coh.org/haemdata/reference/seurat_perform_cell_qc.html)
 
 Consider including:
+
 - [EmptyDrops](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1662-y)
 - [SoupX](https://github.com/constantAmateur/SoupX)
 - Others on [GitHub](https://github.com/drejom/haemdata/issues/7)
 
 ```{targets seurat_perform_cell_qc, eval=TRUE}
-tar_target(
-    mmu_10x_2022_1_GENCODEm28_HLT_qc, 
-    seurat_perform_cell_qc(mmu_10x_2022_1_GENCODEm28_HLT),
+list(
+    tar_target(
+    mmu_10x_aml2022_GENCODEm28_HLT_qc, 
+    seurat_perform_cell_qc(mmu_10x_aml2022_GENCODEm28_HLT),
     resources = apollo_bigmem
+    ),
+    tar_target(
+    mmu_10x_mir142ko_GENCODEm28_HLT_qc, 
+    seurat_perform_cell_qc(mmu_10x_mir142ko_GENCODEm28_HLT),
+    resources = apollo_bigmem
+    )
     )
 ```
 
@@ -541,10 +541,17 @@ tar_target(
 See [`haemdata::seurat_sctransform()`](http://cgt.coh.org/haemdata/reference/seurat_sctransform.html)
 
 ```{targets seurat_sctransform, eval=TRUE}
+list(
     tar_target(
-        mmu_10x_2022_1_GENCODEm28_HLT_sct,
-        seurat_sctransform(mmu_10x_2022_1_GENCODEm28_HLT_qc),
+        mmu_10x_aml2022_GENCODEm28_HLT_sct,
+        seurat_sctransform(mmu_10x_aml2022_GENCODEm28_HLT_qc),
         resources = apollo_bigmem
+    ),
+    tar_target(
+        mmu_10x_mir142ko_GENCODEm28_HLT_sct,
+        seurat_sctransform(mmu_10x_mir142ko_GENCODEm28_HLT_qc),
+        resources = apollo_bigmem
+    )
     )
 ```
 
@@ -553,10 +560,16 @@ See [`haemdata::seurat_sctransform()`](http://cgt.coh.org/haemdata/reference/seu
 See [`haemdata::seurat_annotate_clusters_and_umap()`](http://cgt.coh.org/haemdata/reference/seurat_annotate_umap_and_clusters.html)
 
 ```{targets seurat_annotate_clusters_and_umap, eval=TRUE}
+list(
 tar_target(
-    mmu_10x_2022_1_GENCODEm28_HLT_sct_clust,
-    seurat_annotate_clusters_and_umap(mmu_10x_2022_1_GENCODEm28_HLT_sct),
+    mmu_10x_aml2022_GENCODEm28_HLT_sct_clust,
+    seurat_annotate_clusters_and_umap(mmu_10x_aml2022_GENCODEm28_HLT_sct),
+    resources = apollo_large),
+tar_target(
+    mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust,
+    seurat_annotate_clusters_and_umap(mmu_10x_mir142ko_GENCODEm28_HLT_sct),
     resources = apollo_large)
+    )
 ```
 
 ### Annotate cell cycle 
@@ -564,11 +577,18 @@ tar_target(
 See [`haemdata::seurat_annotate_cell_cycle()`](http://cgt.coh.org/haemdata/reference/seurat_annotate_cell_cycle.html)
 
 ```{targets seurat_annotate_cell_cycle, eval=TRUE}
+list(
+    tar_target(
+    mmu_10x_aml2022_GENCODEm28_HLT_sct_clust_cc,
+    seurat_annotate_cell_cycle(mmu_10x_aml2022_GENCODEm28_HLT_sct_clust),
+    resources = apollo_large
+    ),
 tar_target(
-    mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc,
-    seurat_annotate_cell_cycle(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust),
+    mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc,
+    seurat_annotate_cell_cycle(mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust),
     resources = apollo_large
     )
+)
 ```
 
 ### Annotate cell type 
@@ -576,11 +596,18 @@ tar_target(
 See [`haemdata::seurat_annotate_cell_type()`](http://cgt.coh.org/haemdata/reference/seurat_annotate_cell_cycle.html)
 
 ```{targets seurat_annotate_cell_type, eval=TRUE}
+list(
 tar_target(
-    mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc_ct,
-    seurat_annotate_cell_type(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc),
+    mmu_10x_aml2022_GENCODEm28_HLT_sct_clust_cc_ct,
+    seurat_annotate_cell_type(mmu_10x_aml2022_GENCODEm28_HLT_sct_clust_cc),
+    resources = apollo_large
+    ),
+tar_target(
+    mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc_ct,
+    seurat_annotate_cell_type(mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc),
     resources = apollo_large
     )
+)
 ```
 
 :::
@@ -595,16 +622,14 @@ tar_target(
 
 ```{targets publish_metadata_pins, eval=TRUE}
 list(
-    tarchetypes::tar_change(
+    tar_target(
         metadata_mmu_pins,
         publish_metadata(metadata_mmu),
-        haemdata::haemdata_env$pin_board[["path"]],
         deployment = "main"
     ),
-    tarchetypes::tar_change(
+    tar_target(
         metadata_hsa_pins,
         publish_metadata(metadata_hsa),
-        haemdata::haemdata_env$pin_board[["path"]],
         deployment = "main"
     )
 )
@@ -614,29 +639,24 @@ list(
 
 ```{targets publish_mrna_pins, eval=TRUE}
 list(
-    tarchetypes::tar_change(
+    tar_target(
         mmu_mrna_all_mice_GENCODEm28_pins, publish_se(mmu_mrna_all_mice_qc_se),
-        haemdata::haemdata_env$pin_board[["path"]],
         deployment = "main"
     ),
-    tarchetypes::tar_change(
+    tar_target(
         mmu_mrna_techrep_GENCODEm28_pins, publish_se(mmu_mrna_techrep_qc_se),
-        haemdata::haemdata_env$pin_board[["path"]],
         deployment = "main"
     ),
-    tarchetypes::tar_change(
+    tar_target(
         hsa_mrna_flt3_GENCODEm28_pins, publish_se(hsa_mrna_flt3_qc_se_flt),
-        haemdata::haemdata_env$pin_board[["path"]],
         deployment = "main"
     ),
-    tarchetypes::tar_change(
+    tar_target(
         hsa_mrna_mds_GENCODEm28_pins, publish_se(hsa_mrna_mds_qc_se_flt),
-        haemdata::haemdata_env$pin_board[["path"]],
         deployment = "main"
     ),
-    tarchetypes::tar_change(
+    tar_target(
         hsa_mrna_kim_GENCODEm28_pins, publish_se(hsa_mrna_kim_qc_se_flt),
-        haemdata::haemdata_env$pin_board[["path"]],
         deployment = "main"
     )
 )
@@ -646,22 +666,19 @@ list(
 
 ```{targets publish_mirna_pins, eval=TRUE}
 list( 
-    tarchetypes::tar_change(
-        mmu_mirna_all_mice_mirtop_counts_pins,
-        publish_mirtop_counts(mmu_mirna_mirtop_counts),
-        haemdata::haemdata_env$pin_board[["path"]],
+    tar_target(
+        mmu_mirna_all_mice_miRBase22_mirtop_counts_pins,
+        publish_mirtop_counts(mmu_mirna_all_mice_miRBase22_mirtop_counts),
         deployment = "main"
     ),
-    tarchetypes::tar_change(
-        mmu_mirna_all_mice_bowtie_cpm_pins,
-        publish_bowtie_cpm(mmu_mirna_bowtie_cpm),
-        haemdata::haemdata_env$pin_board[["path"]],
+    tar_target(
+        mmu_mirna_all_mice_miRBase22_bowtie_cpm_pins,
+        publish_bowtie_cpm(mmu_mirna_all_mice_miRBase22_bowtie_cpm),
         deployment = "main"
     ),
-    tarchetypes::tar_change(
+    tar_target(
         mmu_mirna_all_mice_mirna_qc_pins,
-        publish_mirna_qc(mmu_mirna_qc),
-        haemdata::haemdata_env$pin_board[["path"]],
+        publish_mirna_qc(mmu_mirna_all_mice_mirna_qc),
         deployment = "main"
     )
 )
@@ -670,11 +687,17 @@ list(
 ## 10X pins 
 
 ```{targets publish_seurat, eval=TRUE}
-tarchetypes::tar_change(
-    mmu_10x_2022_1_GENCODEm28_HLT_pins,
-    publish_seurat(mmu_10x_2022_1_GENCODEm28_HLT_sct_clust_cc_ct),
-    change = haemdata::haemdata_env$pin_board[["path"]],
-    resources = apollo_small
+list(
+tar_target(
+    mmu_10x_aml2022_GENCODEm28_HLT_pins,
+    publish_seurat(mmu_10x_aml2022_GENCODEm28_HLT_sct_clust_cc_ct),
+        deployment = "main"
+    ),
+tar_target(
+    mmu_10x_mir142ko_GENCODEm28_HLT_pins,
+    publish_seurat(mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc_ct),
+        deployment = "main"
+    )
     ) 
 ```
 
@@ -686,15 +709,15 @@ tar_target(
     haemdata::write_data("published_pins",
     rbind(
     # 10X single cell RNA-seq
-        mmu_10x_2022_1_GENCODEm28_HLT_pins,
+        mmu_10x_mir142ko_GENCODEm28_HLT_pins,
+        mmu_10x_aml2022_GENCODEm28_HLT_pins,
     # metadata
         metadata_mmu_pins,
         metadata_hsa_pins,
     # micro RNAseq
-        mmu_mirna_all_mice_mirtop_counts_pins,
-        mmu_mirna_all_mice_bowtie_cpm_pins,
+        mmu_mirna_all_mice_miRBase22_mirtop_counts_pins,
+        mmu_mirna_all_mice_miRBase22_bowtie_cpm_pins,
         mmu_mirna_all_mice_mirna_qc_pins,
-        
     # bulk RNAseq
         mmu_mrna_all_mice_GENCODEm28_pins,
         mmu_mrna_techrep_GENCODEm28_pins,
