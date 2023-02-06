@@ -20,7 +20,7 @@ experiment metadata derived from the multiqc path provided. Used in conjunction 
 }
 \examples{
 \dontrun{
-multiqc_path <- "path_to_a_nf-core_multiqc_report.html"
+multiqc_path <- glue::glue("{nfcore_cache}/path_to_a_nf-core_multiqc_report.html")
 get_rnaseq_se(multiqc_path)
 }
 }

@@ -1,4 +1,6 @@
 # haemdata 0.0.0.9011
+* add notebooks
+* renamed mirna & aml2022 10X pins
 * add CML miR-142 KO scRNAseq (LMPP & T cells) 18 samples; RNAseq 25 samples ("mir142ko" cohort)
 * update AML Cellplex analysis - Cellranger v7.0.0 (includes intron counts)
 * change sample_id prefix to MHO from PSON

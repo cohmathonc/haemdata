@@ -159,3 +159,39 @@ assign_new_sample_ids <- function(sample_sheet) {
 
         dplyr::rows_patch(sample_sheet, new_sample_ids, by = "library_id")
 }
+
+#' Make a sample sheet for an scRNA-seq cohort
+#'
+#' @param cohort regex pattern to select the cohort of interest.
+#' @return A data frame containing the library ID and fastq file paths for each sample in the given cohort.
+#' @export
+make_scrnaseq_sample_sheet <- function(cohort) {
+published_metadata_mmu |>
+    dplyr::filter(str_detect(cohort, {{ cohort }})) |>
+    dplyr::select(library_id, fastq_1, fastq_2)
+}
+
+#' Make a sample sheet for an RNA-seq cohort
+#' 
+#' @param cohort regex pattern to select the cohort of interest.
+#' @return A data frame containing the library ID, fastq file paths, and strandedness for each sample in the given cohort. 
+#' @export
+make_rnaseq_sample_sheet <- function(cohort) {
+    published_metadata_mmu |>
+        dplyr::filter(str_detect(cohort, {{ cohort }})) |>
+        dplyr::select(library_id, fastq_1, fastq_2, strandedness)
+}
+
+pretrimmed_sample_sheet <- function() {
+        published_metadata_mmu |>
+            dplyr::filter(stringr::str_detect(assay, "miRNA")) |>
+            dplyr::filter(stringr::str_detect(fastq_1, "cutadapt")) |>
+            dplyr::select(sample_id, library_id, fastq_1)
+}
+
+untrimmed_sample_sheet <- function() {
+        published_metadata_mmu |>
+            dplyr::filter(stringr::str_detect(assay, "miRNA")) |>
+            dplyr::filter(stringr::str_detect(fastq_1, "cutadapt", negate = TRUE)) |>
+            dplyr::select(sample_id, library_id, fastq_1)
+}
