@@ -136,6 +136,10 @@ assign_new_sample_ids <- function(sample_sheet) {
         new_samples <- sample_sheet |>
             dplyr::filter(is.na(sample_id)) |>
             pull(library_id)
+        if (length(new_samples) == 0) {
+            print("No new samples...")
+            return(sample_sheet)
+        }
 
         new_sample_ids <- sample_sheet |>
             dplyr::mutate(
@@ -172,9 +176,9 @@ published_metadata_mmu |>
 }
 
 #' Make a sample sheet for an RNA-seq cohort
-#' 
+#'
 #' @param cohort regex pattern to select the cohort of interest.
-#' @return A data frame containing the library ID, fastq file paths, and strandedness for each sample in the given cohort. 
+#' @return A data frame containing the library ID, fastq file paths, and strandedness for each sample in the given cohort.
 #' @export
 make_rnaseq_sample_sheet <- function(cohort) {
     published_metadata_mmu |>
@@ -194,4 +198,11 @@ untrimmed_sample_sheet <- function() {
             dplyr::filter(stringr::str_detect(assay, "miRNA")) |>
             dplyr::filter(stringr::str_detect(fastq_1, "cutadapt", negate = TRUE)) |>
             dplyr::select(sample_id, library_id, fastq_1)
+}
+
+collect_pin_versions <- function(...) {
+    haemdata::write_data(
+        "published_pins",
+        rbind(...)
+    )
 }

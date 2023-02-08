@@ -19,9 +19,7 @@ Source: [preprocessing/\_targets.qmd](https://github.com/drejom/haemdata/blob/ma
 Haemdata is an R package in two-parts: a targets pipeline that preprocesses raw sequencing reads and functions to access processed data.
 
 ::: {.callout-note appearance="simple"}
-
 The [{`targets`}](https://books.ropensci.org/targets/) package streamlines data workflows and promotes reproducibility. It skips redundant tasks and abstracts files as R objects to ensure efficient, painless, and trustworthy results.
-
 :::
 
 ## Load libraries & options
@@ -58,10 +56,6 @@ tar_option_set(
 
 # Load the R scripts & functions:
 for (file in list.files(here::here("preprocessing/scripts"), full.names = TRUE)) source(file)
-
-# for (file in list.files(here::here("R"), pattern = "*.R", full.names = TRUE)) source(file)
-
-haemdata::use_pinboard("devel")
 ```
 
 ### nf-core pipeline versions
@@ -73,6 +67,7 @@ scrnaseq_release <- "2.1.0"
 ```
 
 ### Cohort aliases
+
 Regex patterns to select cohorts using dplyr::filter() or similar functions.
 
 ```{targets cohort-selectors, tar_globals = TRUE}
@@ -93,7 +88,6 @@ cml_mice <- "^CML.mRNA.2021$|^CML.mRNA.2022$|^CML.mRNA.2022_pt2$"
 
 published_metadata_mmu <- readRDS(here::here("data-raw/metadata_mmu.rds"))
 ```
-
 :::
 
 # Metadata
@@ -109,8 +103,7 @@ The code to collate it has been through multiple iterations, is complex and ugly
 
 For **mmu**, the sample metadata is largely complete. These data were collated from multiple sequencing run sheets, directly from sequencing folders, emails, and so forth.
 
-The current implementation of `update_metadata_mmu()` changes `sample_id` prefix to MHO from PSON, 
-simplifies `fastq_1` & `fastq_2` paths, add @yufu1120 sample metadata and adds CML miR-142 KO scRNAseq (LMPP & T cells) metadata.
+The current implementation of `update_metadata_mmu()` changes `sample_id` prefix to MHO from PSON, simplifies `fastq_1` & `fastq_2` paths, add @yufu1120 sample metadata and adds CML miR-142 KO scRNAseq (LMPP & T cells) metadata.
 
 ```{targets metadata_mmu_prepub}
 tar_target(metadata_mmu_prepub, update_metadata_mmu())
@@ -135,14 +128,13 @@ tar_target(
 # Assays
 
 ::: panel-tabset
-
 ## In brief
 
 The workflows for all assays begin with raw sequencing reads, either fastq files or h5ad files for 10X Cellplex libraries.
 
 Raw data are stored on COH's Isilon storage by the Integrative Genomics Core, organized across multiple investigator's `Seq` folders. Since v0.0.0.9008 (2022-11-14), file paths are stored in the metadata table.
 
-Functions in this section format sample sheets for nf-core pipelines, submit pipelines to the Apollo cluster, look for completed runs and extract processed results. For 10X data, functions read in Cellranger output to Seurat objects, apply cell QC filters, perform integration, clustering, UMAP dimension reduction, & annotation of cell cycles and cell types. 
+Functions in this section format sample sheets for nf-core pipelines, submit pipelines to the Apollo cluster, look for completed runs and extract processed results. For 10X data, functions read in Cellranger output to Seurat objects, apply cell QC filters, perform integration, clustering, UMAP dimension reduction, & annotation of cell cycles and cell types.
 
 ## mRNA
 
@@ -152,9 +144,9 @@ To assess library quality control metrics and produce unified expression matrice
 
 Samples can be combined in a single sample sheet before a major release or nf-core pipeline update. In the interim, cohorts can be processed in separate nf-core/rnaseq runs and combined. In the current release, we have:
 
-- All mice from 2016 ~ mid 2022, (except *sequencing validation mice*, see below)
-- 2022 CML mice (`CML.mRNA.2022_pt2`)
-- 2023 CML miR142-KO mice 
+-   All mice from 2016 \~ mid 2022, (except *sequencing validation mice*, see below)
+-   2022 CML mice (`CML.mRNA.2022_pt2`)
+-   2023 CML miR142-KO mice
 
 ```{targets sample_sheet_2016_2022}
 list(
@@ -170,10 +162,10 @@ Spaces are not permitted in filenames, so for this cohort, we need to cache and 
 tar_target(sample_sheet_mir142ko_mrna_cache, symlink_mrna_fastqs("mmu_mrna_mir142ko/fastq", sample_sheet_mrna_mir142ko))
 ```
 
-Two datasets have not been integrated into sample metadata tables: 
+Two datasets have not been integrated into sample metadata tables:
 
-- "Validation mice" from a sequencing validation run and can be considered technical replicates.
-- Human AML samples have metadata that's inconsistent between experiments. Until we decide on the minimum metadata to collect for human samples, these datasets will remain separate. 
+-   "Validation mice" from a sequencing validation run and can be considered technical replicates.
+-   Human AML samples have metadata that's inconsistent between experiments. Until we decide on the minimum metadata to collect for human samples, these datasets will remain separate.
 
 The following targets locate the fastq files on Isilon and make sample sheets for the nf-core/rnaseq pipeline.
 
@@ -200,13 +192,13 @@ list(
 
 Target names and their outputs adhere to the format *species_protocol_cohort_ref-genome_workflow*
 
-|  |  |
-|---|---|
-| **_cohort_** | 2016_2022, validation, flt3, mds, 2022_1 |
-| **_species_** | mmu, hsa |
-| **_protocol_** | mrna, 10x, mirna |
-| **_ref-genome_** | GENCODEr40, GENCODEm28_HLT, GRCm38_HLT, GRCh38 |
-| **_workflow_** | qc, salmon, seurat |
+|                  |                                                |
+|------------------|------------------------------------------------|
+| ***cohort***     | 2016_2022, validation, flt3, mds, 2022_1       |
+| ***species***    | mmu, hsa                                       |
+| ***protocol***   | mrna, scrna, mirna                             |
+| ***ref-genome*** | GENCODEr40, GENCODEm28_HLT, GRCm38_HLT, GRCh38 |
+| ***workflow***   | qc, salmon, seurat                             |
 
 Construct the `run_folder` parameter for `run_nf_core_rnaseq()` using the tokens *species_protocol_cohort*.
 
@@ -276,15 +268,14 @@ list(
             get_rnaseq_se(mmu_mrna_cml3_qc),
             metadata_mmu_prepub,
             mmu_mrna_cml3_qc
+    )),
+    tar_target(
+        mmu_mrna_mir142ko_qc_se,
+        annotate_se(
+            get_rnaseq_se(mmu_mrna_mir142ko_qc),
+            metadata_mmu_prepub,
+            mmu_mrna_mir142ko_qc
     ))
-    #,
-    # tar_target(
-    #     mmu_mrna_mir142ko_qc_se,
-    #     annotate_se(
-    #         get_rnaseq_se(mmu_mrna_mir142_qc),
-    #         metadata_mmu_prepub,
-    #         mmu_mrna_mir142_qc
-    # ))
 )
 ```
 
@@ -303,12 +294,21 @@ list(
 Merge the late-coming CML samples with all other mice into a single SummarisedExperiment.
 
 ```{targets mrna_merge_summarised_experiments}
-tar_target(
-    mmu_mrna_all_mice_qc_se, 
+list(
+    tar_target(
+    mmu_mrna_2016_2022_cml3_mice_qc_se, 
     merge_mrna_se(
         mmu_mrna_2016_2022_qc_se,
         mmu_mrna_cml3_qc_se,
         new_name = "mmu_mrna_all_mice_GENCODEm28_HLT_qc")
+),
+tar_target(
+    mmu_mrna_all_mice_qc_se, 
+    merge_mrna_se(
+        mmu_mrna_2016_2022_cml3_mice_qc_se,
+        mmu_mrna_mir142ko_qc_se,
+        new_name = "mmu_mrna_all_mice_GENCODEm28_HLT_qc")
+)
 )
 ```
 
@@ -385,7 +385,7 @@ list(
 ::: callout-tip
 ## Code suggestion
 
-In a future release, all samples could be run together after preprocessing. 
+In a future release, all samples could be run together after preprocessing.
 :::
 
 ### Bowtie counts
@@ -418,8 +418,8 @@ list(
 
 ### mirTop isomiRs
 
-- mirTop for isomiRs: [Desvignes et al 2020](https://academic.oup.com/bioinformatics/article/36/3/698/5556118) 
-- Nice isomiR review: [Tomasello et al 2021](https://www.frontiersin.org/articles/10.3389/fcell.2021.668648/full)
+-   mirTop for isomiRs: [Desvignes et al 2020](https://academic.oup.com/bioinformatics/article/36/3/698/5556118)
+-   Nice isomiR review: [Tomasello et al 2021](https://www.frontiersin.org/articles/10.3389/fcell.2021.668648/full)
 
 ```{targets nf-core-smrnaseq-mirtop-isomir, eval=FALSE}
 list(
@@ -432,7 +432,7 @@ list(
 )
 ```
 
-::: {.callout-important}
+::: callout-important
 This fails to combine the runs; not published for now.
 :::
 
@@ -444,26 +444,26 @@ Extract mirTrace and samtools QC metrics
 list(
     tar_target(mmu_mirna_pretrimmed_qc, nfcore_smrna_qc(mmu_mirna_pretrimmed_multiqc)),
     tar_target(mmu_mirna_trimmed_qc, nfcore_smrna_qc(mmu_mirna_trimmed_multiqc)),
-    tar_target(mmu_mirna_all_mice_mirna_qc, rbind(mmu_mirna_pretrimmed_qc, mmu_mirna_trimmed_qc))
+    tar_target(mmu_mirna_all_mice_miRBase22_mirna_qc, rbind(mmu_mirna_pretrimmed_qc, mmu_mirna_trimmed_qc))
 )
 ```
 
-## 10X 
+## 10X
 
-::: {.callout-tip}
+::: callout-tip
 ## Code suggestion
-As currently written, the 10X workflow chains together some resource-intensive functions that could be implemented more efficiently. For instance, we could store only the new cell metadata that results from each function/step, rather than passing a new Seurat object from one step to the next. 
+
+As currently written, the 10X workflow chains together some resource-intensive functions that could be implemented more efficiently. For instance, we could store only the new cell metadata that results from each function/step, rather than passing a new Seurat object from one step to the next.
 :::
 
 ### Load data
 
 ::: panel-tabset
-
 #### Multiplexed samples
 
-The *2022 AML scRNAseq cohort* was sequenced using the 10X [CellPlex](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/algorithms/cellplex) cell multiplexing protocol. 
+The *2022 AML scRNAseq cohort* was sequenced using the 10X [CellPlex](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/algorithms/cellplex) cell multiplexing protocol.
 
-The [`seurat_import_cellplex()`](http://cgt.coh.org/haemdata/reference/seurat_import_cellplex.html) function builds Seurat objects and adds cell metadata columns indicating the percent expression of mitochondrial, ribosomal, haemoglobin, platelet, _Xist_ & chrY genes, and the transgene _MYH11_.
+The [`seurat_import_cellplex()`](http://cgt.coh.org/haemdata/reference/seurat_import_cellplex.html) function builds Seurat objects and adds cell metadata columns indicating the percent expression of mitochondrial, ribosomal, haemoglobin, platelet, *Xist* & chrY genes, and the transgene *MYH11*.
 
 ```{targets seurat_import_objects_2022, eval=TRUE}
 tar_target(
@@ -475,7 +475,7 @@ tar_target(
 
 #### Single sample libraries
 
-10X libraries are typically prepared for a single sample and sequenced, as for the *CML miR-142 KO cohort* from the Zhang/Marcucci lab (T-cell scRNAseq).  The Cellranger protocol is essentially the same for Cellplex libraries, without the demultiplexing steps. 
+10X libraries are typically prepared for a single sample and sequenced, as for the *CML miR-142 KO cohort* from the Zhang/Marcucci lab (T-cell scRNAseq). The Cellranger protocol is essentially the same for Cellplex libraries, without the demultiplexing steps.
 
 Begin by preparing a sample sheet for the nf-core/smrnaseq pipeline:
 
@@ -499,7 +499,7 @@ tar_target(
     )
 ```
 
-The [`seurat_import_cellranger()`](http://cgt.coh.org/haemdata/reference/seurat_import_cellranger.html) function builds Seurat objects and adds cell metadata columns indicating the percent expression of mitochondrial, ribosomal, haemoglobin, platelet, _Xist_ & chrY genes, and the transgene _MYH11_.
+The [`seurat_import_cellranger()`](http://cgt.coh.org/haemdata/reference/seurat_import_cellranger.html) function builds Seurat objects and adds cell metadata columns indicating the percent expression of mitochondrial, ribosomal, haemoglobin, platelet, *Xist* & chrY genes, and the transgene *MYH11*.
 
 ```{targets seurat_import_objects_cellranger, eval=TRUE}
 tar_target(
@@ -508,18 +508,17 @@ tar_target(
     resources = apollo_medium
     )
 ```
-
 :::
 
-### QC filter 
+### QC filter
 
 See [`haemdata::seurat_perform_cell_qc()`](http://cgt.coh.org/haemdata/reference/seurat_perform_cell_qc.html)
 
 Consider including:
 
-- [EmptyDrops](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1662-y)
-- [SoupX](https://github.com/constantAmateur/SoupX)
-- Others on [GitHub](https://github.com/drejom/haemdata/issues/7)
+-   [EmptyDrops](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1662-y)
+-   [SoupX](https://github.com/constantAmateur/SoupX)
+-   Others on [GitHub](https://github.com/drejom/haemdata/issues/7)
 
 ```{targets seurat_perform_cell_qc, eval=TRUE}
 list(
@@ -572,7 +571,7 @@ tar_target(
     )
 ```
 
-### Annotate cell cycle 
+### Annotate cell cycle
 
 See [`haemdata::seurat_annotate_cell_cycle()`](http://cgt.coh.org/haemdata/reference/seurat_annotate_cell_cycle.html)
 
@@ -591,7 +590,7 @@ tar_target(
 )
 ```
 
-### Annotate cell type 
+### Annotate cell type
 
 See [`haemdata::seurat_annotate_cell_type()`](http://cgt.coh.org/haemdata/reference/seurat_annotate_cell_cycle.html)
 
@@ -609,7 +608,6 @@ tar_target(
     )
 )
 ```
-
 :::
 
 # Publish pins
@@ -617,7 +615,6 @@ tar_target(
 #TODO What are pins?
 
 ::: panel-tabset
-
 ## Metadata pins
 
 ```{targets publish_metadata_pins, eval=TRUE}
@@ -677,26 +674,26 @@ list(
         deployment = "main"
     ),
     tar_target(
-        mmu_mirna_all_mice_mirna_qc_pins,
-        publish_mirna_qc(mmu_mirna_all_mice_mirna_qc),
+        mmu_mirna_all_mice_miRBase22_mirna_qc_pins,
+        publish_mirna_qc(mmu_mirna_all_mice_miRBase22_mirna_qc),
         deployment = "main"
     )
 )
 ```
 
-## 10X pins 
+## 10X pins
 
 ```{targets publish_seurat, eval=TRUE}
 list(
 tar_target(
     mmu_10x_aml2022_GENCODEm28_HLT_pins,
     publish_seurat(mmu_10x_aml2022_GENCODEm28_HLT_sct_clust_cc_ct),
-        deployment = "main"
+        resources = apollo_small
     ),
 tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_pins,
     publish_seurat(mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc_ct),
-        deployment = "main"
+        resources = apollo_small
     )
     ) 
 ```
@@ -705,30 +702,28 @@ tar_target(
 
 ```{targets collect_pin_versions, eval=TRUE}
 tar_target(
-    latest_published_data,
-    haemdata::write_data("published_pins",
-    rbind(
-    # 10X single cell RNA-seq
-        mmu_10x_mir142ko_GENCODEm28_HLT_pins,
-        mmu_10x_aml2022_GENCODEm28_HLT_pins,
-    # metadata
-        metadata_mmu_pins,
-        metadata_hsa_pins,
-    # micro RNAseq
-        mmu_mirna_all_mice_miRBase22_mirtop_counts_pins,
-        mmu_mirna_all_mice_miRBase22_bowtie_cpm_pins,
-        mmu_mirna_all_mice_mirna_qc_pins,
-    # bulk RNAseq
-        mmu_mrna_all_mice_GENCODEm28_pins,
-        mmu_mrna_techrep_GENCODEm28_pins,
-        hsa_mrna_flt3_GENCODEm28_pins,
-        hsa_mrna_mds_GENCODEm28_pins,
-        hsa_mrna_kim_GENCODEm28_pins
-    )), deployment = "main", format = "file"
+    latest_published_data, collect_pin_versions(
+            mmu_10x_mir142ko_GENCODEm28_HLT_pins,
+            mmu_10x_aml2022_GENCODEm28_HLT_pins,
+            # metadata
+            metadata_mmu_pins,
+            metadata_hsa_pins,
+            # micro RNAseq
+            mmu_mirna_all_mice_miRBase22_mirtop_counts_pins,
+            mmu_mirna_all_mice_miRBase22_bowtie_cpm_pins,
+            mmu_mirna_all_mice_miRBase22_mirna_qc_pins,
+            # bulk RNAseq
+            mmu_mrna_all_mice_GENCODEm28_pins,
+            mmu_mrna_techrep_GENCODEm28_pins,
+            hsa_mrna_flt3_GENCODEm28_pins,
+            hsa_mrna_mds_GENCODEm28_pins,
+            hsa_mrna_kim_GENCODEm28_pins
+    ),
+    deployment = "main",
+    format = "file"
 )
 ```
-
-::: 
+:::
 
 # Build package
 
@@ -760,7 +755,7 @@ system(
 The dependency graph illustrates the steps of the pipeline. It's interactive and you can zoom/pan to explore the `targets`.
 
 ```{r}
-tar_visnetwork(targets_only = TRUE)
+tar_visnetwork(targets_only = TRUE, label = c("time"))
 ```
 
 At this point, you can go back and run `{targets}` chunks in interactive mode without interfering with the code or data of the non-interactive pipeline.

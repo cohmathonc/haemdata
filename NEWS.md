@@ -5,7 +5,7 @@
 * update AML Cellplex analysis - Cellranger v7.0.0 (includes intron counts)
 * change sample_id prefix to MHO from PSON
 * add miRNA sample metadata from @yufu1120
-* simplify Isilon paths (`/net/nfs-irwrsrchnas01/labs` -> `/labs`)
+* simplify Isilon paths (`/net/nfs-irwrsrchnas01/labs` & `/net/isi-dcnl/ifs/user_data` -> `/labs`)
 
 # haemdata 0.0.0.9010
 * move target pipeline to `./preprocessing`

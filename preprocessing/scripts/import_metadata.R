@@ -58,7 +58,9 @@ update_metadata_mmu <- function() {
         "metadata_mmu.csv"
     ) |>
         purrr::modify_if(is.factor, as.character) |>
-        purrr::modify_at("mouse_id", as.character)
+            purrr::modify_at("mouse_id", as.character) |>
+            #### dump mir142ko mice until metadata is checked for errors
+            dplyr::filter(!grepl("mir142ko", cohort))
 
     # # # change sample_id prefix to MHO from PSON
     sample_sheet <- sample_sheet |>
@@ -74,10 +76,9 @@ update_metadata_mmu <- function() {
     # # # simplify fastq_1 & fastq_2 paths
     sample_sheet <- sample_sheet |>
         mutate(
-            fastq_1 = str_replace(fastq_1, "/net/nfs-irwrsrchnas01/labs", "/labs"),
-            fastq_2 = str_replace(fastq_2, "/net/nfs-irwrsrchnas01/labs", "/labs")
+            fastq_1 = str_replace(fastq_1, "/net/nfs-irwrsrchnas01/labs|/net/isi-dcnl/ifs/user_data", "/labs"),
+            fastq_2 = str_replace(fastq_2, "/net/nfs-irwrsrchnas01/labs|/net/isi-dcnl/ifs/user_data", "/labs")
         )
-
     # # # @yufu1120 sample metadata
     updates <- data.frame(
         stringsAsFactors = FALSE,
@@ -122,7 +123,7 @@ update_metadata_mmu <- function() {
     fastq_10X <- parse_10x_mir142_ko()
 
     mir142ko_metadata <- readxl::read_xlsx(here::here("data-raw/CML_mir142_ko_scRNAseq_summary.xlsx")) |>
-        select(library_id, tissue, assay, treatment, genotype, sample_date, mouse_id, dob, dod, cohort) |>
+        select(library_id, tissue, assay, treatment, genotype, sample_date, mouse_id, dob, dod, cohort, batch) |>
         mutate(strandedness = "reverse") |>
         purrr::modify_if(lubridate::is.timepoint, as.character)
 

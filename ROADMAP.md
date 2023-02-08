@@ -2,11 +2,10 @@
 * add notebooks
 * remove metadata from SummarisedExperiments
 * add 10X read metrics for all libraries
-* CML miR-142 KO T & LMPP cells (scRNA & mRNA)
 * simplify `metadata_hsa`
 * implement [`pointblank`](https://rich-iannone.github.io/pointblank/index.html) data dictionaries
 * revised colour scheme
 * ggPCA and PC vs. time plots
-* fix Isilon paths for AML 2016 & 2018 mRNAseq
+* fix Isilon paths for CML, AML 2016 & 2018 mRNAseq
 * update nf-core version to 3.10+ and remove rRNA
 * use {babelwhale} to run cutadapt
