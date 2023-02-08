@@ -110,7 +110,8 @@ add_age_and_weeks_columns <- function(sample_sheet) {
             dplyr::across(dplyr::starts_with("age"), round, 1),
         ) |>
         dplyr::ungroup() |>
-        purrr::modify_if(lubridate::is.timepoint, as.numeric)
+        purrr::modify_if(lubridate::is.timepoint, as.numeric) |>
+        purrr::modify_if(lubridate::is.difftime, as.numeric)
 }
 
 #' Assign New Sample IDs
