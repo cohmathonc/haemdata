@@ -6,8 +6,14 @@ template:
   bootswatch: simplex
 navbar:
   structure:
-    left: [intro, reference, articles, tutorials, news]
+    left: [notebooks, intro, reference, articles, tutorials, news]
     right: [search, github]
+  components:
+    notebooks:
+      icon: fa-notebook
+      href: http://cgt.coh.org/haemdata/notebooks
+      aria-label: notebooks
+      text: Notebooks
 
 reference:
 - title: Available datasets
