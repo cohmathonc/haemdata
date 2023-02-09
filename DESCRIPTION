@@ -30,6 +30,7 @@ Suggests:
     future,
     future.apply,
     future.batchtools,
+    ggfortify,
     ggsci,
     grid,
     hdf5r,
@@ -57,6 +58,7 @@ Suggests:
     SingleR,
     stringr,
     SummarizedExperiment,
+    survival,
     targets,
     thematic,
     tibble,
@@ -74,7 +76,7 @@ RoxygenNote: 7.2.3
 Collate: 
     'haemdata.R'
     'access_data.R'
-    'data.R'
+    'metadata.R'
     'rnaseq.R'
     'run_nfcore_scrnaseq.R'
     'seurat.R'

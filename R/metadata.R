@@ -92,18 +92,19 @@ NULL
 #' @param cohort_regex A regular expression to filter the cohort of interest.
 #' @param assay_regex A regular expression to filter the assay of interest.
 #'
-#' @details Uses the `survfit` function from the {survival} package to fit a 
-#' survival model to the data, and uses the `autoplot.survfit` function from 
-#' the {ggfortify} package to create a ggplot to visualize the fitted model. 
-#' The plot shows the cohort survival over time, with different colors indicating 
+#' @details Uses the `survfit` function from the {survival} package to fit a
+#' survival model to the data, and uses the `autoplot.survfit` function from
+#' the {ggfortify} package to create a ggplot to visualize the fitted model.
+#' The plot shows the cohort survival over time, with different colors indicating
 #' different treatments.
-#' 
+#'
 #' @return A ggplot object showing the effect of treatment on survival for a given cohort and assay.
 #'
 #' @examples
-#' plot_cohort_survival(sample_sheet = metadata_mmu,
-#'                     cohort_regex = "AML",
-#'                     assay_regex = "mRNA")
+#' \dontrun{
+#' use_pinboard("devel")
+#' get_pin("metadata_mmu.csv") |>
+#' plot_cohort_survival(cohort_regex = "AML")}
 #' @export
 plot_cohort_survival <- function(sample_sheet = published_metadata_mmu,
                                 cohort_regex,
@@ -112,7 +113,6 @@ plot_cohort_survival <- function(sample_sheet = published_metadata_mmu,
         dplyr::filter(grepl({{ cohort_regex }}, cohort)) |>
         dplyr::filter(grepl({{ assay_regex }}, assay)) |>
         dplyr::select(sample_id, sample_weeks, dead, treatment)
-
 
     if (nrow(cohort_sample_sheet) == 0) {
         print("No samples to plot...")
