@@ -49,7 +49,7 @@ update_metadata_mmu <- function() {
     # Update sample and mouse metadata
     # Load in metadata_mmu from the devel pinboard and modify as needed
 
-    # v0.0.0.9011 interim
+    # v0.0.0.9012 interim
     sample_sheet <- pins::pin_read(
         pins::board_folder(
             "/labs/rrockne/MHO/haemdata",
@@ -57,82 +57,24 @@ update_metadata_mmu <- function() {
         ),
         "metadata_mmu.csv"
     ) |>
-        purrr::modify_if(is.factor, as.character) |>
-            purrr::modify_at("mouse_id", as.character) |>
-            #### dump mir142ko mice until metadata is checked for errors
-            dplyr::filter(!grepl("mir142ko", cohort))
+        purrr::modify_if(is.factor, as.character) 
 
-    # # # change sample_id prefix to MHO from PSON
+    # # # fix an issue with some CML mice have incorrect dod ----
+    dod_fix <- tibble(
+        mouse_id = as.character(c("487", "488", "489", "490", "541", "545")),
+        dod = rep(NA, 6)
+    )
+    sample_sheet <- rows_update(sample_sheet, dod_fix, by = "mouse_id")
+
+    # # # add survival column ----
     sample_sheet <- sample_sheet |>
-        mutate(sample_id = str_replace(sample_id, "PSON", "MHO"))
+        add_survival_columns() |>
+        select(-(matches("age_at_end|age_at_sample")))
 
-    # # # update Cellplex file paths to Cellranger v7.0.0
+    # # # relocate some columns ----
     sample_sheet <- sample_sheet |>
-        mutate(
-            hdf5 = str_replace(hdf5, "(GENCODEm28_HLT_lib[1-9])/outs", "\\1_v7/outs"),
-            hdf5 = str_replace(hdf5, "/net/nfs-irwrsrchnas01/labs", "/labs"),
-            hdf5 = str_replace(hdf5, "sample_feature_bc_matrix.h5", "sample_filtered_feature_bc_matrix.h5"))
-
-    # # # simplify fastq_1 & fastq_2 paths
-    sample_sheet <- sample_sheet |>
-        mutate(
-            fastq_1 = str_replace(fastq_1, "/net/nfs-irwrsrchnas01/labs|/net/isi-dcnl/ifs/user_data", "/labs"),
-            fastq_2 = str_replace(fastq_2, "/net/nfs-irwrsrchnas01/labs|/net/isi-dcnl/ifs/user_data", "/labs")
-        )
-    # # # @yufu1120 sample metadata
-    updates <- data.frame(
-        stringsAsFactors = FALSE,
-        library_id = c(
-            "COHP_11548", "COHP_11536",
-            "COHP_9755", "COHP_10068", "COHP_10387", "COHP_11216",
-            "COHP_9771", "COHP_10052", "COHP_10819"
-        ),
-        sample_date = c(
-            "1/19/16", "1/19/16", "7/22/15",
-            "9/4/15", "10/5/15", "12/25/15", "7/22/15", "9/4/15",
-            "10/5/15"
-        ),
-        percent_ckit = c(49.3, 49.3, NA, NA, NA, 0.694, NA, NA, NA)
-    ) |> mutate(sample_date = as.character(lubridate::mdy(sample_date)))
-
-    sample_sheet <- dplyr::rows_update(sample_sheet, updates, by = "library_id") |>
-        dplyr::group_by(mouse_id) |>
-        mutate(
-            sample_weeks = case_when(
-                library_id %in% c("COHP_11536", "COHP_11216") ~ as.numeric(round(difftime(as.Date(sample_date), min(as.Date(sample_date)), units = "weeks"), digits = 1)),
-                TRUE ~ sample_weeks
-            ),
-            age_at_sample = case_when(
-                library_id %in% c("COHP_11536", "COHP_11216") ~ as.numeric(round(difftime(as.Date(sample_date), min(as.Date(sample_date)), units = "weeks"), digits = 1)),
-                TRUE ~ age_at_sample
-            )
-        ) |>
-        ungroup()
-
-    # # # CML miR-142 KO scRNAseq (LMPP & T cells)
-
-    fastqs_rnaseq <- data.frame(
-        fastq_1 = list.files("/labs/gmarcucci/Seq/220908_0481_IGC-BZ-20894 LMPP and T RNA-seq",
-            pattern = "_R1_.*\\.gz$", full.names = TRUE, recursive = TRUE
-        )) |>
-        dplyr::filter(! grepl("READS", fastq_1)) |> # Remove IGC preprocessing
-        dplyr::mutate(
-            library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"),
-            fastq_2 = gsub("_R1_", "_R2_", fastq_1))
-
-    fastq_10X <- parse_10x_mir142_ko()
-
-    mir142ko_metadata <- readxl::read_xlsx(here::here("data-raw/CML_mir142_ko_scRNAseq_summary.xlsx")) |>
-        select(library_id, tissue, assay, treatment, genotype, sample_date, mouse_id, dob, dod, cohort, batch) |>
-        mutate(strandedness = "reverse") |>
-        purrr::modify_if(lubridate::is.timepoint, as.character)
-
-    mir142ko_metadata_sample_sheet <- left_join(mir142ko_metadata, fastq_10X, by = "library_id") |>
-        rows_update(fastqs_rnaseq, by = "library_id")
-
-    sample_sheet <- rows_insert(sample_sheet, mir142ko_metadata_sample_sheet, by = "library_id") |>
-        add_age_and_weeks_columns() |>
-        assign_new_sample_ids()
+        relocate(dead, .after = age_at_start)|>
+        relocate(qc_pass_mapping, .after = everything())
 
     # # # Save a copy ----
     sample_sheet |>
