@@ -89,30 +89,33 @@ build_package <- function(latest_published_data) {
     pkgdown::build_site()
 }
 
-#' Add age and weeks columns to a data.frame
+#' Add sample_weeks, age_at_start & dead columns to a data.frame
 #'
-#' @param sample_sheet A data frame containing mouse ID, date of birth (dob), and sample date
-#' @return A data frame with additional columns: sample_weeks, age_at_end, age_at_start, age_at_sample
+#' Adds/updates columns to the metadata_mmu table to 
+#' facilitate survival analysis. 
+#' 
+#' @param sample_sheet A data frame containing mouse ID, date of birth (dob), date of death (dod), and sample date
+#' @return A data frame with additional columns: sample_weeks, age_at_start, dead
 #' @export
 #'
 #' @examples
-#' add_age_and_weeks_columns(sample_sheet)
+#' add_survival_columns(sample_sheet)
 #'
-add_age_and_weeks_columns <- function(sample_sheet) {
+add_survival_columns <- function(sample_sheet) {
     sample_sheet |>
         dplyr::group_by(mouse_id) |>
         dplyr::mutate(
-            # add columns: sample_weeks, age_at_end, age_at_start, age_at_sample
+            # add columns: sample_weeks, age_at_start, dead
             sample_weeks = difftime(as.Date(sample_date), min(as.Date(sample_date)), units = "weeks") |> round(1),
-            age_at_end = difftime(max(as.Date(sample_date)), as.Date(dob), units = "weeks"),
-            age_at_start = difftime(min(as.Date(sample_date)), as.Date(dob), units = "weeks"),
-            age_at_sample = difftime(as.Date(sample_date), as.Date(dob), units = "weeks"),
-            dplyr::across(dplyr::starts_with("age"), round, 1),
+            age_at_start = difftime(min(as.Date(sample_date)), as.Date(dob), units = "weeks") |> round(1),
+            dead = ifelse(as.Date(sample_date) < as.Date(dod), 1, 0),
+            dead = dplyr::case_when(is.na(dead) ~ 1, TRUE ~ dead)
         ) |>
         dplyr::ungroup() |>
         purrr::modify_if(lubridate::is.timepoint, as.numeric) |>
         purrr::modify_if(lubridate::is.difftime, as.numeric)
 }
+
 
 #' Assign New Sample IDs
 #'

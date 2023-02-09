@@ -450,7 +450,7 @@ all_mice |>
     full_join(sample_ids) |>
     relocate(sample_id) |>
     View()
-    
+
     distinct() |>
     rio::export("data-raw/mouse_sample_metadata.xlsx")
  sample_sheet <- all_mice |>
@@ -526,7 +526,7 @@ scCustomize::Read_Metrics_10X(
 nextflow run \
     -c /net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata-nf-core-cache/nextflow.apollo \
     nf-core/smrnaseq -r 2.1.0 -profile test,singularity \
-    --email domeally@coh.org 
+    --email domeally@coh.org
 
 # Shared sample dates
 #2015-11-06
@@ -554,3 +554,65 @@ fastq_paths <- read.csv("data-raw/mmu_mir142_ko_10Xfastqs.csv")
 fastq_paths |>
     filter(str_detect(fastq, "48631")) %>%
     gsub("/labs/gmarcucci/Seq", "", .$fastq)
+
+
+### Survival analysis
+library(ggfortify)
+library(survival)
+
+add_survival_columns <- function(sample_sheet) {
+    sample_sheet |>
+        dplyr::group_by(mouse_id) |>
+        dplyr::mutate(
+            # add columns: sample_weeks, age_at_start, dead
+            sample_weeks = difftime(as.Date(sample_date), min(as.Date(sample_date)), units = "weeks") |> round(1),
+            age_at_start = difftime(min(as.Date(sample_date)), as.Date(dob), units = "weeks") |> round(1),
+            dead = ifelse(as.Date(sample_date) < as.Date(dod), 1, 0),
+            dead = dplyr::case_when(is.na(dead) ~ 1, TRUE ~ dead)
+        ) |>
+        dplyr::ungroup() |>
+        purrr::modify_if(lubridate::is.timepoint, as.numeric) |>
+        purrr::modify_if(lubridate::is.difftime, as.numeric)
+}
+
+published_metadata_mmu <- readRDS(here::here("data-raw/metadata_mmu.rds"))
+
+sample_sheet <- published_metadata_mmu
+
+test_df <- sample_sheet |>
+    select(c(
+        "sample_id", "mouse_id", "cohort",
+        "treatment", "genotype", "sex", "sample_date", "percent_ckit",
+        "dob", "dod", "sample_weeks", "age_at_start", "dead"
+    )) |>
+    dplyr::filter(grepl("AML.mRNA.20", cohort)) |>
+    distinct() |>
+    arrange(mouse_id)
+# ggfortify
+
+plot_cohort_survival <- function(
+    sample_sheet = published_metadata_mmu,
+    cohort_regex,
+    assay_regex = "mRNA"
+    ) {
+    cohort_sample_sheet <- sample_sheet |>
+        dplyr::filter(grepl({{ cohort_regex }}, cohort)) |>
+        dplyr::filter(grepl({{ assay_regex }}, assay)) |>
+        dplyr::select(sample_id, sample_weeks, dead, treatment)
+
+
+    if (nrow(cohort_sample_sheet) == 0) {
+        print("No samples to plot...")
+        return()
+    }
+
+    ggfortify:::autoplot.survfit(
+        survival::survfit(
+            survival::Surv(sample_weeks, dead) ~ treatment,
+            data = cohort_sample_sheet
+        ),
+        xlab = "weeks",
+        main = "Cohort survival, by treatment"
+    ) + labs(fill='Treatment') + 
+        labs(color = "Treatment")
+}
