@@ -44,4 +44,5 @@ reference:
 - title: Other functions
 - contents:
   - write_data
+  - plot_cohort_survival
 
