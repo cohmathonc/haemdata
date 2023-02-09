@@ -1,7 +1,8 @@
 # Roadmap
-* add notebooks
+* add state_space labels 
+* add notebooks, including "cohort report"
 * remove metadata from SummarisedExperiments
-* add 10X read metrics for all libraries
+* add 10X metrics for all scRNAseq libraries
 * simplify `metadata_hsa`
 * implement [`pointblank`](https://rich-iannone.github.io/pointblank/index.html) data dictionaries
 * revised colour scheme

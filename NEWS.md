@@ -1,3 +1,8 @@
+# haemdata 0.0.0.9012
+* fix incorrect dod (6 CML mice)
+* add `dead` column to metadata_mmu, facilitating survival analyses
+* add plot_cohort_survival() function
+
 # haemdata 0.0.0.9011
 * add notebooks
 * renamed mirna & aml2022 10X pins
