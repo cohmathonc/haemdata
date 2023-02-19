@@ -120,50 +120,26 @@ parse_metadata_AML.validation.2017 <- function() {
 
 # AML.mRNA.HSA_FLT3.2022
 parse_metadata_AML.mRNA.HSA_FLT3.2022 <- function() {
-    cohort <- "AML.mRNA.HSA_FLT3.2022"
 
     fastqs <- data.frame(
-        fastq_1 = list.files(c("/net/nfs-irwrsrchnas01/labs/ykuo/Seq/220511_IGC-LZ-20342", "/net/nfs-irwrsrchnas01/labs/ykuo/Seq/220715_IGC-LZ-20821"),
-                pattern = "_R1_.*\\.gz", full.names = TRUE, recursive = TRUE
+        fastq_1 = list.files(c("/labs/ykuo/Seq/220511_IGC-LZ-20342", "/labs/ykuo/Seq/220715_IGC-LZ-20821"),
+                pattern = "_R1_.*\\.gz$", full.names = TRUE, recursive = TRUE
             ),
-        fastq_2 = list.files(c("/net/nfs-irwrsrchnas01/labs/ykuo/Seq/220511_IGC-LZ-20342", "/net/nfs-irwrsrchnas01/labs/ykuo/Seq/220715_IGC-LZ-20821"),
-            pattern = "_R2_.*\\.gz", full.names = TRUE, recursive = TRUE
+        fastq_2 = list.files(c("/labs/ykuo/Seq/220511_IGC-LZ-20342", "/labs/ykuo/Seq/220715_IGC-LZ-20821"),
+            pattern = "_R2_.*\\.gz$", full.names = TRUE, recursive = TRUE
         )
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
 
-    xls <- here::here("data-raw/FLT3 AML samples information (IGC-LZ-20342).xlsx")
-    xls_ss <- here::here("data-raw/sample summary_IGC-LZ-20342.xlsx")
+    xls <- here::here("data-raw/Flt3_sample_metadata.xlsx")
 
-    sample_metadata <- readxl::read_excel(xls) |>
-        janitor::clean_names("lower_camel") |>
-        janitor::remove_constant(na.rm = TRUE) |>
-        tidyr::fill(number, .direction = "down") |>
-        tidyr::separate(htbIdPb, into = c(NA, NA, "sample_id"), sep = "-") |>
-        dplyr::select(patient_id = number, sample_id, sample_date = date, cell_amount = cellAmt) |>
-        tidyr::drop_na(sample_id) |>
+    sample_sheet <- readxl::read_excel(xls) |>
         dplyr::arrange(patient_id, sample_date) |>
         dplyr::mutate(
-            patient_id = gsub("#", "_", patient_id, fixed = TRUE)
-        )
-
-    sequencing_metadata <- readxl::read_excel(xls_ss) |>
-        tidyr::separate(Sample_ID, into = c(NA, NA, "sample_id"), sep = "_") |>
-        dplyr::mutate(
-            cohort = cohort,
-            library_id = TGen_Sample_Name,
-            batch = "2022_C",
-            strandedness = "reverse",
-            sex = NA_character_,
-            dob = NA,
-            treatment = NA_character_,
-            tissue = "PBMC"
-        ) |>
-        dplyr::select(sample_id, cohort, library_id, batch, strandedness, sex, dob, treatment, tissue) |>
-        dplyr::left_join(fastqs)
-
-    sample_sheet <- dplyr::left_join(sequencing_metadata, sample_metadata, by = "sample_id") |>
-        dplyr::arrange(patient_id, sample_date) |>
+            sample_date = as.character(sample_date),
+            strandedness = "reverse") |>
+        dplyr::left_join(fastqs, by = "library_id") |>
         dplyr::select(library_id, fastq_1, fastq_2, strandedness, dplyr::everything())
+
     return(sample_sheet)
 }
 # MDS.rnaseq.EGAD00001003891
