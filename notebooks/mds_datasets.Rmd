@@ -1,0 +1,44 @@
+---
+title: "MDS datasets"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    warning = FALSE,
+    message = FALSE
+)
+```
+
+## Transcriptome sequencing of myelodysplasia 
+| Dataset         | ID       | Technology | Samples |
+| --------------- | -------- | ---------- | ------- |
+| [EGAD00001003891](https://ega-archive.org/datasets/EGAD00001003891) | Illumina | HiSeq 2500 | 266     |
+
+### Dataset Description
+Transcriptome sequencing was performed on 214 patients with myelodysplasia in this study. RNA was obtained from bone marrow CD34+ cells (n=100) and/or bone marrow mononuclear cells (n=165). Transcriptome sequencing was performed for both cell fractions in 51 patients. A total of 211 patients were genotyped by targeted deep sequencing. We also studied bone marrow CD34+ cells and bone marrow mononuclear cells obtained from three healthy adults each.
+
+### Usage
+Data were downloaded from EGA with approval and must not be used for any purpose other than PSON studies. 
+
+Shiozawa et al 2017 *Blood* [![DOI](https://zenodo.org/badge/DOI/10.1182/blood-2017-05-783050.svg)](http://doi.org/10.1182/blood-2017-05-783050)
+
+Shiozawa et al 2018 *Nat Comm* [![DOI](https://zenodo.org/badge/DOI/10.1038/s41467-018-06063-x.svg)](http://doi.org/10.1038/s41467-018-06063-x)
+
+```{r setup}
+library(haemdata)
+use_pinboard("devel")
+
+se <- get_pin("hsa_mrna_mds_GENCODEr40_qc.rds")
+
+pca <- pca_se(se, col_by = "tissue")
+```
+
+```{r pca_plots}
+pca$biplot
+pca$pairs_plot
+```
+```{r pca_corr, fig.height=9, fig.width=8}
+pca$correlation_plot
+```

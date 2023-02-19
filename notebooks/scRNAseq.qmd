@@ -1,0 +1,238 @@
+---
+title: "scRNAseq"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    fig.width = 10,
+    fig.height = 10,
+    out.width = "100%",
+    out.height = "100%",
+    warning = FALSE,
+    message = FALSE,
+    comment = "#>",
+    cache.lazy = FALSE
+)
+```
+
+```{css, include = FALSE}
+<style>
+details {
+    border: 1px solid;
+    border-radius: 10px;
+    padding: .1em .5em 0;
+    text-align: right;
+}
+</style>
+```
+
+```{r setup}
+library(haemdata)
+library(Seurat)
+library(patchwork)
+library(ggplot2)
+library(scCustomize)
+library(dplyr)
+```
+
+<details>
+<summary>Show/hide helper functions code</summary>
+```{r helper_functions}
+#' Make a simplified UMAP plot
+#'
+#' See https://twitter.com/samuel_marsh/status/1526550833479008257
+#' Code https://twitter.com/timoast/status/1526237116035891200/photo/1
+#'
+#' @param x a ggpplot object from Seurat::DimPlot
+#' @return a DimPlot with a simplified UMAP theme
+#' @rdname dim_plot_mod
+dim_plot_mod <- function(x) {
+    p1 <- x + theme_void()
+    p2 <- ggplot(data.frame(x = 100, y = 100), aes(x = x, y = y)) +
+        geom_point() +
+        xlim(c(0, 10)) +
+        ylim(c(0, 10)) +
+        theme_classic() +
+        ylab("UMAP2") +
+        xlab("UMAP1") +
+        theme(
+            axis.text.y = element_blank(),
+            axis.text.x = element_blank(),
+            axis.ticks = element_blank(),
+            axis.line = element_line(
+                arrow = arrow(length = unit(0.5, "cm"), type = "closed")
+            )
+        )
+    layout <- c(
+        patchwork::area(t = 1, l = 2, b = 11, r = 11),
+        patchwork::area(t = 10, l = 1, b = 12, r = 2)
+    )
+
+    p1 + p2 + patchwork::plot_layout(design = layout)
+}
+
+#' Make a QC patchwork plot of per-sample scRNAseq data
+#' - Genes per cell
+#' - UMIs per cell
+#' - log(UMIs per cell)
+#' - % mtDNA per cell
+#'
+#' See https://samuel-marsh.github.io/scCustomize/articles/QC_Plots.html
+#'
+#' @param seurat_object a Seurat object
+#' @return a patchwork plot of the QC data
+#' @rdname dim_plot_mod
+sc_qc_plot_per_sample <- function(seurat_object) {
+    pal <- scCustomize::DiscretePalette_scCustomize(num_colors = 30, palette = "ditto_seq")
+    Seurat::Idents(seurat_object) <- "orig.ident"
+    n1 <- scCustomize::QC_Plot_UMIvsGene(
+        seurat_object,
+        low_cutoff_gene = 800,
+        high_cutoff_gene = 5500,
+        low_cutoff_UMI = 500,
+        high_cutoff_UMI = 50000,
+        colors_use = pal,
+        x_axis_label = "UMIs per Cell",
+        y_axis_label = "Genes per Cell"
+    ) +
+        theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1)) +
+        labs(title = "Cells by Sample ID")
+    n2 <- scCustomize::QC_Plot_UMIvsGene(
+        seurat_object,
+        meta_gradient_name = "percent_mt",
+        low_cutoff_gene = 800,
+        high_cutoff_gene = 5500,
+        high_cutoff_UMI = 45000,
+        x_axis_label = "UMIs per Cell",
+        y_axis_label = "Genes per Cell"
+    ) +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+        labs(title = "Cells by % mtDNA")
+
+    upper <- patchwork::wrap_plots(n1, n2, nrow = 1)
+
+    p1 <- scCustomize::QC_Plots_Genes(seurat_object, low_cutoff = 800, high_cutoff = 5500, pt.size = 0, plot_title = "Genes per cell", raster = TRUE, colors_use = pal)
+    p2 <- scCustomize::QC_Plots_Feature(seurat_object, feature = "percent_ribo", low_cutoff = 5, pt.size = 0, plot_title = "% rRNA per cell", raster = TRUE, colors_use = pal)
+    p3 <- scCustomize::QC_Plots_UMIs(seurat_object, low_cutoff = 1200, high_cutoff = 45000, pt.size = 0, y_axis_log = TRUE, plot_title = "log(UMIs per cell)", raster = TRUE, colors_use = pal)
+    p4 <- scCustomize::QC_Plots_Feature(seurat_object, feature = "percent_mt", high_cutoff = 20, pt.size = 0, plot_title = "% mtDNA per cell", raster = TRUE, colors_use = pal)
+
+    lower <- patchwork::wrap_plots(p1, p2, p3, p4, nrow = 2) &
+        ggplot2::theme(plot.title = element_text(size = 10), legend.position = "none", axis.text = element_text(size = 8))
+
+    patchwork::wrap_plots(upper, lower, nrow = 2)
+}
+
+#' Make a QC plot of per-sample median per-cell values
+#' Median values per sample:
+#' - Genes per cell
+#' - UMIs per cell
+#' - percent mt per cell
+#'
+#' See https://samuel-marsh.github.io/scCustomize/articles/QC_Plots.html
+#'
+#' @param seurat_object a Seurat object
+#' @param group_by a meta.data column with fewer than 8 unique values to group by
+#' @return a patchwork plot of the QC data
+#' @rdname dim_plot_mod
+sc_qc_plot_group_by <- function(seurat_object, group_by) {
+    pal <- scCustomize::DiscretePalette_scCustomize(num_colors = 30, palette = "ditto_seq")
+
+    d1 <- Seurat::DimPlot(seurat_object, reduction = "umap", group.by = {{ group_by }}, cols = pal) |>
+        dim_plot_mod()
+    my_theme <- ggplot2::theme(plot.title = element_blank(), legend.position = "none", axis.text.y = element_text(size = 9))
+    p1 <- scCustomize::Plot_Median_Genes(seurat_object, group_by = {{ group_by }}, colors_use = pal) + my_theme
+    p2 <- scCustomize::Plot_Median_UMIs(seurat_object, group_by = {{ group_by }}, colors_use = pal) + my_theme
+    p3 <- scCustomize::Plot_Median_Other(seurat_object, median_var = "percent_mt", group_by = {{ group_by }}, colors_use = pal) + my_theme
+    p4 <- scCustomize::Plot_Median_Other(seurat_object, median_var = "percent_ribo", group_by = {{ group_by }}, colors_use = pal) + my_theme
+    p5 <- scCustomize::Plot_Median_Other(seurat_object, median_var = "percent_myh11", group_by = {{ group_by }}, colors_use = pal) + my_theme
+    p6 <- scCustomize::Plot_Cells_per_Sample(seurat_object, group_by = {{ group_by }}, colors_use = pal) + my_theme
+
+    layout <- "
+        AAA#G
+        AAA#G
+        BCDEF
+        "
+
+    patchwork::wrap_plots(A = d1, B = p1, C = p2, D = p3, E = p4, F = p5, G = p6, design = layout)
+}
+```
+
+</details>
+
+::: {.panel-tabset}
+
+## AML 2022 scRNAseq
+
+```{r cache.lazy = FALSE}
+use_pinboard("devel")
+seurat_object <- get_pin("mmu_10x_aml2022_GENCODEm28_HLT.rds")
+```
+
+### Per cell metadata
+```{r }
+seurat_object@meta.data |> colnames()
+```
+
+Number of samples: **`r dplyr::n_distinct(seurat_object@meta.data$orig.ident)`**; total number of cells: **`r nrow(seurat_object@meta.data)`**
+
+### Per sample QC metrics
+```{r }
+sc_qc_plot_per_sample(seurat_object)
+```
+
+### Per sample UMAP
+```{r }
+pal <- scCustomize::DiscretePalette_scCustomize(num_colors = 30, palette = "ditto_seq")
+scCustomize::DimPlot_scCustom(seurat_object, reduction = "umap", group.by = "orig.ident", colors_use = pal) |>
+    dim_plot_mod() + ggplot2::guides(color = ggplot2::guide_legend(ncol = 2))
+```
+
+### Per cell QC metrics
+```{r }
+sc_qc_plot_group_by(seurat_object, "tissue")
+sc_qc_plot_group_by(seurat_object, "ckit")
+sc_qc_plot_group_by(seurat_object, "Phase")
+sc_qc_plot_group_by(seurat_object, "cell_type")
+gc()
+```
+
+## CML miR-142 KO scRNAseq (LMPP & T cell)
+
+```{r cache.lazy = FALSE}
+use_pinboard("devel")
+seurat_object <- get_pin("mmu_10x_mir142ko_GENCODEm28_HLT.rds")
+```
+
+### Per cell metadata
+```{r }
+seurat_object@meta.data |> colnames()
+```
+
+Number of samples: **`r dplyr::n_distinct(seurat_object@meta.data$orig.ident)`**; total number of cells: **`r nrow(seurat_object@meta.data)`**
+
+
+### Per sample QC metrics
+```{r }
+sc_qc_plot_per_sample(seurat_object)
+```
+
+### Per sample UMAP
+```{r }
+pal <- scCustomize::DiscretePalette_scCustomize(num_colors = 30, palette = "ditto_seq")
+scCustomize::DimPlot_scCustom(seurat_object, reduction = "umap", group.by = "orig.ident", colors_use = pal) |>
+    dim_plot_mod() + ggplot2::guides(color = ggplot2::guide_legend(ncol = 2))
+```
+
+### Per cell QC metrics
+```{r }
+sc_qc_plot_group_by(seurat_object, "seurat_clusters")
+sc_qc_plot_group_by(seurat_object, "Phase")
+sc_qc_plot_group_by(seurat_object, "cell_type")
+```
+
+:::
+
+# Using Python?
+
+https://mojaveazure.github.io/seurat-disk/articles/convert-anndata.html

@@ -1,0 +1,41 @@
+project:
+  type: website
+  output-dir: public
+  post-render:
+    - rsync -avP --delete public/ /labs/rrockne/MHO/haemdata-www/notebooks
+    - rsync -avP ../preprocessing/_targets.html /home/domeally/MHO/haemdata-www
+
+execute:
+  freeze: auto
+
+website:
+  title: "Haemdata Notes"
+  repo-url: https://github.com/drejom/haemdata/
+  repo-subdir: notebooks
+  repo-actions: [edit, issue]
+  site-url: "http://cgt.coh.org/haemdata/notebooks"
+  favicon: ../pkgdown/favicon/favicon.ico
+
+  navbar:
+    logo: ../man/figures/logo.png
+    search: true	
+    left:
+      - href: index.qmd
+        text: Home
+      - about.qmd
+      - href: http://cgt.coh.org/haemdata/
+        text: Package website
+  sidebar:
+    contents: auto
+
+format:
+  html:
+    theme: simplex
+    css: styles.css
+    toc: true
+    embed-resources: true
+    standalone: true
+
+
+
+

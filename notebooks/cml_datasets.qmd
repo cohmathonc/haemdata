@@ -1,0 +1,136 @@
+---
+title: "CML datasets"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    warning = FALSE,
+    message = FALSE,
+    echo = FALSE
+)
+
+library(haemdata)
+library(magrittr)
+library(SummarizedExperiment)
+use_pinboard("devel")
+metadata_mmu <- readRDS(here::here("data-raw/metadata_mmu.rds"))
+```
+
+::: {.panel-tabset}
+
+## CML treatment mice
+
+```{r cml_2022}
+cml_mice <- get_pin("mmu_mrna_all_mice_GENCODEm28_HLT_qc.rds") %>%
+    subset(select = grepl("mRNA", SummarizedExperiment::colData(.)$assay)) %>%
+    subset(select = grepl("CML.mRNA.202[21]", SummarizedExperiment::colData(.)$cohort))
+
+pca <- pca_se(cml_mice)
+```
+
+::: {.panel-tabset}
+
+### Biplot
+
+```{r }
+pca$biplot
+```
+```{r }
+mat <- SummarizedExperiment::assay(cml_mice, "abundance")
+mat <- mat[rowSums(mat) != 0, ] # remove rows with all zeros
+scaled <- scale(t(mat), scale = TRUE, center = TRUE) 
+sample_sheet <- SummarizedExperiment::colData(cml_mice) |> as.data.frame()
+
+prin_comp <- prcomp(scaled, rank. = 2)
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components <- cbind(components, sample_sheet) |> 
+    dplyr::mutate(
+        PC2 = -PC2)
+
+
+plotly::plot_ly(components, x = ~PC1, y = ~PC2, color = ~treatment, type = 'scatter', mode = 'markers', hovertext = ~library_id)
+```
+
+### Pairs plot
+
+```{r }
+pca$pairs_plot
+```
+
+### Correlation table
+
+```{r cml_2022_pca_corr, fig.height=9, fig.width=8}
+pca$correlation_plot
+```
+
+### Human transgenes
+
+```{r cml_2022_transgenes}
+plot_transgenes_se(cml_mice)
+```
+
+### Survival
+```{r cml_2022_survival}
+metadata_mmu |>
+plot_cohort_survival("CML.mRNA.202[21]")
+```
+
+:::
+
+## CML miR142 KO 
+
+::: {.panel-tabset}
+```{r cml_mir142ko}
+cml_mice <- get_pin("mmu_mrna_all_mice_GENCODEm28_HLT_qc.rds") %>%
+    subset(select = grepl("mRNA", SummarizedExperiment::colData(.)$assay)) %>%
+    subset(select = grepl("CML.mRNA.mir142ko", SummarizedExperiment::colData(.)$cohort))
+
+pca <- pca_se(cml_mice, col_by = "tissue")
+```
+
+### Biplot
+
+```{r }
+pca$biplot
+```
+
+### Pairs plot
+
+```{r }
+pca$pairs_plot
+```
+
+### Correlation table
+
+```{r cml_mir142ko_pca_corr, fig.height=9, fig.width=8}
+pca$correlation_plot
+```
+
+### Plotly PCA
+
+```{r}
+
+mat <- SummarizedExperiment::assay(cml_mice, "abundance")
+mat <- mat[rowSums(mat) != 0, ] # remove rows with all zeros
+scaled <- scale(t(mat), scale = TRUE, center = TRUE) 
+sample_sheet <- SummarizedExperiment::colData(cml_mice) |> as.data.frame()
+
+prin_comp <- prcomp(scaled, rank. = 2)
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components <- cbind(components, sample_sheet) |> 
+    dplyr::mutate(
+        PC2 = -PC2,
+        condition = paste(tissue, genotype, sep = "_"))
+
+
+plotly::plot_ly(components, x = ~PC1, y = ~PC2, color = ~condition, colors = c('seagreen','springgreen3','red', "royalblue"), type = 'scatter', mode = 'markers', hovertext = ~library_id)
+
+```
+
+:::
+
+:::

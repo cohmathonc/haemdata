@@ -1,0 +1,11 @@
+---
+title: "About"
+---
+
+Welcome to **Haemdata Notes**, a platform for publishing analytical notebooks making use of Haemdata. 
+
+In addition to *cohort reports*, it would be great if we can collect complete analyses or short examples and snippets of code in notebooks - Jupyter, Quarto, Rmarkdown, or a multitude of other formats. 
+
+The website is built with [Quarto](https://quarto.org/), a powerful scientific publishing platform that supports Python, R, Julia, and Observable JavaScript, and many other languages via Jupyter notebooks, for example.
+
+![](https://datascience.arizona.edu/sites/default/files/styles/az_large/public/2022-08/horst_quarto_schematic.png)
