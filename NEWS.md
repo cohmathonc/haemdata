@@ -1,4 +1,5 @@
 # haemdata 0.0.0.9012
+* fix FLT3 cohort metadata, include 2 rerun samples, remove irrelevant sample
 * fix incorrect dod (6 CML mice)
 * add `dead` column to metadata_mmu, facilitating survival analyses
 * add plot_cohort_survival() function

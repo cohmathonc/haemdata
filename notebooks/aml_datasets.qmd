@@ -209,17 +209,6 @@ library(haemdata)
 use_pinboard("devel")
 se <- get_pin("hsa_mrna_flt3_GENCODEr40_qc.rds")
 
-# ## Add week_scaled column, where time is scaled for each patient
-# SummarizedExperiment::colData(se) <- SummarizedExperiment::colData(se) |>
-#     janitor::remove_constant() |>
-#     dplyr::as_tibble() |>
-#     dplyr::group_by(patient_id) |>
-#     dplyr::mutate(weeks_scaled = as.vector(scale(weeks))) |>
-#     dplyr::ungroup() |>
-#     `rownames<-`(colnames(se)) |>
-#     S4Vectors::DataFrame()
-
-#pca <- pca_se(se, col_by = "weeks_scaled")
 pca <- pca_se(se, col_by = "patient_id")
 ```
 
