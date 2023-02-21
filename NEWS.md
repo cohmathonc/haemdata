@@ -1,4 +1,5 @@
 # haemdata 0.0.0.9012
+* add Notebook rendering to targets pipeline (build_package() function)
 * [isomiRs](https://www.bioconductor.org/packages/release/bioc/html/isomiRs.html) object added to targets pipeline. Can publish pin if any interest
 * fix FLT3 cohort metadata, include 2 rerun samples, remove irrelevant sample
 * fix incorrect dod (6 CML mice)

@@ -60,7 +60,8 @@ pkgdown::build_site()
 # Draft a release for GitHub
 usethis::use_github_release()
 
-fs::file_copy(here::here("preprocessing/_targets.html"), "~/MHO/haemdata-www", overwrite = TRUE)
+# render notebooks
+quarto::quarto_render(input = "preprocessing", as_job = FALSE)
 
 devtools::document()
 pkgdown::build_reference()
