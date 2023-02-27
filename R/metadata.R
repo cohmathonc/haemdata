@@ -22,7 +22,7 @@
 #'  | `sex` | Sex (`M`/`F`) |
 #'  | `dob` | Date of birth, YYYY-MM-DD |
 #'  | `cohort` | Logical groups of samples, generally corresponding to experimental cohorts |
-#'  | `batch` | a arbitrary string to indicate samples in the same sequencing run; unique within cohorts |
+#'  | `batch` | An arbitrary string to indicate samples in the same sequencing run; unique within cohorts |
 #'  | `dod` | Date of death, YYYY-MM-DD. `NA` if the mouse survived the experiment. |
 #'  | `sample_date` | Date the sample was collected, YYYY-MM-DD |
 #'  | `percent_ckit` | Percentage of c-KIT+ cells, measured by flow cytometry (CD117) |
