@@ -54,7 +54,7 @@ use_pinboard <- function(pin_board = NULL,
     } else if (pin_board == "devel") {
         # check that haemdata_folder is accessible
         if (!dir.exists(haemdata_folder)) {
-            stop(glue::glue("'{haemdata_folder}' is not is not accessible.
+            stop(glue::glue("'{haemdata_folder}' is not accessible.
             Check the path"))
         }
         # devel pin_board
