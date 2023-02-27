@@ -7,7 +7,7 @@
 #'  [Download](../metadata_mmu_template.xlsx) a template for new samples
 #'  | Column | Description |
 #'  |---|---|
-#'  | `sample_id` | Unique identifier with the format `PSON_XXXX` that identifies a tissue sample with respect to the mouse, tissue type and sample date. Used to match samples across assays. |
+#'  | `sample_id` | Unique identifier with the format `MHO_XXXX` that identifies a tissue sample with respect to the mouse, tissue type and sample date. Used to match samples across assays. |
 #'  | `library_id` | Integrative Genomics Core *CLN* with the format `COHP_XXXXX`. Matches sequence reads, QC metrics, raw counts and metadata for each sequencing library. Not unique as some libraries are split across multiple sequencing runs.|
 #'  | `fastq_1` | Full path of fastq1, unique in the table |
 #'  | `fastq_2` | Full path of fastq2, unique in the table, or blank for single-end reads |
