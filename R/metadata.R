@@ -30,7 +30,7 @@
 #'  | `age_at_start` | Age at start of the 1st sample, in weeks (`min(sample_date) - dob`) |
 #'  | `dead` | Dead or alive at time of sampling; `0` = alive, `1` = dead |
 #'  | `ref_dim1` | reference dimension 1 - typically PC1; can be UMAP or any other dimension reduction coordinate. |
-#'  | `ref_dim1` | reference dimension 2 - typically PC2 |
+#'  | `ref_dim2` | reference dimension 2 - typically PC2 |
 #'  | `qc_pass_mapping` | `mRNA` samples only. `TRUE` if STAR uniquely mapped reads >= `mapping_threshold` (5% by default), or `FALSE` if not. |
 #'
 #' @details
