@@ -84,7 +84,8 @@ dim_plot_mod <- function(x) {
 #' @return a patchwork plot of the QC data
 #' @rdname dim_plot_mod
 sc_qc_plot_per_sample <- function(seurat_object) {
-    pal <- scCustomize::DiscretePalette_scCustomize(num_colors = 30, palette = "ditto_seq")
+
+    pal <- scCustomize::DiscretePalette_scCustomize(num_colors = 60, palette = "varibow")
     Seurat::Idents(seurat_object) <- "orig.ident"
     n1 <- scCustomize::QC_Plot_UMIvsGene(
         seurat_object,
@@ -136,7 +137,7 @@ sc_qc_plot_per_sample <- function(seurat_object) {
 #' @return a patchwork plot of the QC data
 #' @rdname dim_plot_mod
 sc_qc_plot_group_by <- function(seurat_object, group_by) {
-    pal <- scCustomize::DiscretePalette_scCustomize(num_colors = 30, palette = "ditto_seq")
+    pal <- scCustomize::DiscretePalette_scCustomize(num_colors = 40, palette = "ditto_seq")
 
     d1 <- Seurat::DimPlot(seurat_object, reduction = "umap", group.by = {{ group_by }}, cols = pal) |>
         dim_plot_mod()
@@ -183,7 +184,7 @@ sc_qc_plot_per_sample(seurat_object)
 
 ### Per sample UMAP
 ```{r }
-pal <- scCustomize::DiscretePalette_scCustomize(num_colors = 30, palette = "ditto_seq")
+pal <- scCustomize::DiscretePalette_scCustomize(num_colors = 60, palette = "varibow")
 scCustomize::DimPlot_scCustom(seurat_object, reduction = "umap", group.by = "orig.ident", colors_use = pal) |>
     dim_plot_mod() + ggplot2::guides(color = ggplot2::guide_legend(ncol = 2))
 ```
@@ -219,7 +220,41 @@ sc_qc_plot_per_sample(seurat_object)
 
 ### Per sample UMAP
 ```{r }
-pal <- scCustomize::DiscretePalette_scCustomize(num_colors = 30, palette = "ditto_seq")
+pal <- scCustomize::DiscretePalette_scCustomize(num_colors = 60, palette = "varibow")
+scCustomize::DimPlot_scCustom(seurat_object, reduction = "umap", group.by = "orig.ident", colors_use = pal) |>
+    dim_plot_mod() + ggplot2::guides(color = ggplot2::guide_legend(ncol = 2))
+```
+
+### Per cell QC metrics
+```{r }
+sc_qc_plot_group_by(seurat_object, "seurat_clusters")
+sc_qc_plot_group_by(seurat_object, "Phase")
+sc_qc_plot_group_by(seurat_object, "cell_type")
+```
+
+## CML miR-142 KO blast crisis
+
+```{r cache.lazy = FALSE}
+use_pinboard("devel")
+seurat_object <- get_pin("mmu_10x_blastcrisis_GENCODEm28_HLT.rds")
+```
+
+### Per cell metadata
+```{r }
+seurat_object@meta.data |> colnames()
+```
+
+Number of samples: **`r dplyr::n_distinct(seurat_object@meta.data$orig.ident)`**; total number of cells: **`r nrow(seurat_object@meta.data)`**
+
+
+### Per sample QC metrics
+```{r }
+sc_qc_plot_per_sample(seurat_object)
+```
+
+### Per sample UMAP
+```{r }
+pal <- scCustomize::DiscretePalette_scCustomize(num_colors = 53, palette = "varibow")
 scCustomize::DimPlot_scCustom(seurat_object, reduction = "umap", group.by = "orig.ident", colors_use = pal) |>
     dim_plot_mod() + ggplot2::guides(color = ggplot2::guide_legend(ncol = 2))
 ```

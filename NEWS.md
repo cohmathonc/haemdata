@@ -1,10 +1,11 @@
 # haemdata 0.0.0.9012
-* add Notebook rendering to targets pipeline (build_package() function)
+* add CML blast crisis scRNAseq experiment; 6 mice, 53 samples ("CML.blastcrisis.2023" cohort)
+* add Notebook rendering to targets pipeline (via build_package() function)
 * [isomiRs](https://www.bioconductor.org/packages/release/bioc/html/isomiRs.html) object added to targets pipeline. Can publish pin if any interest
 * fix FLT3 cohort metadata, include 2 rerun samples, remove irrelevant sample
 * fix incorrect dod (6 CML mice)
-* add `dead` column to metadata_mmu, facilitating survival analyses
-* add plot_cohort_survival() function
+* add functions to facilitate survival analyses: add_survival_columns(), plot_cohort_survival()
+* use "code-link: true" in qmd documents
 
 # haemdata 0.0.0.9011
 * add notebooks
@@ -24,7 +25,7 @@
 * miRNA fastqs gzip compressed in place, keeping originals
 * fix mislabelled human FLT3 AML samples, add new samples
 * retired GRCm38 mRNAseq pipeline; GENCODEm28 is the default mmu reference genome for mRNAseq
-* add a PSON sample identifier for all mmu samples
+* add a MHO sample identifier for all mmu samples
 * add a warning about reproducibility when pins are loaded without setting `version`
 * rename `sample` to `library_id` in metadata_mmu
 * rename `project` to `cohort` in metadata_mmu

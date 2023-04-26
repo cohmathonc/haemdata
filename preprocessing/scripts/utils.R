@@ -65,7 +65,7 @@ build_package <- function(latest_published_data) {
     devtools::check(error_on = "error", vignettes = FALSE)
 
     # Make a release on GitHub
-    ## put fields in standard order and alphabetises dependencies
+    ## put fields in standard order and alphabetise dependencies
     usethis::use_tidy_description()
 
     # build the package
@@ -110,8 +110,8 @@ add_survival_columns <- function(sample_sheet) {
             dead = dplyr::case_when(is.na(dead) ~ 1, TRUE ~ dead)
         ) |>
         dplyr::ungroup() |>
-        purrr::modify_if(lubridate::is.timepoint, as.numeric) |>
-        purrr::modify_if(lubridate::is.difftime, as.numeric)
+        purrr::modify_if(lubridate::is.timepoint, as.character) |>
+        purrr::modify_if(lubridate::is.difftime, as.character)
 }
 
 

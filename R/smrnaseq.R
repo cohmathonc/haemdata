@@ -127,7 +127,7 @@ make_isomir <- function(mirtop_isomirs, metadata) {
         tibble::column_to_rownames("library_id") |>
         select(sample_id, mouse_id, tissue, cohort, batch, treatment, genotype, sex, percent_ckit, sample_weeks)
 
-    isomir <- isomiRs::IsomirDataSeqFromMirtop(mirtop_isomirs_df, metadata_df)
+    isomir <- isomiRs::IsomirDataSeqFromMirtop(mirtop_isomirs, metadata_df)
 
     return(isomir)
 }

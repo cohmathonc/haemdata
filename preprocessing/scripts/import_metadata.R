@@ -57,7 +57,8 @@ update_metadata_mmu <- function() {
         ),
         "metadata_mmu.csv"
     ) |>
-        purrr::modify_if(is.factor, as.character) 
+        purrr::modify_if(is.factor, as.character) |>
+        dplyr::filter(cohort != "CML.blastcrisis.2023")
 
     # # # fix an issue with some CML mice have incorrect dod ----
     dod_fix <- tibble(
@@ -75,6 +76,49 @@ update_metadata_mmu <- function() {
     sample_sheet <- sample_sheet |>
         relocate(dead, .after = age_at_start)|>
         relocate(qc_pass_mapping, .after = everything())
+
+    # # # add "blast crisis" mouse metadata
+    blast_crisis_sample_sheet <- readxl::read_excel(here::here("data-raw/metadata_mmu_blastcrisis.xlsx")) |>
+        mutate(
+            dod = if_else(dod == "no die", NA_character_, dod),
+            dod = as.Date(as.numeric(dod), origin = "1899-12-30"),
+            mouse_id = as.character(mouse_id)
+        ) |>
+    # sequencing info
+    left_join(readxl::read_excel(here::here("data-raw/sequencing summary_IGC-BZ-21029.xlsx")) |>
+        select(library_id = "TGen_Sample_Name", prep_date = "sample  prep date", seq_date = "sequencing date", seq_length = "sequencing length...17") |>
+        na.omit(), by = "library_id") |>
+    # fastqs
+    left_join(read.csv("data-raw/mmu_blastcrisis_10Xfastqs.csv") |>
+        dplyr::filter(!grepl("counts|_WT_|_KO_", fastq)) |> ### Filter out analyses files from the IGC
+        dplyr::mutate(
+            library_id = stringr::str_replace(fastq, ".*(COHP_\\d*)_.*", "\\1"),
+            fastq_1 = case_when(
+                grepl("R1_001", fastq) ~ fastq, TRUE ~ NA_character_
+            ),
+            fastq_2 = case_when(
+                grepl("R2_001", fastq) ~ fastq, TRUE ~ NA_character_
+            ),
+            basename = gsub("R[12]_001.fastq.gz$", "", fastq)
+        ) |>
+        group_by(basename) |>
+        tidyr::fill(fastq_1, fastq_2, .direction = "downup") |>
+        ungroup() |>
+        select(-fastq, -basename) |>
+        distinct(), by = "library_id") |>
+        mutate(batch = paste(
+            "2023",
+            factor(prep_date, labels = paste0("L", seq_along(unique(prep_date)))),
+            factor(seq_date, labels = paste0("S", seq_along(unique(seq_date)))),
+            factor(seq_length, labels = paste0("R", seq_along(unique(seq_length)))),
+            sep = "_")) |>
+        add_survival_columns() |>
+            select(-c(label, prep_date, seq_date, seq_length))
+
+    # # # Add to sample_sheet, assign new sample_id
+        sample_sheet <- rows_insert(sample_sheet, blast_crisis_sample_sheet, by = "library_id") |>
+            arrange(sample_id) |>
+            assign_new_sample_ids()
 
     # # # Save a copy ----
     sample_sheet |>

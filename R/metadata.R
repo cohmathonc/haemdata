@@ -121,7 +121,7 @@ plot_cohort_survival <- function(sample_sheet = published_metadata_mmu,
 
     ggfortify:::autoplot.survfit(
         survival::survfit(
-            survival::Surv(sample_weeks, dead) ~ treatment,
+            survival::Surv(as.numeric(sample_weeks), dead) ~ treatment,
             data = cohort_sample_sheet
         ),
         xlab = "Weeks",

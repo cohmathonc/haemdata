@@ -40,18 +40,19 @@ pca$biplot
 ```{r }
 mat <- SummarizedExperiment::assay(cml_mice, "abundance")
 mat <- mat[rowSums(mat) != 0, ] # remove rows with all zeros
-scaled <- scale(t(mat), scale = TRUE, center = TRUE) 
+scaled <- scale(t(mat), scale = TRUE, center = TRUE)
 sample_sheet <- SummarizedExperiment::colData(cml_mice) |> as.data.frame()
 
 prin_comp <- prcomp(scaled, rank. = 2)
 components <- prin_comp[["x"]]
 components <- data.frame(components)
-components <- cbind(components, sample_sheet) |> 
+components <- cbind(components, sample_sheet) |>
     dplyr::mutate(
-        PC2 = -PC2)
+        PC2 = -PC2
+    )
 
 
-plotly::plot_ly(components, x = ~PC1, y = ~PC2, color = ~treatment, type = 'scatter', mode = 'markers', hovertext = ~library_id)
+plotly::plot_ly(components, x = ~PC1, y = ~PC2, color = ~treatment, type = "scatter", mode = "markers", hovertext = ~library_id)
 ```
 
 ### Pairs plot
@@ -75,7 +76,7 @@ plot_transgenes_se(cml_mice)
 ### Survival
 ```{r cml_2022_survival}
 metadata_mmu |>
-plot_cohort_survival("CML.mRNA.202[21]")
+    plot_cohort_survival("CML.mRNA.202[21]")
 ```
 
 :::
@@ -115,19 +116,20 @@ pca$correlation_plot
 
 mat <- SummarizedExperiment::assay(cml_mice, "abundance")
 mat <- mat[rowSums(mat) != 0, ] # remove rows with all zeros
-scaled <- scale(t(mat), scale = TRUE, center = TRUE) 
+scaled <- scale(t(mat), scale = TRUE, center = TRUE)
 sample_sheet <- SummarizedExperiment::colData(cml_mice) |> as.data.frame()
 
 prin_comp <- prcomp(scaled, rank. = 2)
 components <- prin_comp[["x"]]
 components <- data.frame(components)
-components <- cbind(components, sample_sheet) |> 
+components <- cbind(components, sample_sheet) |>
     dplyr::mutate(
         PC2 = -PC2,
-        condition = paste(tissue, genotype, sep = "_"))
+        condition = paste(tissue, genotype, sep = "_")
+    )
 
 
-plotly::plot_ly(components, x = ~PC1, y = ~PC2, color = ~condition, colors = c('seagreen','springgreen3','red', "royalblue"), type = 'scatter', mode = 'markers', hovertext = ~library_id)
+plotly::plot_ly(components, x = ~PC1, y = ~PC2, color = ~condition, colors = c("seagreen", "springgreen3", "red", "royalblue"), type = "scatter", mode = "markers", hovertext = ~library_id)
 
 ```
 

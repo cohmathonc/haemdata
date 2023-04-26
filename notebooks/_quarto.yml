@@ -35,6 +35,8 @@ format:
     toc: true
     embed-resources: true
     standalone: true
+    code-link: true
+
 
 
 

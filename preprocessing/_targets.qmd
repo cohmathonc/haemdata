@@ -3,6 +3,9 @@ title: "Preprocessing pipeline"
 theme: simplex
 embed-resources: true
 standalone: true
+format:
+  html:
+    code-link: true
 ---
 
 <p style="font-size: small">
@@ -104,7 +107,10 @@ The code to collate it has been through multiple iterations, is complex and ugly
 
 For **mmu**, the sample metadata is largely complete. These data were collated from multiple sequencing run sheets, directly from sequencing folders, emails, and so forth.
 
-The current implementation of `update_metadata_mmu()` changes `sample_id` prefix to MHO from PSON, simplifies `fastq_1` & `fastq_2` paths, add @yufu1120 sample metadata and adds CML miR-142 KO scRNAseq (LMPP & T cells) metadata.
+The current implementation of `update_metadata_mmu()` does the following:
+- fixes `dod` for some CML mice
+- adds metadata for "blast crisis" experiment
+
 
 ```{targets metadata_mmu_prepub}
 tar_target(metadata_mmu_prepub, update_metadata_mmu())
@@ -482,38 +488,56 @@ tar_target(
 
 #### Single sample libraries
 
-10X libraries are typically prepared for a single sample and sequenced, as for the *CML miR-142 KO cohort* from the Zhang/Marcucci lab (T-cell scRNAseq). The Cellranger protocol is essentially the same for Cellplex libraries, without the demultiplexing steps.
+10X libraries are typically prepared for a single sample and sequenced, as for the *CML miR-142 KO* cohort from the Zhang/Marcucci lab (LMPP & T-cell scRNAseq) and the 2023 *blast crisis* cohort. The Cellranger protocol is essentially the same for Cellplex libraries, without the demultiplexing steps. 
 
 Begin by preparing a sample sheet for the nf-core/smrnaseq pipeline:
 
-```{targets cml_mir142_ko_sample_sheet, eval=TRUE}
-tar_target(sample_sheet_mir142ko_10x, make_scrnaseq_sample_sheet("^CML.10x.mir142ko$")
-    )
+```{targets 10X_SS_sample_sheets, eval=TRUE}
+list(
+tar_target(sample_sheet_mir142ko_10x, make_scrnaseq_sample_sheet("^CML.10x.mir142ko$")),
+tar_target(sample_sheet_blastcrisis_10x, parse_10x_blastcrisis())
+)
 ```
 
-An nf-core/scrnaseq pipeline allows running Cellranger with single-sample libraries, but does not support Cellplex libraries at this stage. Nor does it permit spaces in file paths, so we first link fastq files to the {nf_core_cache}:
+An nf-core/scrnaseq pipeline allows running Cellranger with single-sample libraries, but does not support Cellplex libraries at this stage. Cellranger requires fastq names meet a specified format, and the nf-core pipeline does not permit spaces in file paths, so we first link fastq files to the {nf_core_cache}:
 
-```{targets link_fastqs_10x_mir142, eval=TRUE}
-tar_target(sample_sheet_mir142ko_10x_cache, symlink_10x_fastqs("mmu_10X_mir142_ko/fastq", sample_sheet_mir142ko_10x))
+```{targets link_fastqs_10x, eval=TRUE}
+list(
+tar_target(sample_sheet_mir142ko_10x_cache, symlink_10x_fastqs("mmu_10X_mir142_ko/fastq", sample_sheet_mir142ko_10x)),
+tar_target(sample_sheet_blastcrisis_10x_cache, symlink_10x_fastqs("mmu_10X_blastcrisis/fastq", sample_sheet_blastcrisis_10x))
+)
 ```
 
 Run the pipeline:
 
 ```{targets run_nfcore_scrnaseq, eval=TRUE}
-tar_target(
+list(
+    tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_multiqc,
     run_nfcore_scrnaseq("mmu_10X_mir142_ko", sample_sheet_mir142ko_10x_cache)
+    ),
+tar_target(
+    mmu_10x_blastcrisis_GENCODEm28_HLT_multiqc,
+    run_nfcore_scrnaseq("mmu_10X_blastcrisis", sample_sheet_blastcrisis_10x_cache)
     )
+)
 ```
 
 The [`seurat_import_cellranger()`](http://cgt.coh.org/haemdata/reference/seurat_import_cellranger.html) function builds Seurat objects and adds cell metadata columns indicating the percent expression of mitochondrial, ribosomal, haemoglobin, platelet, *Xist* & chrY genes, and the transgene *MYH11*.
 
 ```{targets seurat_import_objects_cellranger, eval=TRUE}
-tar_target(
+list(
+    tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT,
     seurat_import_cellranger(mmu_10x_mir142ko_GENCODEm28_HLT_multiqc),
     resources = apollo_medium
+    ),
+    tar_target(
+    mmu_10x_blastcrisis_GENCODEm28_HLT,
+    seurat_import_cellranger(mmu_10x_blastcrisis_GENCODEm28_HLT_multiqc),
+    resources = apollo_medium
     )
+)
 ```
 :::
 
@@ -538,6 +562,11 @@ list(
     mmu_10x_mir142ko_GENCODEm28_HLT_qc, 
     seurat_perform_cell_qc(mmu_10x_mir142ko_GENCODEm28_HLT),
     resources = apollo_bigmem
+    ),
+    tar_target(
+    mmu_10x_blastcrisis_GENCODEm28_HLT_qc, 
+    seurat_perform_cell_qc(mmu_10x_blastcrisis_GENCODEm28_HLT),
+    resources = apollo_bigmem
     )
     )
 ```
@@ -557,6 +586,11 @@ list(
         mmu_10x_mir142ko_GENCODEm28_HLT_sct,
         seurat_sctransform(mmu_10x_mir142ko_GENCODEm28_HLT_qc),
         resources = apollo_bigmem
+    ),
+    tar_target(
+        mmu_10x_blastcrisis_GENCODEm28_HLT_sct,
+        seurat_sctransform(mmu_10x_blastcrisis_GENCODEm28_HLT_qc),
+        resources = apollo_bigmem
     )
     )
 ```
@@ -574,7 +608,11 @@ tar_target(
 tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust,
     seurat_annotate_clusters_and_umap(mmu_10x_mir142ko_GENCODEm28_HLT_sct),
-    resources = apollo_large)
+    resources = apollo_large),
+tar_target(
+    mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust,
+    seurat_annotate_clusters_and_umap(mmu_10x_blastcrisis_GENCODEm28_HLT_sct),
+    resources = apollo_bigmem)
     )
 ```
 
@@ -592,6 +630,11 @@ list(
 tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc,
     seurat_annotate_cell_cycle(mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust),
+    resources = apollo_large
+    ),
+tar_target(
+    mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust_cc,
+    seurat_annotate_cell_cycle(mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust),
     resources = apollo_large
     )
 )
@@ -612,6 +655,11 @@ tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc_ct,
     seurat_annotate_cell_type(mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc),
     resources = apollo_large
+    ),
+tar_target(
+    mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust_cc_ct,
+    seurat_annotate_cell_type(mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust_cc),
+    resources = apollo_bigmem
     )
 )
 ```
@@ -701,6 +749,11 @@ tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_pins,
     publish_seurat(mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc_ct),
         resources = apollo_small
+    ),
+tar_target(
+    mmu_10x_blastcrisis_GENCODEm28_HLT_pins,
+    publish_seurat(mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust_cc_ct),
+        resources = apollo_small
     )
     ) 
 ```
@@ -712,6 +765,7 @@ tar_target(
     latest_published_data, collect_pin_versions(
             mmu_10x_mir142ko_GENCODEm28_HLT_pins,
             mmu_10x_aml2022_GENCODEm28_HLT_pins,
+            mmu_10x_blastcrisis_GENCODEm28_HLT_pins,
             # metadata
             metadata_mmu_pins,
             metadata_hsa_pins,

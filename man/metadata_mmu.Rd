@@ -10,7 +10,7 @@
 \description{
 \href{../metadata_mmu_template.xlsx}{Download} a template for new samples\tabular{ll}{
    Column \tab Description \cr
-   \code{sample_id} \tab Unique identifier with the format \code{PSON_XXXX} that identifies a tissue sample with respect to the mouse, tissue type and sample date. Used to match samples across assays. \cr
+   \code{sample_id} \tab Unique identifier with the format \code{MHO_XXXX} that identifies a tissue sample with respect to the mouse, tissue type and sample date. Used to match samples across assays. \cr
    \code{library_id} \tab Integrative Genomics Core \emph{CLN} with the format \code{COHP_XXXXX}. Matches sequence reads, QC metrics, raw counts and metadata for each sequencing library. Not unique as some libraries are split across multiple sequencing runs. \cr
    \code{fastq_1} \tab Full path of fastq1, unique in the table \cr
    \code{fastq_2} \tab Full path of fastq2, unique in the table, or blank for single-end reads \cr
@@ -25,7 +25,7 @@
    \code{sex} \tab Sex (\code{M}/\code{F}) \cr
    \code{dob} \tab Date of birth, YYYY-MM-DD \cr
    \code{cohort} \tab Logical groups of samples, generally corresponding to experimental cohorts \cr
-   \code{batch} \tab a arbitrary string to indicate samples in the same sequencing run; unique within cohorts \cr
+   \code{batch} \tab An arbitrary string to indicate samples in the same sequencing run; unique within cohorts \cr
    \code{dod} \tab Date of death, YYYY-MM-DD. \code{NA} if the mouse survived the experiment. \cr
    \code{sample_date} \tab Date the sample was collected, YYYY-MM-DD \cr
    \code{percent_ckit} \tab Percentage of c-KIT+ cells, measured by flow cytometry (CD117) \cr
@@ -33,7 +33,7 @@
    \code{age_at_start} \tab Age at start of the 1st sample, in weeks (\code{min(sample_date) - dob}) \cr
    \code{dead} \tab Dead or alive at time of sampling; \code{0} = alive, \code{1} = dead \cr
    \code{ref_dim1} \tab reference dimension 1 - typically PC1; can be UMAP or any other dimension reduction coordinate. \cr
-   \code{ref_dim1} \tab reference dimension 2 - typically PC2 \cr
+   \code{ref_dim2} \tab reference dimension 2 - typically PC2 \cr
    \code{qc_pass_mapping} \tab \code{mRNA} samples only. \code{TRUE} if STAR uniquely mapped reads >= \code{mapping_threshold} (5\% by default), or \code{FALSE} if not. \cr
 }
 }

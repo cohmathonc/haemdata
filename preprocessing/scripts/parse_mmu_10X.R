@@ -47,3 +47,42 @@ parse_10x_mir142_ko <- function() {
 
     return(sample_sheet)
 }
+
+# ├ cml_blastcrisis
+parse_10x_blastcrisis <- function() {
+    cml_blastcrisis_fastq_paths <- c(
+        "/labs/gmarcucci/Seq/230210_IGC-BZ-21029_FullRun",
+        "/labs/gmarcucci/Seq/230119_IGC-BZ-21029_test_run"
+    )
+
+    if (file.exists("data-raw/mmu_blastcrisis_10Xfastqs.csv")) {
+        fastq_paths <- read.csv("data-raw/mmu_blastcrisis_10Xfastqs.csv")
+    } else {
+        fastq_paths <- data.frame(fastq = list.files(
+            path = cml_blastcrisis_fastq_paths,
+            pattern = "R[12]_001.fastq.gz$", full.names = TRUE, recursive = TRUE
+        ))
+        rio::export(fastq_paths, "data-raw/mmu_blastcrisis_10Xfastqs.csv")
+    }
+
+    sample_sheet <- fastq_paths |>
+        dplyr::filter(!grepl("counts|_WT_|_KO_", fastq)) |> ### Filter out analyses files from the IGC
+        dplyr::mutate(
+            library_id = stringr::str_replace(fastq, ".*(COHP_\\d*)_.*", "\\1"),
+            fastq_1 = case_when(
+                grepl("R1_001", fastq) ~ fastq, TRUE ~ NA_character_
+            ),
+            fastq_2 = case_when(
+                grepl("R2_001", fastq) ~ fastq, TRUE ~ NA_character_
+            ),
+            basename = gsub("R[12]_001.fastq.gz$", "", fastq)
+        ) |>
+        group_by(basename) |>
+        tidyr::fill(fastq_1, fastq_2, .direction = "downup") |>
+        ungroup() |>
+        select(-fastq, -basename) |>
+        distinct()
+
+
+    return(sample_sheet)
+}
