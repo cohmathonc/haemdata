@@ -15,6 +15,7 @@ library(haemdata)
 library(magrittr)
 library(SummarizedExperiment)
 use_pinboard("devel")
+# need this while the devel metadata pinboard is not yet published
 metadata_mmu <- readRDS(here::here("data-raw/metadata_mmu.rds"))
 ```
 
@@ -81,7 +82,7 @@ metadata_mmu |>
 
 :::
 
-## CML miR142 KO 
+## CML miR142 KO
 
 ::: {.panel-tabset}
 ```{r cml_mir142ko}
@@ -113,7 +114,6 @@ pca$correlation_plot
 ### Plotly PCA
 
 ```{r}
-
 mat <- SummarizedExperiment::assay(cml_mice, "abundance")
 mat <- mat[rowSums(mat) != 0, ] # remove rows with all zeros
 scaled <- scale(t(mat), scale = TRUE, center = TRUE)
@@ -128,9 +128,7 @@ components <- cbind(components, sample_sheet) |>
         condition = paste(tissue, genotype, sep = "_")
     )
 
-
 plotly::plot_ly(components, x = ~PC1, y = ~PC2, color = ~condition, colors = c("seagreen", "springgreen3", "red", "royalblue"), type = "scatter", mode = "markers", hovertext = ~library_id)
-
 ```
 
 :::
