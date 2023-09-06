@@ -13,3 +13,9 @@
 * update nf-core version to 3.10+ and remove rRNA
 * use {babelwhale} to run cutadapt
 * consolidate everything into an Arrow dataframe; use tidySummarizedExperiment framework
+* improve scRNAseq QC
+    * https://github.com/plger/scDblFinder
+    * https://github.com/broadinstitute/CellBender
+    * https://github.com/wmacnair/SampleQC
+    * new [hexsticker](http://gradientdescending.com/how-to-generate-a-hex-sticker-with-openai-and-cropcircles/)?
+* https://github.com/cxli233/SimpleTidy_GeneCoEx
