@@ -38,7 +38,8 @@ knitr::opts_chunk$set(
     collapse = TRUE,
     warning = FALSE,
     message = FALSE,
-    comment = "#>")
+    comment = "#>"
+)
 ```
 
 ## Pipeline globals
@@ -59,7 +60,6 @@ tar_option_set(
 
 # Load the R scripts & functions:
 for (file in list.files(here::here("preprocessing/scripts"), full.names = TRUE)) source(file)
-
 ```
 
 ### nf-core pipeline versions
@@ -812,13 +812,13 @@ Having defined the pipeline targets above, R scripts are run using `tar_make_fut
 
 ```{r, eval = FALSE}
 system(
-  glue::glue(
-    "srun -J run_haemdata --time 48:00 /opt/singularity/3.7.0/bin/singularity exec \\
+    glue::glue(
+        "srun -J run_haemdata --time 48:00 /opt/singularity/3.7.0/bin/singularity exec \\
         --env R_LIBS_SITE=/opt/singularity-images/rbioc/rlibs/bioc-3.16 \\
         -B /labs,/opt/singularity,/opt/singularity-images \\
         --pwd {getwd()} \\
         /opt/singularity-images/rbioc/vscode-rbioc_3.16.sif Rscript -e 'targets::tar_make_future\\(\\)'"
-  )
+    )
 )
 ```
 
