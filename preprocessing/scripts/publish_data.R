@@ -58,31 +58,36 @@ publish_seurat <- function(seurat_object) {
 #' @author Denis O'Meally
 #' @export
 publish_metadata <- function(metadata) {
-    if (is.null(haemdata::haemdata_env$pin_board)) {
-        stop(haemdata::haemdata_env$pin_board_msg)
+    # Determine where to publish #####
+    if (publish_location == "one-drive") {
+        haemdata::use_pinboard("onedrive")
+    } else if (publish_location == "devel") {
+        haemdata::use_pinboard("devel")
     } else {
-        # extract name
-        name <- deparse(substitute(metadata))
-
-        # make description
-        description <- glue::glue(
-            "A table describing sample metadata. See {haemdata::haemdata_env$package_url}/reference/{name}.html for more information."
-        )
-
-        csv_pin <- pins::pin_write(
-            haemdata::haemdata_env$pin_board,
-            metadata,
-            name = glue::glue("{name}.csv"),
-            type = "csv",
-            title = name,
-            description = description
-        )
-
-        csv_version <- get_latest_pin_version(csv_pin)
-
-        return(data.frame("pin_name" = c(csv_pin), "version" = c(csv_version)))
+        stop(haemdata::haemdata_env$pin_board_msg)
     }
+    # extract name
+    name <- deparse(substitute(metadata))
+
+    # make description
+    description <- glue::glue(
+        "A table describing sample metadata. See {haemdata::haemdata_env$package_url}/reference/{name}.html for more information."
+    )
+
+    csv_pin <- pins::pin_write(
+        haemdata::haemdata_env$pin_board,
+        metadata,
+        name = glue::glue("{name}.csv"),
+        type = "csv",
+        title = name,
+        description = description
+    )
+
+    csv_version <- get_latest_pin_version(csv_pin)
+
+    return(data.frame("pin_name" = c(csv_pin), "version" = c(csv_version)))
 }
+
 #' Publish mirtop counts
 #'
 #' Publishes mirtopcounts table to the  Haemdata Teams channel or to the `MHO/haemdata`
@@ -94,31 +99,37 @@ publish_metadata <- function(metadata) {
 #' @author Denis O'Meally
 #' @export
 publish_mirtop_counts <- function(mirtop_counts) {
-    if (is.null(haemdata::haemdata_env$pin_board)) {
-        stop(haemdata::haemdata_env$pin_board_msg)
+    # Determine where to publish #####
+    if (publish_location == "one-drive") {
+        haemdata::use_pinboard("onedrive")
+    } else if (publish_location == "devel") {
+        haemdata::use_pinboard("devel")
     } else {
-        # extract name
-        name <- deparse(substitute(mirtop_counts))
-
-        # make description
-        description <- glue::glue(
-            "A table of miR counts from the nfcore/smrnaseq pipeline [script](https://github.com/nf-core/smrnaseq/blob/master/bin/collapse_mirtop.r) that collapses mirtop output to a matrix"
-        )
-
-        csv_pin <- pins::pin_write(
-            haemdata::haemdata_env$pin_board,
-            mirtop_counts,
-            name = glue::glue("{name}.csv"),
-            type = "csv",
-            title = name,
-            description = description
-        )
-
-        csv_version <- get_latest_pin_version(csv_pin)
-
-        return(data.frame("pin_name" = c(csv_pin), "version" = c(csv_version)))
+        stop(haemdata::haemdata_env$pin_board_msg)
     }
+
+    # extract name
+    name <- deparse(substitute(mirtop_counts))
+
+    # make description
+    description <- glue::glue(
+        "A table of miR counts from the nfcore/smrnaseq pipeline [script](https://github.com/nf-core/smrnaseq/blob/master/bin/collapse_mirtop.r) that collapses mirtop output to a matrix"
+    )
+
+    csv_pin <- pins::pin_write(
+        haemdata::haemdata_env$pin_board,
+        mirtop_counts,
+        name = glue::glue("{name}.csv"),
+        type = "csv",
+        title = name,
+        description = description
+    )
+
+    csv_version <- get_latest_pin_version(csv_pin)
+
+    return(data.frame("pin_name" = c(csv_pin), "version" = c(csv_version)))
 }
+
 #' Publish bowtie cpm (nf-core/smrnaseq)
 #'
 #' Publishes nf-core/smrnaseq bowtie cpm table to the  Haemdata Teams channel or to the `MHO/haemdata`
@@ -130,31 +141,36 @@ publish_mirtop_counts <- function(mirtop_counts) {
 #' @author Denis O'Meally
 #' @export
 publish_bowtie_cpm <- function(bowtie_cpm) {
-    if (is.null(haemdata::haemdata_env$pin_board)) {
-        stop(haemdata::haemdata_env$pin_board_msg)
+    # Determine where to publish #####
+    if (publish_location == "one-drive") {
+        haemdata::use_pinboard("onedrive")
+    } else if (publish_location == "devel") {
+        haemdata::use_pinboard("devel")
     } else {
-        # extract name
-        name <- deparse(substitute(bowtie_cpm))
-
-        # make description
-        description <- glue::glue(
-            "A table of CPM from the nfcore/smrnaseq pipeline [script](https://github.com/nf-core/smrnaseq/blob/master/bin/edgeR_miRBase.r) that uses edgeR to make a matrix from bowtie counts of mature miRs"
-        )
-
-        csv_pin <- pins::pin_write(
-            haemdata::haemdata_env$pin_board,
-            bowtie_cpm,
-            name = glue::glue("{name}.csv"),
-            type = "csv",
-            title = name,
-            description = description
-        )
-
-        csv_version <- get_latest_pin_version(csv_pin)
-
-        return(data.frame("pin_name" = c(csv_pin), "version" = c(csv_version)))
+        stop(haemdata::haemdata_env$pin_board_msg)
     }
+    # extract name
+    name <- deparse(substitute(bowtie_cpm))
+
+    # make description
+    description <- glue::glue(
+        "A table of CPM from the nfcore/smrnaseq pipeline [script](https://github.com/nf-core/smrnaseq/blob/master/bin/edgeR_miRBase.r) that uses edgeR to make a matrix from bowtie counts of mature miRs"
+    )
+
+    csv_pin <- pins::pin_write(
+        haemdata::haemdata_env$pin_board,
+        bowtie_cpm,
+        name = glue::glue("{name}.csv"),
+        type = "csv",
+        title = name,
+        description = description
+    )
+
+    csv_version <- get_latest_pin_version(csv_pin)
+
+    return(data.frame("pin_name" = c(csv_pin), "version" = c(csv_version)))
 }
+
 #' Publish miRTrace and samtools metrics (nf-core/smrnaseq)
 #'
 #' Publishes nf-core/smrnaseq mirTrace and samtools metrics to the  Haemdata Teams channel or to the `MHO/haemdata`
@@ -166,150 +182,169 @@ publish_bowtie_cpm <- function(bowtie_cpm) {
 #' @author Denis O'Meally
 #' @export
 publish_mirna_qc <- function(mirna_qc) {
-    if (is.null(haemdata::haemdata_env$pin_board)) {
-        stop(haemdata::haemdata_env$pin_board_msg)
+    # Determine where to publish #####
+    if (publish_location == "one-drive") {
+        haemdata::use_pinboard("onedrive")
+    } else if (publish_location == "devel") {
+        haemdata::use_pinboard("devel")
     } else {
-        # extract name
-        name <- deparse(substitute(mirna_qc))
-
-        # make description
-        description <- glue::glue(
-            "A table of QC metrics from the nfcore/smrnaseq pipeline (https://github.com/nf-core/smrnaseq) miRTrace and samtools modules"
-        )
-
-        csv_pin <- pins::pin_write(
-            haemdata::haemdata_env$pin_board,
-            mirna_qc,
-            name = glue::glue("{name}.csv"),
-            type = "csv",
-            title = name,
-            description = description
-        )
-
-        csv_version <- get_latest_pin_version(csv_pin)
-
-        return(data.frame("pin_name" = c(csv_pin), "version" = c(csv_version)))
+        stop(haemdata::haemdata_env$pin_board_msg)
     }
+    # extract name
+    name <- deparse(substitute(mirna_qc))
+
+    # make description
+    description <- glue::glue(
+        "A table of QC metrics from the nfcore/smrnaseq pipeline (https://github.com/nf-core/smrnaseq) miRTrace and samtools modules"
+    )
+
+    csv_pin <- pins::pin_write(
+        haemdata::haemdata_env$pin_board,
+        mirna_qc,
+        name = glue::glue("{name}.csv"),
+        type = "csv",
+        title = name,
+        description = description
+    )
+
+    csv_version <- get_latest_pin_version(csv_pin)
+
+    return(data.frame("pin_name" = c(csv_pin), "version" = c(csv_version)))
 }
+
 # --- Writing pins to the pin_board --- ####
 
 # write a SummarisedExperiment pin, with name, description, and metadata
 write_se_pin <- function(summarised_experiment) {
-    if (is.null(haemdata::haemdata_env$pin_board)) {
-        stop(haemdata::haemdata_env$pin_board_msg)
+    # Determine where to publish #####
+    if (publish_location == "one-drive") {
+        haemdata::use_pinboard("onedrive")
+    } else if (publish_location == "devel") {
+        haemdata::use_pinboard("devel")
     } else {
-        name <- summarised_experiment@metadata$object_name
-
-        description <- glue::glue(
-            "A SummarisedExperiment object. See {haemdata::haemdata_env$package_url}/reference/{name}.html for more information."
-        )
-
-        haemdata::haemdata_env$pin_board |>
-            pins::pin_write(
-                summarised_experiment,
-                name = glue::glue("{name}.rds"),
-                type = "rds",
-                title = name,
-                description = description,
-                metadata = as.list(summarised_experiment@metadata)
-            )
+        stop(haemdata::haemdata_env$pin_board_msg)
     }
+
+    name <- summarised_experiment@metadata$object_name
+
+    description <- glue::glue(
+        "A SummarisedExperiment object. See {haemdata::haemdata_env$package_url}/reference/{name}.html for more information."
+    )
+
+    haemdata::haemdata_env$pin_board |>
+        pins::pin_write(
+            summarised_experiment,
+            name = glue::glue("{name}.rds"),
+            type = "rds",
+            title = name,
+            description = description,
+            metadata = as.list(summarised_experiment@metadata)
+        )
 }
 
 # write an expression matrix pin, with name, description, and metadata from the summarised experment
 # calls make_tpm_matrix() with defaults for the expression matrix
 write_se2tpm_pin <- function(summarised_experiment) {
-    if (is.null(haemdata::haemdata_env$pin_board)) {
-        stop(haemdata::haemdata_env$pin_board_msg)
+    # Determine where to publish #####
+    if (publish_location == "one-drive") {
+        haemdata::use_pinboard("onedrive")
+    } else if (publish_location == "devel") {
+        haemdata::use_pinboard("devel")
     } else {
-        name <- summarised_experiment@metadata$object_name
-
-        description <- glue::glue(
-            "An expression matrix of genes expressed > 1 TPM in > 5 samples. See {haemdata::haemdata_env$package_url}/reference/{name}.html for more information."
-        )
-
-        expn_mat <- haemdata::make_tpm_matrix(summarised_experiment)
-
-        haemdata::haemdata_env$pin_board |>
-            pins::pin_write(
-                expn_mat$tpm_matrix,
-                name = glue::glue("{expn_mat$name}.csv"),
-                type = "csv",
-                title = name,
-                description = description,
-                metadata = as.list(summarised_experiment@metadata)
-            )
+        stop(haemdata::haemdata_env$pin_board_msg)
     }
+
+    name <- summarised_experiment@metadata$object_name
+
+    description <- glue::glue(
+        "An expression matrix of genes expressed > 1 TPM in > 5 samples. See {haemdata::haemdata_env$package_url}/reference/{name}.html for more information."
+    )
+
+    expn_mat <- haemdata::make_tpm_matrix(summarised_experiment)
+
+    haemdata::haemdata_env$pin_board |>
+        pins::pin_write(
+            expn_mat$tpm_matrix,
+            name = glue::glue("{expn_mat$name}.csv"),
+            type = "csv",
+            title = name,
+            description = description,
+            metadata = as.list(summarised_experiment@metadata)
+        )
 }
 
 # Pin a Seurat object as an `h5ad` file, with name, description, and metadata
 #'
 write_seurat_h5ad_pin <- function(seurat_object) {
-    if (is.null(haemdata::haemdata_env$pin_board)) {
-        stop(haemdata::haemdata_env$pin_board_msg)
-    } else {
-        tmp <- tempdir()
+# Determine where to publish #####
+ifelse(isTRUE(publish_to_onedrive), haemdata::use_pinboard("onedrive"), haemdata::use_pinboard("devel"))
 
-        name <- Seurat::Misc(seurat_object)[["name"]]
+    tmp <- tempdir()
 
-        description <- glue::glue(
-            "A Seurat object exported to h5ad format. See {haemdata::haemdata_env$package_url}/reference/{name}.html for more information."
+    name <- Seurat::Misc(seurat_object)[["name"]]
+
+    description <- glue::glue(
+        "A Seurat object exported to h5ad format. See {haemdata::haemdata_env$package_url}/reference/{name}.html for more information."
+    )
+
+    metadata <- list(
+        "cell_metadata" = list(seurat_object@meta.data |> names())
+    )
+
+    SeuratDisk::SaveH5Seurat(
+        seurat_object,
+        filename = glue::glue("{tmp}/{name}.h5seurat"),
+        verbose = TRUE,
+        overwrite = TRUE
+    )
+
+    SeuratDisk::Convert(glue::glue("{tmp}/{name}.h5seurat"), dest = "h5ad", overwrite = TRUE)
+
+    h5ad_pin <- haemdata::haemdata_env$pin_board |>
+        pins::pin_upload(
+            paths = glue::glue("{tmp}/{name}.h5ad"),
+            name = glue::glue("{name}.h5ad"),
+            title = name,
+            description = description,
+            metadata = metadata
         )
 
-        metadata <- list(
-            "cell_metadata" = list(seurat_object@meta.data |> names())
-        )
+    system(glue::glue("rm {tmp}/{name}.*"))
 
-        SeuratDisk::SaveH5Seurat(
-            seurat_object,
-            filename = glue::glue("{tmp}/{name}.h5seurat"),
-            verbose = TRUE,
-            overwrite = TRUE
-        )
-
-        SeuratDisk::Convert(glue::glue("{tmp}/{name}.h5seurat"), dest = "h5ad", overwrite = TRUE)
-
-        h5ad_pin <- haemdata::haemdata_env$pin_board |>
-            pins::pin_upload(
-                paths = glue::glue("{tmp}/{name}.h5ad"),
-                name = glue::glue("{name}.h5ad"),
-                title = name,
-                description = description,
-                metadata = metadata
-            )
-
-        system(glue::glue("rm {tmp}/{name}.*"))
-
-        return(h5ad_pin)
-    }
+    return(h5ad_pin)
 }
 
 # Pin a Seurat object, with name, description, and metadata
 #'
 write_seurat_pin <- function(seurat_object) {
-    if (is.null(haemdata::haemdata_env$pin_board)) {
-        stop(haemdata::haemdata_env$pin_board_msg)
+    # Determine where to publish #####
+    if (publish_location == "one-drive") {
+        haemdata::use_pinboard("onedrive")
+    } else if (publish_location == "devel") {
+        haemdata::use_pinboard("devel")
     } else {
-        name <- Seurat::Misc(seurat_object)[["name"]]
-
-        description <- glue::glue(
-            "A Seurat object saved in rds format. See {haemdata::haemdata_env$package_url}/reference/{name}.html for more information."
-        )
-
-        metadata <- list(
-            "cell_metadata" = list(seurat_object@meta.data |> names())
-        )
-
-        seurat_pin <- haemdata::haemdata_env$pin_board |>
-            pins::pin_write(
-                seurat_object,
-                name = glue::glue("{name}.rds"),
-                type = "rds",
-                title = name,
-                description = description,
-                metadata = metadata
-            )
-
-        return(seurat_pin)
+        stop(haemdata::haemdata_env$pin_board_msg)
     }
+
+    name <- Seurat::Misc(seurat_object)[["name"]]
+
+    description <- glue::glue(
+        "A Seurat object saved in rds format. See {haemdata::haemdata_env$package_url}/reference/{name}.html for more information."
+    )
+
+    metadata <- list(
+        "cell_metadata" = list(seurat_object@meta.data |> names())
+    )
+
+    seurat_pin <- haemdata::haemdata_env$pin_board |>
+        pins::pin_write(
+            seurat_object,
+            name = glue::glue("{name}.rds"),
+            type = "rds",
+            title = name,
+            description = description,
+            metadata = metadata
+        )
+
+    return(seurat_pin)
 }
