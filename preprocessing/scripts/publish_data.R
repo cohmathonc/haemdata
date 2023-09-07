@@ -276,8 +276,14 @@ write_se2tpm_pin <- function(summarised_experiment) {
 # Pin a Seurat object as an `h5ad` file, with name, description, and metadata
 #'
 write_seurat_h5ad_pin <- function(seurat_object) {
-# Determine where to publish #####
-ifelse(isTRUE(publish_to_onedrive), haemdata::use_pinboard("onedrive"), haemdata::use_pinboard("devel"))
+    # Determine where to publish #####
+    if (publish_location == "one-drive") {
+        haemdata::use_pinboard("onedrive")
+    } else if (publish_location == "devel") {
+        haemdata::use_pinboard("devel")
+    } else {
+        stop(haemdata::haemdata_env$pin_board_msg)
+    }
 
     tmp <- tempdir()
 
