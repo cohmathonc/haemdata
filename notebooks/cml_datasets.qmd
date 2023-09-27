@@ -10,13 +10,14 @@ knitr::opts_chunk$set(
     message = FALSE,
     echo = FALSE
 )
+```
 
+```{r setup}
 library(haemdata)
 library(magrittr)
 library(SummarizedExperiment)
-use_pinboard("devel")
-# need this while the devel metadata pinboard is not yet published
-metadata_mmu <- readRDS(here::here("data-raw/metadata_mmu.rds"))
+use_pinboard("onedrive")
+metadata_mmu <- get_pin("metadata_mmu.csv")
 ```
 
 ::: {.panel-tabset}

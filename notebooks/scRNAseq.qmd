@@ -166,7 +166,7 @@ sc_qc_plot_group_by <- function(seurat_object, group_by) {
 ## AML 2022 scRNAseq
 
 ```{r cache.lazy = FALSE}
-use_pinboard("devel")
+use_pinboard("onedrive")
 seurat_object <- get_pin("mmu_10x_aml2022_GENCODEm28_HLT.rds")
 ```
 
@@ -201,7 +201,7 @@ gc()
 ## CML miR-142 KO scRNAseq (LMPP & T cell)
 
 ```{r cache.lazy = FALSE}
-use_pinboard("devel")
+use_pinboard("onedrive")
 seurat_object <- get_pin("mmu_10x_mir142ko_GENCODEm28_HLT.rds")
 ```
 
@@ -235,7 +235,7 @@ sc_qc_plot_group_by(seurat_object, "cell_type")
 ## CML miR-142 KO blast crisis
 
 ```{r cache.lazy = FALSE}
-use_pinboard("devel")
+use_pinboard("onedrive")
 seurat_object <- get_pin("mmu_10x_blastcrisis_GENCODEm28_HLT.rds")
 ```
 

@@ -75,8 +75,7 @@ scrnaseq_release <- "2.1.0"
 Set to "onedrive" to publish to OneDrive via the haemdata Teams channel, or to "devel" to publish to Isilon (`MHO/haemdata`)
 
 ```{targets publish-destination, tar_globals = TRUE}
-publish_location <- "devel"
-                  # "onedrive"
+publish_location <- "onedrive"
 ```
 
 ### Cohort aliases

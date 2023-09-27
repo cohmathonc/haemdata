@@ -59,7 +59,7 @@ publish_seurat <- function(seurat_object) {
 #' @export
 publish_metadata <- function(metadata) {
     # Determine where to publish #####
-    if (publish_location == "one-drive") {
+    if (publish_location == "onedrive") {
         haemdata::use_pinboard("onedrive")
     } else if (publish_location == "devel") {
         haemdata::use_pinboard("devel")
@@ -100,7 +100,7 @@ publish_metadata <- function(metadata) {
 #' @export
 publish_mirtop_counts <- function(mirtop_counts) {
     # Determine where to publish #####
-    if (publish_location == "one-drive") {
+    if (publish_location == "onedrive") {
         haemdata::use_pinboard("onedrive")
     } else if (publish_location == "devel") {
         haemdata::use_pinboard("devel")
@@ -142,7 +142,7 @@ publish_mirtop_counts <- function(mirtop_counts) {
 #' @export
 publish_bowtie_cpm <- function(bowtie_cpm) {
     # Determine where to publish #####
-    if (publish_location == "one-drive") {
+    if (publish_location == "onedrive") {
         haemdata::use_pinboard("onedrive")
     } else if (publish_location == "devel") {
         haemdata::use_pinboard("devel")
@@ -183,7 +183,7 @@ publish_bowtie_cpm <- function(bowtie_cpm) {
 #' @export
 publish_mirna_qc <- function(mirna_qc) {
     # Determine where to publish #####
-    if (publish_location == "one-drive") {
+    if (publish_location == "onedrive") {
         haemdata::use_pinboard("onedrive")
     } else if (publish_location == "devel") {
         haemdata::use_pinboard("devel")
@@ -217,7 +217,7 @@ publish_mirna_qc <- function(mirna_qc) {
 # write a SummarisedExperiment pin, with name, description, and metadata
 write_se_pin <- function(summarised_experiment) {
     # Determine where to publish #####
-    if (publish_location == "one-drive") {
+    if (publish_location == "onedrive") {
         haemdata::use_pinboard("onedrive")
     } else if (publish_location == "devel") {
         haemdata::use_pinboard("devel")
@@ -246,7 +246,7 @@ write_se_pin <- function(summarised_experiment) {
 # calls make_tpm_matrix() with defaults for the expression matrix
 write_se2tpm_pin <- function(summarised_experiment) {
     # Determine where to publish #####
-    if (publish_location == "one-drive") {
+    if (publish_location == "onedrive") {
         haemdata::use_pinboard("onedrive")
     } else if (publish_location == "devel") {
         haemdata::use_pinboard("devel")
@@ -277,7 +277,7 @@ write_se2tpm_pin <- function(summarised_experiment) {
 #'
 write_seurat_h5ad_pin <- function(seurat_object) {
     # Determine where to publish #####
-    if (publish_location == "one-drive") {
+    if (publish_location == "onedrive") {
         haemdata::use_pinboard("onedrive")
     } else if (publish_location == "devel") {
         haemdata::use_pinboard("devel")
@@ -324,7 +324,7 @@ write_seurat_h5ad_pin <- function(seurat_object) {
 #'
 write_seurat_pin <- function(seurat_object) {
     # Determine where to publish #####
-    if (publish_location == "one-drive") {
+    if (publish_location == "onedrive") {
         haemdata::use_pinboard("onedrive")
     } else if (publish_location == "devel") {
         haemdata::use_pinboard("devel")

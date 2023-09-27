@@ -9,7 +9,6 @@ knitr::opts_chunk$set(
     warning = FALSE,
     message = FALSE
 )
-metadata_mmu <- readRDS(here::here("data-raw/metadata_mmu.rds"))
 ```
 
 ::: {.panel-tabset}
@@ -21,9 +20,10 @@ First, we need to setup the pin-board and download the mouse datasets.
 
 ```{r setup}
 library(haemdata)
-use_pinboard("devel")
+use_pinboard("onedrive")
 
 all_mice <- get_pin("mmu_mrna_all_mice_GENCODEm28_HLT_qc.rds")
+metadata_mmu <- get_pin("metadata_mmu.csv")
 ```
 
 ::: {.panel-tabset}
@@ -193,7 +193,7 @@ First, we need to setup the pin-board from which well retrieve the human dataset
 
 ```{r, eval=FALSE}
 library(haemdata)
-use_pinboard("devel")
+use_pinboard("onedrive")
 ```
 
 ::: {.panel-tabset}
@@ -206,7 +206,7 @@ City of Hope Biobank FLT3 patients
 
 ```{r }
 library(haemdata)
-use_pinboard("devel")
+use_pinboard("onedrive")
 se <- get_pin("hsa_mrna_flt3_GENCODEr40_qc.rds")
 
 pca <- pca_se(se, col_by = "patient_id")
