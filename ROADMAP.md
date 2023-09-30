@@ -1,4 +1,5 @@
 # Roadmap
+* update {targets} pipeline to use {crew} for parallelisation
 * add 'normal' human BM + PBMC samples
   http://cgt.coh.org/MHO/AML.human.data/results/rnaseq.PE.GENCODEv33/MultiQC/multiqc_report.html
   http://cgt.coh.org/MHO/AML.human.data/results/rnaseq.SE.GENCODEv33/MultiQC/multiqc_report.html
@@ -24,3 +25,4 @@
 * https://github.com/cxli233/SimpleTidy_GeneCoEx
 * CoFrEE: Estimate DNA Copy Number from Genome-wide RNA Expression Data
     https://www.biorxiv.org/content/10.1101/2023.08.25.554898v1
+* https://github.com/omnideconv/immunedeconv
