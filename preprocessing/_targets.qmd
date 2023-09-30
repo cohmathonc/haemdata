@@ -32,6 +32,8 @@ Set options and load libraries required to run the pipeline.
 ```{r setup}
 library(targets)
 library(tarchetypes)
+library(crew)
+library(crew.cluster)
 tar_unscript()
 
 knitr::opts_chunk$set(
@@ -49,17 +51,30 @@ Define global options, functions & variables common to all targets.
 ### Global options
 
 ```{targets global-options, tar_globals = TRUE}
-options(tidyverse.quiet = TRUE)
+# Location of the nf-core cache and other intermediate analysis files
+nf_core_cache <- "/labs/rrockne/MHO/haemdata-nf-core-cache"
+
+# Load the R scripts & functions:
+tar_source(here::here("preprocessing/scripts"))
 
 tar_option_set(
     packages = c("tidyverse", "SummarizedExperiment", "haemdata", "tarchetypes"),
-    error = "abridge", # continue with running targets on error
+    error = "abridge" # continue with running targets on error
+)
+#-----------------------------------------------------------------------------
+tar_option_set(
+    workspace_on_error = TRUE,
+    format = "qs",
     storage = "worker",
-    retrieval = "worker"
+    retrieval = "worker",
+    controller = crew::crew_controller_group(local, small, medium, large, bigmem),
+    resources = tar_resources(
+    # Run jobs locally by default
+    crew = tar_resources_crew(controller = "local")
+    )
 )
 
-# Load the R scripts & functions:
-for (file in list.files(here::here("preprocessing/scripts"), full.names = TRUE)) source(file)
+
 ```
 
 ### nf-core pipeline versions
@@ -75,7 +90,7 @@ scrnaseq_release <- "2.1.0"
 Set to "onedrive" to publish to OneDrive via the haemdata Teams channel, or to "devel" to publish to Isilon (`MHO/haemdata`)
 
 ```{targets publish-destination, tar_globals = TRUE}
-publish_location <- "onedrive"
+publish_location <- "devel"
 ```
 
 ### Cohort aliases
@@ -564,17 +579,17 @@ list(
     tar_target(
     mmu_10x_aml2022_GENCODEm28_HLT_qc, 
     seurat_perform_cell_qc(mmu_10x_aml2022_GENCODEm28_HLT),
-    resources = apollo_bigmem
+    resources = apollo_medium
     ),
     tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_qc, 
     seurat_perform_cell_qc(mmu_10x_mir142ko_GENCODEm28_HLT),
-    resources = apollo_bigmem
+    resources = apollo_medium
     ),
     tar_target(
     mmu_10x_blastcrisis_GENCODEm28_HLT_qc, 
     seurat_perform_cell_qc(mmu_10x_blastcrisis_GENCODEm28_HLT),
-    resources = apollo_bigmem
+    resources = apollo_medium
     )
     )
 ```
@@ -588,17 +603,17 @@ list(
     tar_target(
         mmu_10x_aml2022_GENCODEm28_HLT_sct,
         seurat_sctransform(mmu_10x_aml2022_GENCODEm28_HLT_qc),
-        resources = apollo_bigmem
+        resources = apollo_medium
     ),
     tar_target(
         mmu_10x_mir142ko_GENCODEm28_HLT_sct,
         seurat_sctransform(mmu_10x_mir142ko_GENCODEm28_HLT_qc),
-        resources = apollo_bigmem
+        resources = apollo_medium
     ),
     tar_target(
         mmu_10x_blastcrisis_GENCODEm28_HLT_sct,
         seurat_sctransform(mmu_10x_blastcrisis_GENCODEm28_HLT_qc),
-        resources = apollo_bigmem
+        resources = apollo_medium
     )
     )
 ```
@@ -612,15 +627,15 @@ list(
 tar_target(
     mmu_10x_aml2022_GENCODEm28_HLT_sct_clust,
     seurat_annotate_clusters_and_umap(mmu_10x_aml2022_GENCODEm28_HLT_sct),
-    resources = apollo_large),
+    resources = apollo_medium),
 tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust,
     seurat_annotate_clusters_and_umap(mmu_10x_mir142ko_GENCODEm28_HLT_sct),
-    resources = apollo_large),
+    resources = apollo_medium),
 tar_target(
     mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust,
     seurat_annotate_clusters_and_umap(mmu_10x_blastcrisis_GENCODEm28_HLT_sct),
-    resources = apollo_bigmem)
+    resources = apollo_medium)
     )
 ```
 
@@ -633,17 +648,17 @@ list(
     tar_target(
     mmu_10x_aml2022_GENCODEm28_HLT_sct_clust_cc,
     seurat_annotate_cell_cycle(mmu_10x_aml2022_GENCODEm28_HLT_sct_clust),
-    resources = apollo_large
+    resources = apollo_medium
     ),
 tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc,
     seurat_annotate_cell_cycle(mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust),
-    resources = apollo_large
+    resources = apollo_medium
     ),
 tar_target(
     mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust_cc,
     seurat_annotate_cell_cycle(mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust),
-    resources = apollo_large
+    resources = apollo_medium
     )
 )
 ```
@@ -657,7 +672,7 @@ list(
 tar_target(
     mmu_10x_aml2022_GENCODEm28_HLT_sct_clust_cc_ct,
     seurat_annotate_cell_type(mmu_10x_aml2022_GENCODEm28_HLT_sct_clust_cc),
-    resources = apollo_large
+    resources = apollo_medium
     ),
 tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc_ct,
@@ -667,7 +682,7 @@ tar_target(
 tar_target(
     mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust_cc_ct,
     seurat_annotate_cell_type(mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust_cc),
-    resources = apollo_bigmem
+    resources = apollo_medium
     )
 )
 ```
@@ -684,13 +699,11 @@ tar_target(
 list(
     tar_target(
         metadata_mmu_pins,
-        publish_metadata(metadata_mmu),
-        deployment = "main"
+        publish_metadata(metadata_mmu)\
     ),
     tar_target(
         metadata_hsa_pins,
-        publish_metadata(metadata_hsa),
-        deployment = "main"
+        publish_metadata(metadata_hsa)\
     )
 )
 ```
@@ -701,23 +714,23 @@ list(
 list(
     tar_target(
         mmu_mrna_all_mice_GENCODEm28_pins, publish_se(mmu_mrna_all_mice_qc_se),
-        deployment = "main"
+        resources = apollo_small
     ),
     tar_target(
         mmu_mrna_techrep_GENCODEm28_pins, publish_se(mmu_mrna_techrep_qc_se),
-        deployment = "main"
+        resources = apollo_small
     ),
     tar_target(
         hsa_mrna_flt3_GENCODEm28_pins, publish_se(hsa_mrna_flt3_qc_se_flt),
-        deployment = "main"
+        resources = apollo_small
     ),
     tar_target(
         hsa_mrna_mds_GENCODEm28_pins, publish_se(hsa_mrna_mds_qc_se_flt),
-        deployment = "main"
+        resources = apollo_small
     ),
     tar_target(
         hsa_mrna_kim_GENCODEm28_pins, publish_se(hsa_mrna_kim_qc_se_flt),
-        deployment = "main"
+        resources = apollo_small
     )
 )
 ```
@@ -729,17 +742,17 @@ list(
     tar_target(
         mmu_mirna_all_mice_miRBase22_mirtop_counts_pins,
         publish_mirtop_counts(mmu_mirna_all_mice_miRBase22_mirtop_counts),
-        deployment = "main"
+        resources = apollo_small
     ),
     tar_target(
         mmu_mirna_all_mice_miRBase22_bowtie_cpm_pins,
         publish_bowtie_cpm(mmu_mirna_all_mice_miRBase22_bowtie_cpm),
-        deployment = "main"
+        resources = apollo_small
     ),
     tar_target(
         mmu_mirna_all_mice_miRBase22_mirna_qc_pins,
         publish_mirna_qc(mmu_mirna_all_mice_miRBase22_mirna_qc),
-        deployment = "main"
+        resources = apollo_small
     )
 )
 ```
@@ -761,7 +774,7 @@ tar_target(
 tar_target(
     mmu_10x_blastcrisis_GENCODEm28_HLT_pins,
     publish_seurat(mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust_cc_ct),
-        resources = apollo_shortmem
+        resources = apollo_medium
     )
     ) 
 ```
@@ -788,7 +801,6 @@ tar_target(
             hsa_mrna_mds_GENCODEm28_pins,
             hsa_mrna_kim_GENCODEm28_pins
     ),
-    deployment = "main",
     format = "file"
 )
 ```
@@ -802,7 +814,7 @@ tar_target(
 tar_target(
     built_package,
     build_package(latest_published_data),
-    resources = apollo_shortmem)
+    resources = apollo_medium)
 ```
 
 # Targets pipeline

@@ -1,6 +1,5 @@
 # Roadmap
-* update {targets} pipeline to use {crew} for parallelisation
-* add 'normal' human BM + PBMC samples
+* add non-AML human samples (XX BM, PBMC, CD34+ PBMC) 
   http://cgt.coh.org/MHO/AML.human.data/results/rnaseq.PE.GENCODEv33/MultiQC/multiqc_report.html
   http://cgt.coh.org/MHO/AML.human.data/results/rnaseq.SE.GENCODEv33/MultiQC/multiqc_report.html
 * use scavenger partition on Apollo

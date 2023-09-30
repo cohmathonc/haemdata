@@ -1,3 +1,6 @@
+# haemdata 0.0.0.9013
+* update {targets} pipeline to use {crew} for parallelisation
+
 # haemdata 0.0.0.9012
 * add CML blast crisis scRNAseq experiment; 6 mice, 53 samples ("CML.blastcrisis.2023" cohort)
 * add Notebook rendering to targets pipeline (via build_package() function)

@@ -1,7 +1,7 @@
 Package: haemdata
 Title: An R package for accessing genomic data from the PSON AML
     State-transition project at COH
-Version: 0.0.0.9012
+Version: 0.0.0.9013
 Authors@R: 
     person("Denis", "O'Meally", , "domeally@coh.org", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7749-9506"))
@@ -27,6 +27,8 @@ Suggests:
     BiocParallel,
     celldex,
     clustifyr,
+    crew,
+    crew.cluster,
     future,
     future.apply,
     future.batchtools,
@@ -41,7 +43,6 @@ Suggests:
     knitr,
     magick,
     Matrix,
-    OUTRIDER,
     parallelly,
     patchwork,
     PCAtools,
