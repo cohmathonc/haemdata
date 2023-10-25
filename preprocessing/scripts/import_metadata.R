@@ -174,7 +174,7 @@ parse_metadata_AML.mRNA.HSA_FLT3.2022 <- function() {
         )
     ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
 
-    xls <- here::here("data-raw/Flt3_sample_metadata.xlsx")
+    xls <- here::here("data-raw/flt3_sample_metadata.xlsx")
 
     sample_sheet <- readxl::read_excel(xls) |>
         dplyr::arrange(patient_id, sample_date) |>
