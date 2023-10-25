@@ -44,3 +44,98 @@ SummarizedExperiment::assay(se, "abundance") |>
         legend.title = ggplot2::element_blank()
     )
 ```
+
+## Plot the proportion of cell types over time in the CML "blast crisis" single cell RNAseq dataset?
+
+```{r, message = FALSE}
+library(haemdata)
+library(tidyverse)
+library(Seurat)
+library(plotly)
+
+use_pinboard("onedrive")
+
+start<-Sys.time()
+seurat_object <- get_pin("mmu_10x_blastcrisis_GENCODEm28_HLT.rds")
+end<-Sys.time()
+end-start
+# ~5 mins
+
+metadata_mmu <- get_pin("metadata_mmu.csv") |>
+    dplyr::filter(
+        stringr::str_detect(cohort, "blastcrisis") &
+        stringr::str_detect(assay, "scRNA")) |>
+        dplyr::select(-matches(c("fastq","batch"))) |> unique()
+
+metadata<-left_join(seurat_object[[]], metadata_mmu, by=c("orig.ident"="library_id"))
+
+# Custom color palette
+cell_type_palette <- c(
+    # T-cell related group (Blue)
+    'T cells' = '#1f78b4',
+    'Tgd' = '#6baed6',
+    'NKT' = '#9ecae1',
+
+    # Natural Killer and related cells (Red)
+    'NK cells' = '#e41a1c',
+    'ILC' = '#ef3b2c',
+
+    # B-cell related group (Green)
+    'B cells' = '#31a354',
+    'B cells, pro' = '#74c476',
+
+    # Monocyte and Macrophage group (Purple)
+    'Macrophages' = '#984ea3',
+    'Monocytes' = '#beaed4',
+
+    # Dendritic and Granulocytes (Orange)
+    'DC' = '#ff7f00',
+    'Basophils' = '#fdbf6f',
+    'Neutrophils' = '#fdd0a2',
+    'Eosinophils' = '#fdae6b',
+
+    # Miscellaneous immune cells (Brown)
+    'Mast cells' = '#8c6d31',
+
+    # Stem and Stromal cells (Pink)
+    'Stem cells' = '#f768a1',
+    'Stromal cells' = '#dd3497',
+    'Endothelial cells' = '#ae017e',
+
+    # Not Available / Unknown (Grey)
+    'NA' = '#636363'
+    )
+
+prepared_data <- metadata %>%
+    group_by(orig.ident, cell_type, sample_weeks, mouse_id) %>%
+    summarise(cell_count = n(), .groups = 'drop') %>%
+    group_by(orig.ident, sample_weeks, mouse_id) %>%
+    mutate(total_count = sum(cell_count)) %>%
+    ungroup() %>%
+    mutate(
+        proportion = cell_count / total_count,
+        cell_type = factor(cell_type, levels = names(cell_type_palette)))
+
+
+p<-ggplot(data = prepared_data, aes(x = sample_weeks, y = proportion, color = cell_type)) +
+    geom_point() +
+    geom_smooth(method = 'loess', se = FALSE, span = 1) +  # Add trend lines
+    scale_y_log10() +
+    scale_color_manual(values = cell_type_palette) +
+    facet_wrap(~ mouse_id) +
+    labs(title = "Proportion of Cell Types by Sample Weeks and Mouse ID (Log Scale)",
+        x = "Sample Weeks",
+        y = "Proportion of Cell Types (Log Scale)") +
+    theme_minimal()
+
+# Convert ggplot object to a Plotly object
+ggplotly(p)
+```
+
+## Clear the Microsoft R cache
+
+From time-to-time, the cache used by the {pins} package  can become corrupted. This can be fixed by clearing the cache. From the Terminal in Rstudio, or any shell on your computer, run the following command:
+
+```{sh}
+rm -rf ~/.cache/pins/[name of the corrupted pin]
+```
