@@ -61,7 +61,7 @@ pkgdown::build_site()
 usethis::use_github_release()
 
 # render notebooks
-quarto::quarto_render(input = "preprocessing", as_job = FALSE)
+quarto::quarto_render(input = here::here("notebooks/"), as_job = FALSE)
 
 devtools::document()
 pkgdown::build_reference()
