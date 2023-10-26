@@ -11,8 +11,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-::: {.panel-tabset}
-
 ## Mouse datasets 
 Note: Validation mice also available via Haemdata/Ondrive. See [X]() for more details.
 
@@ -187,58 +185,5 @@ plot_transgenes_se(se)
  
 :::
 
-## Human datasets
-
-First, we need to setup the pin-board from which well retrieve the human datasets
-
-```{r, eval=FALSE}
-library(haemdata)
-use_pinboard("onedrive")
-```
-
-::: {.panel-tabset}
-
-### COH patients 
-
-City of Hope Biobank FLT3 patients
-
-**Include some background info on these samples, IRB etc**
-
-```{r }
-library(haemdata)
-use_pinboard("onedrive")
-se <- get_pin("hsa_mrna_flt3_GENCODEr40_qc.rds")
-
-pca <- pca_se(se, col_by = "patient_id")
-```
-
-```{r }
-pca$biplot
-pca$pairs_plot
-```
-```{r  fig.height=9, fig.width=8}
-pca$correlation_plot
-```
-
-### Relapse patients
-Kim et al 2020 *Sci Rep* [![DOI](https://zenodo.org/badge/DOI/10.1038/s41598-020-76933-2.svg)](https://doi.org/10.1038/s41598-020-76933-2)
-
-Bioproject: [PRJEB27973](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJEB27973)
-
-```{r }
-se <- get_pin("hsa_mrna_kim_GENCODEr40_qc.rds")
-
-pca <- pca_se(se, col_by = "timepoint")
-```
-
-```{r }
-pca$biplot
-pca$pairs_plot
-```
-```{r  fig.height=9, fig.width=8}
-pca$correlation_plot
-```
-
-:::
 
 :::
