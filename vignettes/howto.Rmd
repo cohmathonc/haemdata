@@ -1,15 +1,12 @@
 ---
 title: "How do I..."
 ---
-```{r setup, include=FALSE}
-thematic::thematic_rmd(bg = "white", fg = "black", accent = "red")
-```
-
-# How do I...?
 
 ## Plot *Kit* expression over time
 
-```{r, message = FALSE}
+```{r, message=FALSE, warning=FALSE}
+#| collapse = TRUE
+#| code-summary: "Show the code"
 library(haemdata)
 use_pinboard("onedrive")
 
@@ -45,9 +42,13 @@ SummarizedExperiment::assay(se, "abundance") |>
     )
 ```
 
-## Plot the proportion of cell types over time in the CML "blast crisis" single cell RNAseq dataset?
+## Plot cell-type proportions over time
 
-```{r, message = FALSE}
+Plot the proportion of cell types over time in the CML "blast crisis" single cell RNAseq dataset
+
+```{r, message=FALSE, warning=FALSE}
+#| collapse = TRUE
+#| code-summary: "Show the code"
 library(haemdata)
 library(tidyverse)
 library(Seurat)
@@ -129,12 +130,31 @@ p<-ggplot(data = prepared_data, aes(x = sample_weeks, y = proportion, color = ce
     theme_minimal()
 
 # Convert ggplot object to a Plotly object
-ggplotly(p)
+plotly_obj <- ggplotly(p)
+
+# Specify the traces to remain visible
+visible_traces <- c('B cells', 'NK cells', 'Macrophages', 'Basophils', 'Neutrophils', 'Eosinophils', 'Mast cells')
+
+# Iterate through traces and adjust default view
+for (i in 1:length(plotly_obj$x$data)) {
+    trace_name <- plotly_obj$x$data[[i]]$name
+
+    if (trace_name %in% visible_traces) {
+        plotly_obj$x$data[[i]]$visible <- TRUE
+    } else {
+        plotly_obj$x$data[[i]]$visible <- "legendonly"
+    }
+}
+
+# Display the modified Plotly object
+plotly_obj
 ```
 
-## Clear the Microsoft R cache
+## Clear the {pins} cache
 
-From time-to-time, the cache used by the {pins} package  can become corrupted. This can be fixed by clearing the cache. From the Terminal in Rstudio, or any shell on your computer, run the following command:
+From time-to-time, the cache used by the {pins} package  can become corrupted. This is easily fixed by clearing the cache.
+
+From the Terminal in Rstudio, or any shell on your computer, delete one or all corrupted items:
 
 ```{sh}
 rm -rf ~/.cache/pins/[name of the corrupted pin]
