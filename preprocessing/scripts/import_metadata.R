@@ -19,7 +19,145 @@ make_metadata_hsa <- function(sample_sheet) {
     metadata_hsa <- sample_sheet |>
         dplyr::arrange(batch, patient_id)
 
-    return(metadata_hsa)
+    # Create a vector of colnames to remove
+    aml_metadata <- metadata_hsa |>
+    # Select cols of interest
+        dplyr::select("library_id", "fastq_1", "fastq_2", "strandedness", "patient_id", "sex", 
+            "study_accession", "batch", "treatment", "tissue", "cohort", "sample_id",
+            "sample_date", "age_at_diagnosis", diagnosis_year = "diagnosis year", "clinical_treatment", 
+            date_of_diagnosis = "date of diagnosis", "timepoint", "genotype", "dob", "study_title",
+            "sample_title", "sample_description", "sample_name") |>
+    # remove "/net/nfs-irwrsrchnas01" from fastq paths
+        dplyr::mutate(
+            fastq_1 = stringr::str_remove(fastq_1, "^/net/nfs-irwrsrchnas01"),
+            fastq_2 = stringr::str_remove(fastq_2, "^/net/nfs-irwrsrchnas01"),
+    # tidy up redundant sample identifiers
+            sample_id = dplyr::coalesce(sample_name, sample_id, sample_title),
+    # fix FLT3 date_of_diagnosis dates
+            date_of_diagnosis = as.character(date_of_diagnosis),
+            date_of_diagnosis = suppressWarnings(
+                dplyr::case_when(
+                str_detect(date_of_diagnosis,"/", negate = TRUE) ~ as.character(as.Date(as.numeric(date_of_diagnosis), origin = "1899-12-30")),
+                TRUE ~ as.character(lubridate::parse_date_time(date_of_diagnosis, c("%m/%Y", "%m/%d/%Y"))))
+            ),
+    # extract patient id where obvious
+            patient_id = dplyr::case_when(
+                study_accession == "PRJEB27973" ~ str_extract(sample_id, "[a-zA-Z0-9]{6}"),
+                study_accession == "EGAS00001002346" ~ str_extract(sample_id, "PV\\d+|normal\\d"),
+                TRUE ~ patient_id 
+            ),
+    # extract data from MDS samples
+            timepoint = dplyr::case_when(
+                study_accession == "EGAS00001002346" ~ str_extract(sample_id, "day\\d+"),
+                TRUE ~ timepoint),
+            genotype = dplyr::case_when(
+                study_accession == "EGAS00001002346" ~ str_extract(sample_id, "Ctrl|Mut\\d|WT\\d"),
+                TRUE ~ genotype),
+            treatment = dplyr::case_when(
+                study_accession == "EGAS00001002346" ~ str_extract(sample_id, "CHX|untreated|None"),
+                TRUE ~ treatment),
+            treatment = dplyr::case_when(
+                study_accession == "EGAS00001002346" ~ ifelse(stringr::str_detect(treatment, "None"), "untreated", treatment),
+                TRUE ~ treatment),
+            treatment = dplyr::case_when(
+                study_accession == "EGAS00001002346" ~ ifelse(stringr::str_detect(sample_id, "normal"), "Ctrl", treatment),
+                TRUE ~ treatment),
+            study_title = dplyr::case_when(
+                study_accession == "EGAS00001002346" ~ "Aberrant splicing and defective mRNA production induced by somatic spliceosome mutations in myelodysplasia; Shiozawa et al Nat Comms 2018",
+                TRUE ~ study_title),
+            cohort = dplyr::case_when(
+                study_accession == "EGAS00001002346" ~ "MDS.mRNA.EGAD00001003891",
+                TRUE ~ cohort),
+    # Fix cohort for Kim et al
+            cohort = dplyr::case_when(
+                study_accession == "PRJEB27973" ~ "AML.mRNA.PRJEB27973",
+                TRUE ~ cohort),
+    # relabel CD+ cells
+            tissue = ifelse(stringr::str_detect(tissue, "CD34"), "BM CD34+", tissue)
+        ) |>
+        dplyr::select(-c(sample_name, sample_title, sample_description)) 
+
+    # healthy PBMCs & BM fastqs
+    PE_reads <- fastqs <- data.frame(
+        fastq_1 = list.files(c(
+            "/labs/rrockne/MHO/AML.human.data/data/GSE58335/fastq",
+            "/labs/rrockne/MHO/AML.human.data/data/fastq/PE-reads"),
+                pattern = "_1\\.fastq\\.gz$", full.names = TRUE, recursive = TRUE),
+        fastq_2 = list.files(c(
+            "/labs/rrockne/MHO/AML.human.data/data/GSE58335/fastq",
+            "/labs/rrockne/MHO/AML.human.data/data/fastq/PE-reads"),
+            pattern = "_2\\.fastq\\.gz$", full.names = TRUE, recursive = TRUE
+        )
+        ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "SRR\\d{7}"),
+        strandedness = case_when(
+            grepl("marrow", fastq_1) ~ "unstranded",
+            TRUE ~ "reverse"
+        ))
+
+    SE_reads <- fastqs <- data.frame(
+        fastq_1 = list.files(c(
+            "/labs/rrockne/MHO/AML.human.data/data/fastq/SE-reads"),
+                pattern = "fastq\\.gz$", full.names = TRUE, recursive = TRUE),
+        fastq_2 = ""
+        ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "SRR\\d{7}"),
+        strandedness = case_when(
+            grepl("PBMC", fastq_1) ~ "unstranded",
+            grepl("BM", fastq_1) ~ "forward",
+            TRUE ~ "unstranded"
+        ))
+    
+    reads <- rbind(PE_reads, SE_reads)
+
+    # metadata for healthy PBMCs & BM
+    non_aml_metadata <- readr::read_tsv("/labs/rrockne/MHO/AML.human.data/combined.tsv", show_col_types = FALSE) |>
+    # drop cols
+        dplyr::select(-matches(c("sample_accession", "single_end", "scientific", "experiment", "description", "fastq", "md5", "tax_id", "species", "id", "submission", "secondary", "alias", "library", "instrument", "count")))
+
+    # merge metadata and reads
+    non_aml_sample_sheet <- dplyr::left_join(
+        non_aml_metadata,
+        reads,
+        by = c("run_accession" = "library_id")
+    ) |>
+        dplyr::group_by(study_accession) %>%
+        dplyr::mutate(
+            batch = paste0("non_aml.mRNA_", LETTERS[as.integer(cur_group_id())]),
+            tissue = dplyr::case_when(
+                stringr::str_detect(sample_title, "PBMC|Control|GBS") ~ "PBMC",
+                stringr::str_detect(sample_title, "CD34") ~ "BM CD34+",
+                TRUE ~ "BM"
+            ),
+            patient_id = dplyr::case_when(
+                study_accession == "PRJNA294808" ~ if_else(stringr::str_detect(sample_title, "GBS"), "GBS_twin", "Ctrl_twin"),
+                study_accession == "PRJNA487456" ~ str_remove(sample_title, "CD34\\+ BM donor "),
+                study_accession == "PRJNA252189" ~ str_remove(sample_title, "PBMC\\.none\\.0h\\.X.\\.0"),
+                study_accession == "PRJNA493081" ~ sample_title,
+                TRUE ~ str_extract(sample_title, "\\d+") 
+            ),
+            sex = dplyr::case_when(
+                stringr::str_detect(sample_title, "XX")  ~ "F",
+                stringr::str_detect(sample_title, "XY")  ~ "M",
+                TRUE ~ "" 
+            ),
+            diagnosis_year = "",
+            clinical_treatment = "",
+            date_of_diagnosis = "",
+            age_at_diagnosis = "",
+            sample_date = "",
+            timepoint = "",
+            genotype = "",
+            treatment = "Ctrl",
+            dob = "",
+            cohort = "AML.mRNA.non_aml") |> ungroup() |>
+            dplyr::select(library_id = run_accession, fastq_1, fastq_2, strandedness, sample_id = "sample_title", dplyr::everything())
+
+        # put the two together
+        combined_df <- rbind(non_aml_sample_sheet, aml_metadata) |>
+            # replace all "" with NA_character_
+            dplyr::select(-matches("fastq")) |>
+            dplyr::mutate_all(list(~ dplyr::na_if(., "")))
+            
+    return(combined_df)
 }
 
 #' Update metadata for mouse AML samples

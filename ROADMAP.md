@@ -1,14 +1,11 @@
 # Roadmap
-* add non-AML human samples (XX BM, PBMC, CD34+ PBMC) 
-  http://cgt.coh.org/MHO/AML.human.data/results/rnaseq.PE.GENCODEv33/MultiQC/multiqc_report.html
-  http://cgt.coh.org/MHO/AML.human.data/results/rnaseq.SE.GENCODEv33/MultiQC/multiqc_report.html
+* make get_pin() use pin versions from the current package release
 * use scavenger partition on Apollo
 * add state_space labels 
 * add notebooks, including "cohort report"
     * use langevitour in cohort report
 * remove metadata from SummarisedExperiments
 * add 10X metrics for all scRNAseq libraries
-* simplify & rationalise `metadata_hsa`
 * implement [`pointblank`](https://rich-iannone.github.io/pointblank/index.html) data dictionaries
 * revised colour scheme
 * ggPCA and PC vs. time plots
@@ -17,6 +14,7 @@
 * use {babelwhale} to run cutadapt
 * consolidate everything into an Arrow dataframe; use tidySummarizedExperiment framework
 * improve scRNAseq QC
+    * https://anna-neufeld.github.io/countsplit/
     * https://github.com/plger/scDblFinder
     * https://github.com/broadinstitute/CellBender
     * https://github.com/wmacnair/SampleQC
@@ -25,3 +23,5 @@
 * CoFrEE: Estimate DNA Copy Number from Genome-wide RNA Expression Data
     https://www.biorxiv.org/content/10.1101/2023.08.25.554898v1
 * https://github.com/omnideconv/immunedeconv
+* https://shbrief.github.io/GenomicSuperSignature/
+* Add GEO accessions to metadata_mmu.csv

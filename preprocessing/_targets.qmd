@@ -90,7 +90,7 @@ scrnaseq_release <- "2.1.0"
 Set to "onedrive" to publish to OneDrive via the haemdata Teams channel, or to "devel" to publish to Isilon (`MHO/haemdata`)
 
 ```{targets publish-destination, tar_globals = TRUE}
-publish_location <- "devel"
+publish_location <- "onedrive"
 ```
 
 ### Cohort aliases
@@ -141,9 +141,12 @@ tar_target(metadata_mmu_prepub, update_metadata_mmu())
 
 ## Human metadata
 
-For **hsa** metadata, `make_metadata_hsa()` row binds all available metadata in to an ugly and largely incomplete table.
+For **hsa** metadata, `make_metadata_hsa()` row binds all available metadata and where possible, 
+extracts `study_title`, `tissue`, `patient_id`, `sex`, `diagnosis_year`, `clinical_treatment`, `date_of_diagnosis`, 
+`age_at_diagnosis`, `sample_date`, `timepoint`, `genotype`, `treatment`, `dob`, and assigns a `cohort` and (sequencing) `batch`.
 
-The current implementation simply consolidates metadata across sample sheets.
+Many fields are not available across all datasets. For instance, `clinical_treatment` is only available for COH patients; 
+MDS & CBF-AML patients have minimal metadata as no per-sample information is available.
 
 ```{targets metadata_hsa}
 tar_target(
@@ -195,7 +198,7 @@ tar_target(sample_sheet_mir142ko_mrna_cache, symlink_mrna_fastqs("mmu_mrna_mir14
 Two datasets have not been integrated into sample metadata tables:
 
 -   "Validation mice" from a sequencing validation run and can be considered technical replicates.
--   Human AML samples have metadata that's inconsistent between experiments. Until we decide on the minimum metadata to collect for human samples, these datasets will remain separate.
+-   Human AML samples have metadata that is inconsistent between experiments. Until we decide on the minimum metadata to collect for human samples, these datasets will remain separate.
 
 The following targets locate the fastq files on Isilon and make sample sheets for the nf-core/rnaseq pipeline.
 
@@ -214,7 +217,8 @@ list(
 # AML & MDS patients (COH Biobank); MDS from EGAD00001003891; AML patients from PRJEB27973
     tar_target(sample_sheet_2022_2, parse_metadata_AML.mRNA.HSA_FLT3.2022()),
     tar_target(sample_sheet_2022_3, parse_metadata_MDS.rnaseq.EGAD00001003891()),
-    tar_target(sample_sheet_2022_4, parse_metadata_AML.PRJEB27973())
+    tar_target(sample_sheet_2022_4, parse_metadata_AML.PRJEB27973()),
+    tar_target(sample_sheet_non_aml, dplyr::filter(metadata_hsa, grepl("AML.non_aml", cohort)))
 )
 ```
 
@@ -267,6 +271,10 @@ list(
     tar_target(hsa_mrna_kim_qc,
         run_nf_core_rnaseq("hsa_mrna_kim", sample_sheet_2022_4, "GENCODEr40"),
         format = "file"
+    ),
+    tar_target(hsa_mrna_non_aml_qc,
+        run_nf_core_rnaseq("hsa_mrna_non_aml", sample_sheet_non_aml, "GENCODEr40"),
+        format = "file"
     )
 )
 ```
@@ -315,7 +323,8 @@ list(
 list(
     tar_target(hsa_mrna_flt3_qc_se, annotate_se(get_rnaseq_se(hsa_mrna_flt3_qc), metadata_hsa, hsa_mrna_flt3_qc)),
     tar_target(hsa_mrna_mds_qc_se, annotate_se(get_rnaseq_se(hsa_mrna_mds_qc), metadata_hsa, hsa_mrna_mds_qc)),
-    tar_target(hsa_mrna_kim_qc_se, annotate_se(get_rnaseq_se(hsa_mrna_kim_qc), metadata_hsa, hsa_mrna_kim_qc))
+    tar_target(hsa_mrna_kim_qc_se, annotate_se(get_rnaseq_se(hsa_mrna_kim_qc), metadata_hsa, hsa_mrna_kim_qc)),
+    tar_target(hsa_mrna_non_aml_qc_se, annotate_se(get_rnaseq_se(hsa_mrna_non_aml_qc), metadata_hsa, hsa_mrna_non_aml_qc))
 )
 ```
 
@@ -358,7 +367,8 @@ Remove human samples that fail the STAR uniquely mapped reads threshold of 5%
 list(
     tar_target(hsa_mrna_flt3_qc_se_flt, qc_filter_se(hsa_mrna_flt3_qc_se)),
     tar_target(hsa_mrna_mds_qc_se_flt, qc_filter_se(hsa_mrna_mds_qc_se)),
-    tar_target(hsa_mrna_kim_qc_se_flt, qc_filter_se(hsa_mrna_kim_qc_se))
+    tar_target(hsa_mrna_kim_qc_se_flt, qc_filter_se(hsa_mrna_kim_qc_se)),
+    tar_target(hsa_mrna_non_aml_qc_se_flt, qc_filter_se(hsa_mrna_non_aml_qc_se))
 )
 ```
 
@@ -372,7 +382,7 @@ The Integrative Genomics Core has implemented a custom "home brew" miRNAseq prot
 cutadapt -a TCTGGAATTCTCGGGTGCCAAGGAACTCC -m 16 -u 3 -o OUT.cutadapt.fq.gz IN.fq.gz
 ```
 
-Some libraries were delivered by the Core with the adapter already removed and 3bp clipped from the 3' end prior to processing.
+Some libraries were delivered by the Core with the adapter already removed and 3bp clipped from the 3’ end prior to processing.
 
 Somewhere along the line, the original, unedited fastqs were lost from the Isilon storage and now only the trimmed fastqs are available, so two independent runs are required.
 
@@ -699,11 +709,11 @@ tar_target(
 list(
     tar_target(
         metadata_mmu_pins,
-        publish_metadata(metadata_mmu)\
+        publish_metadata(metadata_mmu)
     ),
     tar_target(
         metadata_hsa_pins,
-        publish_metadata(metadata_hsa)\
+        publish_metadata(metadata_hsa)
     )
 )
 ```
@@ -730,6 +740,10 @@ list(
     ),
     tar_target(
         hsa_mrna_kim_GENCODEm28_pins, publish_se(hsa_mrna_kim_qc_se_flt),
+        resources = apollo_small
+    ),
+    tar_target(
+        hsa_mrna_non_aml_GENCODEm28_pins, publish_se(hsa_mrna_non_aml_qc_se_flt),
         resources = apollo_small
     )
 )
@@ -799,7 +813,8 @@ tar_target(
             mmu_mrna_techrep_GENCODEm28_pins,
             hsa_mrna_flt3_GENCODEm28_pins,
             hsa_mrna_mds_GENCODEm28_pins,
-            hsa_mrna_kim_GENCODEm28_pins
+            hsa_mrna_kim_GENCODEm28_pins,
+            hsa_mrna_non_aml_GENCODEm28_pins
     ),
     format = "file"
 )

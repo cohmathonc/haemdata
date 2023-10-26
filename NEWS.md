@@ -1,5 +1,9 @@
 # haemdata 0.0.0.9013
+* add 63 non-AML human samples (BM & PBMC) 
+* harmonise metadata_hsa and include non-AML patient samples
 * update {targets} pipeline to use {crew} for parallelisation
+* Add note about Kim et al - pan cancer panel, not transcriptome
+* Add cell-type plot over time to "How do I..."
 
 # haemdata 0.0.0.9012
 * add CML blast crisis scRNAseq experiment; 6 mice, 53 samples ("CML.blastcrisis.2023" cohort)
