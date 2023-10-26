@@ -1,0 +1,189 @@
+---
+title: "Human datasets"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    warning = FALSE,
+    message = FALSE
+)
+```
+
+## Human datasets
+
+First, setup the pin-board from which well retrieve the human datasets
+
+```{r }
+library(haemdata)
+library(SummarizedExperiment)
+use_pinboard("onedrive")
+```
+
+::: {.panel-tabset}
+
+### COH FLT3 patients 
+
+City of Hope Biobank FLT3 patients
+
+::: {.callout-note} 
+##  Patient metadata
+Limited patient metadata are availalbe for these samples: 
+
+`sample_id`, `patient_id`, `sex`, `diagnosis_year`, `clinical_treatment`, `date_of_diagnosis`, `age_at_diagnosis`, `sample_date`
+:::
+
+```{r }
+flt3 <- get_pin("hsa_mrna_flt3_GENCODEr40_qc.rds")
+
+pca <- pca_se(flt3, col_by = "patient_id")
+```
+
+```{r }
+pca$biplot
+pca$pairs_plot
+```
+
+```{r fig.height=9, fig.width=8}
+pca$correlation_plot
+```
+
+### Relapse patients
+
+Kim et al 2020 *Sci Rep* [![DOI](https://zenodo.org/badge/DOI/10.1038/s41598-020-76933-2.svg)](https://doi.org/10.1038/s41598-020-76933-2)
+
+Bioproject: [PRJEB27973](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJEB27973)
+
+::: {.callout-warning}
+## Pan-Cancer Panel
+This dataset is [TruSight RNA Pan-Cancer Panel](https://www.illumina.com/products/by-type/clinical-research-products/trusight-rna-pan-cancer.html) (1385 genes) (Illumina, Inc., San Diego, CA USA). This is not a full transcriptome dataset.
+:::
+
+::: {.callout-note} 
+##  Patient metadata
+No further patient-level metadata was made available either via NCBI or the publication, although the supplementary tables contain extensive summary statistics. Contact the authors for more information.
+:::
+
+```{r }
+kim <- get_pin("hsa_mrna_kim_GENCODEr40_qc.rds")
+
+pca <- pca_se(kim, col_by = "timepoint")
+```
+
+```{r }
+pca$biplot
+pca$pairs_plot
+```
+
+```{r  fig.height=9, fig.width=8}
+pca$correlation_plot
+```
+
+### MDS patients 
+
+| Dataset         | ID       | Technology | Samples |
+| --------------- | -------- | ---------- | ------- |
+| [EGAD00001003891](https://ega-archive.org/datasets/EGAD00001003891) | Illumina | HiSeq 2500 | 266     |
+
+#### Dataset Description
+Transcriptome sequencing was performed on 214 patients with myelodysplasia in this study. RNA was obtained from bone marrow CD34+ cells (n=100) and/or bone marrow mononuclear cells (n=165). Transcriptome sequencing was performed for both cell fractions in 51 patients. A total of 211 patients were genotyped by targeted deep sequencing. For controls, bone marrow CD34+ cells and bone marrow mononuclear cells were obtained from three healthy adults each.
+
+::: {.callout-note} 
+##  Patient metadata
+No further patient-level metadata was made available either via EGA or the publication, although the supplementary tables contain extensive summary statistics. Contact the authors for more information.
+:::
+
+::: {.callout-caution}
+## Usage
+Data were downloaded from EGA with approval and must not be used for any purpose other than PSON studies. 
+:::
+
+Shiozawa et al 2017 *Blood* [![DOI](https://zenodo.org/badge/DOI/10.1182/blood-2017-05-783050.svg)](http://doi.org/10.1182/blood-2017-05-783050)
+
+Shiozawa et al 2018 *Nat Comm* [![DOI](https://zenodo.org/badge/DOI/10.1038/s41467-018-06063-x.svg)](http://doi.org/10.1038/s41467-018-06063-x)
+
+```{r }
+mds <- get_pin("hsa_mrna_mds_GENCODEr40_qc.rds")
+
+pca <- pca_se(mds, col_by = "tissue")
+```
+
+```{r }
+pca$biplot
+pca$pairs_plot
+```
+
+```{r fig.height=9, fig.width=8}
+pca$correlation_plot
+```
+### non-AML patients 
+
+Non-AML patients sourced form a variety of studies:
+
+    - [PRJNA252189](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA252189)  Transcriptomic profiling of peripheral blood mononuclear cells from healthy individuals                                                                                    
+    - [PRJNA261023](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA261023)  Transcriptomic profiling of bone marrow cells from healthy individuals                                                                                                     
+    - [PRJNA268220](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA268220)  RNA sequencing of bone marrow CD34+ cells from myelodysplastic syndrome patients with and without SF3B1 mutation and from healthy controls                                 
+    - [PRJNA294808](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA294808)  Transcriptomes of peripheral blood mononuclear cells from a Guillain-Barre Syndrome patient and her healthy twin sampled at three different points of the disease evolution
+    - [PRJNA453199](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA453199)  RNA sequencing analysis of adult mixed phenotype acute leukemia (MPAL)                                                                                                     
+    - [PRJNA487456](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA487456)  RNA-Seq of CD34+ Bone Marrow Progenitors from Healthy Donors                                                                                                               
+    - [PRJNA493081](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA493081)  Human Bone Marrow Assessment by Single Cell RNA Sequencing, Mass Cytometry and Flow Cytometry [bulk]         
+
+
+```{r }
+non_aml <- get_pin("hsa_mrna_non_aml_GENCODEr40_qc.rds")
+
+pca <- pca_se(non_aml, col_by = "study_accession")
+```
+
+```{r }
+pca$biplot
+pca$pairs_plot
+```
+
+```{r  fig.height=9, fig.width=8}
+pca$correlation_plot
+```
+
+### Combined
+
+```{r }
+#| code-fold: true
+#| code-summary: "Show the code"
+mat_flt3 <- assay(flt3, "abundance")
+mat_kim <- assay(kim, "abundance")
+mat_mds <- assay(mds, "abundance")
+mat_non_aml <- assay(non_aml, "abundance")
+
+mat<-cbind(mat_flt3,
+    mat_kim,
+    mat_mds,
+    mat_non_aml) 
+
+row_data <- rowData(flt3)
+
+col_flt3 <- colData(flt3)|>as.data.frame()
+col_kim <- colData(kim)|>as.data.frame()
+col_mds <- colData(mds)|>as.data.frame()
+col_non_aml <- colData(non_aml)|>as.data.frame()
+
+col_data <- dplyr::bind_rows(
+    col_flt3,
+    col_kim,
+    col_mds,
+    col_non_aml) |> DataFrame()
+
+se <- SummarizedExperiment(assays = list("abundance"=mat), colData=col_data, rowData=row_data)
+
+pca <- pca_se(se, col_by = "cohort")
+```
+
+```{r }
+pca$biplot
+pca$pairs_plot
+```
+
+```{r  fig.height=9, fig.width=8}
+pca$correlation_plot
+```
+:::
