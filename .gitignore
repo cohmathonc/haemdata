@@ -19,3 +19,4 @@ preprocessing/_targets_r
 notebooks/_freeze/*
 
 RCLONE_TEST
+preprocessing/_targets.yaml
