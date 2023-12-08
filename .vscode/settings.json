@@ -1,5 +1,8 @@
 {
     "peacock.color": "#ab2725",
+    "peacock.affectStatusBar": false,
+    "peacock.affectTitleBar": true,
+    "peacock.affectActivityBar": false,
     "spellright.language": [
         "en",
         "en_AU"
