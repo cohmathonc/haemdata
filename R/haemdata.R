@@ -15,7 +15,7 @@ globalVariables(c(
     "sample_weeks", "strandedness", "cell_type", "cell_type_fine",
     "pruned.labels", "assay", "hdf5", "cohort", "library_id", "sample_id",
     "age_at_sample", "batch", "genotype", "percent_ckit",
-    "sex", "tissue", "treatment", "filename", "dead", "published_metadata_mmu"
+    "sex", "tissue", "treatment", "filename", "dead", "metadata_mmu_prepub"
 ))
 # setup package environment
 

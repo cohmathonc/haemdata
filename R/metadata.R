@@ -106,7 +106,7 @@ NULL
 #' get_pin("metadata_mmu.csv") |>
 #' plot_cohort_survival(cohort_regex = "AML")}
 #' @export
-plot_cohort_survival <- function(sample_sheet = published_metadata_mmu,
+plot_cohort_survival <- function(sample_sheet = metadata_mmu_prepub,
                                 cohort_regex,
                                 assay_regex = "mRNA") {
     cohort_sample_sheet <- sample_sheet |>
