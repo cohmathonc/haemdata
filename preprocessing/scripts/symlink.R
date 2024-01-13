@@ -52,7 +52,7 @@ symlink_10x_fastqs <- function(folder, sample_sheet) {
 #' Given a sample_sheet with library_id, fastq_1, fastq_2 and strandedness this function will symlink
 #' files to the {nf_core_cache} in the `folder`, required when original file paths have spaces.
 #'
-#' @param folder
+#' @param folder run_folder for the Cohort
 #' @param sample_sheet a data.frame with the columns library_id, fastq_1, fastq_2 and strandeness
 #' @return an nf-core sample sheet with paths of fastq symlinks, without spaces
 symlink_mrna_fastqs <- function(folder, sample_sheet) {
