@@ -44,15 +44,13 @@
 #'
 #' @name metadata_mmu
 #' @docType data
-#' @source [`update_metadata_mmu()`](https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24)
 #' @author Denis O'Meally
 NULL
 
 # metadata_hsa  -----------------------------------------------------------
 #' Minimal metadata for human samples
 #'
-#' The [`make_metadata_hsa()`](https://github.com/drejom/haemdata/blob/cf03cf0a3eb420a8ee6276c7ec0a9186a55c0e2b/scripts/import_metadata.R#L3)
-#' function assembles the metadata for all RNAseq libraries
+#' The make_metadata_hsa() function assembles the metadata for all RNAseq libraries
 #' from patient samples. Minimal metadata fields include library_id, fastq_1, fastq_2, strandedness,
 #' sample_id, tissue, weeks, timepoint, batch, treatment, genotype, sex, dob, project.
 #'
@@ -65,7 +63,6 @@ NULL
 #'
 #' @name metadata_hsa
 #' @docType data
-#' @source [`make_metadata_hsa()`](https://github.com/drejom/haemdata/blob/cf03cf0a3eb420a8ee6276c7ec0a9186a55c0e2b/scripts/import_metadata.R#L3)
 #' @author Denis O'Meally
 NULL
 
