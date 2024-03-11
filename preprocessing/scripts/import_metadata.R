@@ -22,10 +22,10 @@ make_metadata_hsa <- function(sample_sheet) {
     # Create a vector of colnames to remove
     aml_metadata <- metadata_hsa |>
     # Select cols of interest
-        dplyr::select("library_id", "fastq_1", "fastq_2", "strandedness", "patient_id", "sex", 
+        dplyr::select("library_id", "fastq_1", "fastq_2", "strandedness", "patient_id", "sex",
             "study_accession", "batch", "treatment", "tissue", "cohort", "sample_id",
-            "sample_date", "age_at_diagnosis", diagnosis_year = "diagnosis year", "clinical_treatment", 
-            date_of_diagnosis = "date of diagnosis", "timepoint", "genotype", "dob", "study_title",
+            "sample_date", 
+            "timepoint", "genotype", "dob", "study_title",
             "sample_title", "sample_description", "sample_name") |>
     # remove "/net/nfs-irwrsrchnas01" from fastq paths
         dplyr::mutate(
@@ -33,18 +33,11 @@ make_metadata_hsa <- function(sample_sheet) {
             fastq_2 = stringr::str_remove(fastq_2, "^/net/nfs-irwrsrchnas01"),
     # tidy up redundant sample identifiers
             sample_id = dplyr::coalesce(sample_name, sample_id, sample_title),
-    # fix FLT3 date_of_diagnosis dates
-            date_of_diagnosis = as.character(date_of_diagnosis),
-            date_of_diagnosis = suppressWarnings(
-                dplyr::case_when(
-                str_detect(date_of_diagnosis,"/", negate = TRUE) ~ as.character(as.Date(as.numeric(date_of_diagnosis), origin = "1899-12-30")),
-                TRUE ~ as.character(lubridate::parse_date_time(date_of_diagnosis, c("%m/%Y", "%m/%d/%Y"))))
-            ),
     # extract patient id where obvious
             patient_id = dplyr::case_when(
                 study_accession == "PRJEB27973" ~ str_extract(sample_id, "[a-zA-Z0-9]{6}"),
                 study_accession == "EGAS00001002346" ~ str_extract(sample_id, "PV\\d+|normal\\d"),
-                TRUE ~ patient_id 
+                TRUE ~ patient_id
             ),
     # extract data from MDS samples
             timepoint = dplyr::case_when(
@@ -75,7 +68,7 @@ make_metadata_hsa <- function(sample_sheet) {
     # relabel CD+ cells
             tissue = ifelse(stringr::str_detect(tissue, "CD34"), "BM CD34+", tissue)
         ) |>
-        dplyr::select(-c(sample_name, sample_title, sample_description)) 
+        dplyr::select(-c(sample_name, sample_title, sample_description))
 
     # healthy PBMCs & BM fastqs
     PE_reads <- fastqs <- data.frame(
@@ -105,7 +98,7 @@ make_metadata_hsa <- function(sample_sheet) {
             grepl("BM", fastq_1) ~ "forward",
             TRUE ~ "unstranded"
         ))
-    
+
     reads <- rbind(PE_reads, SE_reads)
 
     # metadata for healthy PBMCs & BM
@@ -132,17 +125,13 @@ make_metadata_hsa <- function(sample_sheet) {
                 study_accession == "PRJNA487456" ~ str_remove(sample_title, "CD34\\+ BM donor "),
                 study_accession == "PRJNA252189" ~ str_remove(sample_title, "PBMC\\.none\\.0h\\.X.\\.0"),
                 study_accession == "PRJNA493081" ~ sample_title,
-                TRUE ~ str_extract(sample_title, "\\d+") 
+                TRUE ~ str_extract(sample_title, "\\d+")
             ),
             sex = dplyr::case_when(
                 stringr::str_detect(sample_title, "XX")  ~ "F",
                 stringr::str_detect(sample_title, "XY")  ~ "M",
-                TRUE ~ "" 
+                TRUE ~ ""
             ),
-            diagnosis_year = "",
-            clinical_treatment = "",
-            date_of_diagnosis = "",
-            age_at_diagnosis = "",
             sample_date = "",
             timepoint = "",
             genotype = "",
@@ -156,7 +145,7 @@ make_metadata_hsa <- function(sample_sheet) {
             # replace all "" with NA_character_
             dplyr::select(-matches("fastq")) |>
             dplyr::mutate_all(list(~ dplyr::na_if(., "")))
-            
+
     return(combined_df)
 }
 
@@ -177,7 +166,7 @@ make_metadata_hsa <- function(sample_sheet) {
 #' function (which has been retired since version 0.0.0.0.9008).
 #'
 #' This function is really just a place holder for code that manipulates the metadata table
-#' for each release. See previous releases on GihUb to track down how raw metadata was prepared.
+#' for each release. See previous releases on GitHub to track down how raw metadata was prepared.
 #' #'
 #' @name update_metadata_mmu
 #' @return a data.frame
@@ -187,76 +176,42 @@ update_metadata_mmu <- function() {
     # Update sample and mouse metadata
     # Load in metadata_mmu from the devel pinboard and modify as needed
 
-    # v0.0.0.9012 interim
-    sample_sheet <- pins::pin_read(
-        pins::board_folder(
-            "/labs/rrockne/MHO/haemdata",
-            versioned = FALSE
-        ),
-        "metadata_mmu.csv"
-    ) |>
-        purrr::modify_if(is.factor, as.character) |>
-        dplyr::filter(cohort != "CML.blastcrisis.2023")
+    use_pinboard("onedrive")
+    # v0.0.0.9013
+    metadata_mmu <- get_pin("metadata_mmu.csv", version = "20230907T012227Z-d3324")
 
-    # # # fix an issue with some CML mice have incorrect dod ----
-    dod_fix <- tibble(
-        mouse_id = as.character(c("487", "488", "489", "490", "541", "545")),
-        dod = rep(NA, 6)
-    )
-    sample_sheet <- rows_update(sample_sheet, dod_fix, by = "mouse_id")
 
-    # # # add survival column ----
+    # # # add "old mice" mouse metadata
+    sample_sheet <- readxl::read_excel(here::here("data-raw/metadata_mmu_AmberZ_LisaU.xlsx")) |>
+        mutate(
+            mouse_id = as.character(mouse_id),
+            sample_weeks = as.integer(stringr::str_remove(timepoint, "W")),
+        ) |>
+        add_survival_columns()
+
+    # # # add missing metadata_mmu cols ----
     sample_sheet <- sample_sheet |>
-        add_survival_columns() |>
-        select(-(matches("age_at_end|age_at_sample")))
+        mutate(
+            sample_weeks = as.numeric(sample_weeks),
+            age_at_start = as.numeric(age_at_start),
+            sample_id = NA,
+            hdf5 = NA,
+            percent_ckit = NA,
+            ref_dim1 = NA,
+            ref_dim2 = NA,
+            qc_pass_mapping = NA) |> 
+        arrange(age_at_start)
+
 
     # # # relocate some columns ----
     sample_sheet <- sample_sheet |>
         relocate(dead, .after = age_at_start)|>
         relocate(qc_pass_mapping, .after = everything())
 
-    # # # add "blast crisis" mouse metadata
-    blast_crisis_sample_sheet <- readxl::read_excel(here::here("data-raw/metadata_mmu_blastcrisis.xlsx")) |>
-        mutate(
-            dod = if_else(dod == "no die", NA_character_, dod),
-            dod = as.Date(as.numeric(dod), origin = "1899-12-30"),
-            mouse_id = as.character(mouse_id)
-        ) |>
-    # sequencing info
-    left_join(readxl::read_excel(here::here("data-raw/sequencing summary_IGC-BZ-21029.xlsx")) |>
-        select(library_id = "TGen_Sample_Name", prep_date = "sample  prep date", seq_date = "sequencing date", seq_length = "sequencing length...17") |>
-        na.omit(), by = "library_id") |>
-    # fastqs
-    left_join(read.csv("data-raw/mmu_blastcrisis_10Xfastqs.csv") |>
-        dplyr::filter(!grepl("counts|_WT_|_KO_", fastq)) |> ### Filter out analyses files from the IGC
-        dplyr::mutate(
-            library_id = stringr::str_replace(fastq, ".*(COHP_\\d*)_.*", "\\1"),
-            fastq_1 = case_when(
-                grepl("R1_001", fastq) ~ fastq, TRUE ~ NA_character_
-            ),
-            fastq_2 = case_when(
-                grepl("R2_001", fastq) ~ fastq, TRUE ~ NA_character_
-            ),
-            basename = gsub("R[12]_001.fastq.gz$", "", fastq)
-        ) |>
-        group_by(basename) |>
-        tidyr::fill(fastq_1, fastq_2, .direction = "downup") |>
-        ungroup() |>
-        select(-fastq, -basename) |>
-        distinct(), by = "library_id") |>
-        mutate(batch = paste(
-            "2023",
-            factor(prep_date, labels = paste0("L", seq_along(unique(prep_date)))),
-            factor(seq_date, labels = paste0("S", seq_along(unique(seq_date)))),
-            factor(seq_length, labels = paste0("R", seq_along(unique(seq_length)))),
-            sep = "_")) |>
-        add_survival_columns() |>
-            select(-c(label, prep_date, seq_date, seq_length))
-
-    # # # Add to sample_sheet, assign new sample_id
-        sample_sheet <- rows_insert(sample_sheet, blast_crisis_sample_sheet, by = "library_id") |>
-            arrange(sample_id) |>
-            assign_new_sample_ids()
+    # # # Add to metadata_mmu, assign new sample_id
+    sample_sheet <- rows_insert(metadata_mmu, sample_sheet, by = "library_id") |>
+        arrange(sample_id) |>
+        assign_new_sample_ids()
 
     # # # Save a copy ----
     sample_sheet |>
