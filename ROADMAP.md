@@ -25,3 +25,8 @@
 * https://github.com/omnideconv/immunedeconv
 * https://shbrief.github.io/GenomicSuperSignature/
 * Add GEO accessions to metadata_mmu.csv
+* Investigate survex: Explainable Machine Learning in Survival Analysis
+* Investigate http://www.immune-dictionary.org/
+* add scRNAseq for pre-leukemic mice (Yu-Husan)
+* rMATS-turbo for alternative splicing
+  https://www.nature.com/articles/s41596-023-00944-2
