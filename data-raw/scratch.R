@@ -575,9 +575,9 @@ add_survival_columns <- function(sample_sheet) {
         purrr::modify_if(lubridate::is.difftime, as.numeric)
 }
 
-published_metadata_mmu <- readRDS(here::here("data-raw/metadata_mmu.rds"))
+incoming_metadata_mmu <- readRDS(here::here("data-raw/metadata_mmu.rds"))
 
-sample_sheet <- published_metadata_mmu
+sample_sheet <- metadata_mmu_prepub
 
 test_df <- sample_sheet |>
     select(c(
@@ -591,7 +591,7 @@ test_df <- sample_sheet |>
 # ggfortify
 
 plot_cohort_survival <- function(
-    sample_sheet = published_metadata_mmu,
+    sample_sheet = metadata_mmu_prepub,
     cohort_regex,
     assay_regex = "mRNA"
     ) {

@@ -73,8 +73,6 @@ tar_option_set(
     crew = tar_resources_crew(controller = "local")
     )
 )
-
-
 ```
 
 ### nf-core pipeline versions
@@ -90,7 +88,7 @@ scrnaseq_release <- "2.1.0"
 Set to "onedrive" to publish to OneDrive via the haemdata Teams channel, or to "devel" to publish to Isilon (`MHO/haemdata`)
 
 ```{targets publish-destination, tar_globals = TRUE}
-publish_location <- "onedrive"
+publish_location <- "devel"
 ```
 
 ### Cohort aliases
@@ -113,7 +111,8 @@ treatment_mice <- "^AML.mRNA.2021.RxGroup1$|^AML.mRNA.2021.RxGroup2$|
 
 cml_mice <- "^CML.mRNA.2021$|^CML.mRNA.2022$|^CML.mRNA.2022_pt2$"
 
-published_metadata_mmu <- readRDS(here::here("data-raw/metadata_mmu.rds"))
+old_mice <- "^senescence$"
+
 ```
 :::
 
@@ -131,8 +130,7 @@ The code to collate it has been through multiple iterations, is complex and ugly
 For **mmu**, the sample metadata is largely complete. These data were collated from multiple sequencing run sheets, directly from sequencing folders, emails, and so forth.
 
 The current implementation of `update_metadata_mmu()` does the following:
-- fixes `dod` for some CML mice
-- adds metadata for "blast crisis" experiment
+- adds the metadata for the `senescence.mRNA.2022` cohort (3 young, 3 old mice)
 
 
 ```{targets metadata_mmu_prepub}
@@ -161,9 +159,10 @@ tar_target(
 # Assays
 
 ::: panel-tabset
+
 ## In brief
 
-The workflows for all assays begin with raw sequencing reads, either fastq files or h5ad files for 10X Cellplex libraries.
+The workflows for all assays begin with raw sequencing reads for bulk miRNA and mRNA, or h5ad files for 10X Cellplex libraries.
 
 Raw data are stored on COH's Isilon storage by the Integrative Genomics Core, organized across multiple investigator's `Seq` folders. Since v0.0.0.9008 (2022-11-14), file paths are stored in the metadata table.
 
@@ -179,26 +178,31 @@ Samples can be combined in a single sample sheet before a major release or nf-co
 
 -   All mice from 2016 \~ mid 2022, (except *sequencing validation mice*, see below)
 -   2022 CML mice (`CML.mRNA.2022_pt2`)
+-   2022 Senecence mice (3 young, 3 old)
 -   2023 CML miR142-KO mice
 
 ```{targets sample_sheet_2016_2022}
 list(
     tar_target(sample_sheet_2016_2022, make_rnaseq_sample_sheet(all_mice)),
     tar_target(sample_sheet_CML_3, make_rnaseq_sample_sheet("^CML.mRNA.2022_pt2$")),
-    tar_target(sample_sheet_mrna_mir142ko, make_rnaseq_sample_sheet("^CML.mRNA.mir142ko$"))
+    tar_target(sample_sheet_mrna_mir142ko, make_rnaseq_sample_sheet("^CML.mRNA.mir142ko$")),
+    tar_target(sample_sheet_mrna_old, make_rnaseq_sample_sheet("^senescence.mRNA.2022$"))
 )        
 ```
 
-Spaces are not permitted in filenames, so for this cohort, we need to cache and symlink fastqs:
+Spaces are not permitted in filenames, so for these cohorts, we need to cache and symlink fastqs:
 
 ```{targets link_fastqs_mRNA_mir142, eval=TRUE}
-tar_target(sample_sheet_mir142ko_mrna_cache, symlink_mrna_fastqs("mmu_mrna_mir142ko/fastq", sample_sheet_mrna_mir142ko))
+list(
+    tar_target(sample_sheet_mir142ko_mrna_cache, symlink_mrna_fastqs("mmu_mrna_mir142ko/fastq", sample_sheet_mrna_mir142ko)),
+    tar_target(sample_sheet_old_mrna_cache, symlink_mrna_fastqs("mmu_mrna_old_mice/fastq", sample_sheet_mrna_old))
+)
 ```
 
 Two datasets have not been integrated into sample metadata tables:
 
 -   "Validation mice" from a sequencing validation run and can be considered technical replicates.
--   Human AML samples have metadata that is inconsistent between experiments. Until we decide on the minimum metadata to collect for human samples, these datasets will remain separate.
+-   Human sample metadata is yet to be standardized between experiments, so they remain separate for now.
 
 The following targets locate the fastq files on Isilon and make sample sheets for the nf-core/rnaseq pipeline.
 
@@ -260,6 +264,10 @@ list(
         run_nf_core_rnaseq("mmu_mrna_mir142ko", sample_sheet_mir142ko_mrna_cache, "GENCODEm28_HLT"),
         format = "file"
     ),
+    tar_target(mmu_mrna_old_qc,
+        run_nf_core_rnaseq("mmu_mrna_old_mice", sample_sheet_old_mrna_cache, "GENCODEm28_HLT"),
+        format = "file"
+    ),
     tar_target(hsa_mrna_flt3_qc,
         run_nf_core_rnaseq("hsa_mrna_flt3", sample_sheet_2022_2, "GENCODEr40"),
         format = "file"
@@ -313,6 +321,13 @@ list(
             get_rnaseq_se(mmu_mrna_mir142ko_qc),
             metadata_mmu_prepub,
             mmu_mrna_mir142ko_qc
+    )),
+    tar_target(
+        mmu_mrna_old_qc_se,
+        annotate_se(
+            get_rnaseq_se(mmu_mrna_old_qc),
+            metadata_mmu_prepub,
+            mmu_mrna_old_qc
     ))
 )
 ```
@@ -330,7 +345,7 @@ list(
 
 ### Merge SummarisedExperiments
 
-Merge the late-coming CML samples with all other mice into a single SummarisedExperiment.
+Merge the late-coming senescent mice cohort and mir142 KO CML samples with all other mice into a single SummarisedExperiment.
 
 ```{targets mrna_merge_summarised_experiments}
 list(
@@ -342,10 +357,17 @@ list(
         new_name = "mmu_mrna_all_mice_GENCODEm28_HLT_qc")
 ),
 tar_target(
-    mmu_mrna_all_mice_qc_se, 
+    mmu_mrna_2016_2022_cml3_mir142ko_mice_qc_se, 
     merge_mrna_se(
         mmu_mrna_2016_2022_cml3_mice_qc_se,
         mmu_mrna_mir142ko_qc_se,
+        new_name = "mmu_mrna_all_mice_GENCODEm28_HLT_qc")
+),
+tar_target(
+    mmu_mrna_all_mice_qc_se, 
+    merge_mrna_se(
+        mmu_mrna_2016_2022_cml3_mir142ko_mice_qc_se,
+        mmu_mrna_old_qc_se,
         new_name = "mmu_mrna_all_mice_GENCODEm28_HLT_qc")
 )
 )
@@ -687,7 +709,7 @@ tar_target(
 tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc_ct,
     seurat_annotate_cell_type(mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc),
-    resources = apollo_large
+    resources = apollo_huge
     ),
 tar_target(
     mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust_cc_ct,
