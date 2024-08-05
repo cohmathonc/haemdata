@@ -3,7 +3,7 @@
 # metadata_mmu -----------------------------------------------------------
 #' @title Minimal metadata for mouse samples
 #'
-#' @description 
+#' @description
 #'  [Download](../metadata_mmu_template.xlsx) a template for new samples
 #'  | Column | Description |
 #'  |---|---|
@@ -34,12 +34,12 @@
 #'  | `qc_pass_mapping` | `mRNA` samples only. `TRUE` if STAR uniquely mapped reads >= `mapping_threshold` (5% by default), or `FALSE` if not. |
 #'
 #' @details
-#' The [`update_metadata_mmu()`](https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24)
+#' The [`update_metadata_mmu()`](https://github.com/cohmathonc/haemdata/blob/main/scripts/import_metadata.R#L24)
 #' function assembles the metadata for all RNAseq libraries from AML and CML mice, by consolidating
 #' data scraped from multiple sequencing run sheets, directly from sequencing folders, emails, and so forth.
 #' The code is complex and ugly and undoubtedly some errors will have made it through.
 #'
-#' Raise an [issue on GitHub](https://github.com/drejom/haemdata/issues)
+#' Raise an [issue on GitHub](https://github.com/cohmathonc/haemdata/issues)
 #' to report erroneous or missing records.
 #'
 #' @name metadata_mmu
@@ -58,7 +58,7 @@ NULL
 #'
 #' #TODO Describe the studies: MDS & COH Biobank FLT3
 #'
-#' Raise an [issue on GitHub](https://github.com/drejom/haemdata/issues)
+#' Raise an [issue on GitHub](https://github.com/cohmathonc/haemdata/issues)
 #' to report erroneous or missing records.
 #'
 #' @name metadata_hsa
@@ -101,31 +101,32 @@ NULL
 #' \dontrun{
 #' use_pinboard("devel")
 #' get_pin("metadata_mmu.csv") |>
-#' plot_cohort_survival(cohort_regex = "AML")}
+#'   plot_cohort_survival(cohort_regex = "AML")
+#' }
 #' @export
 plot_cohort_survival <- function(sample_sheet = metadata_mmu_prepub,
-                                cohort_regex,
-                                assay_regex = "mRNA") {
-    cohort_sample_sheet <- sample_sheet |>
-        dplyr::filter(grepl({{ cohort_regex }}, cohort)) |>
-        dplyr::filter(grepl({{ assay_regex }}, assay)) |>
-        dplyr::select(sample_id, sample_weeks, dead, treatment)
+                                 cohort_regex,
+                                 assay_regex = "mRNA") {
+  cohort_sample_sheet <- sample_sheet |>
+    dplyr::filter(grepl({{ cohort_regex }}, cohort)) |>
+    dplyr::filter(grepl({{ assay_regex }}, assay)) |>
+    dplyr::select(sample_id, sample_weeks, dead, treatment)
 
-    if (nrow(cohort_sample_sheet) == 0) {
-        print("No samples to plot...")
-        return()
-    }
+  if (nrow(cohort_sample_sheet) == 0) {
+    print("No samples to plot...")
+    return()
+  }
 
-    ggfortify:::autoplot.survfit(
-        survival::survfit(
-            survival::Surv(as.numeric(sample_weeks), dead) ~ treatment,
-            data = cohort_sample_sheet
-        ),
-        xlab = "Weeks",
-        ylab = "Cohort survival",
-        main = "Effect of treatment on survival") +
-        ggplot2::labs(
-            fill = "Treatment",
-            color = "Treatment",
-        subtitle = glue::glue("Cohort: {cohort_regex}"))
+  ggfortify:::autoplot.survfit(
+    survival::survfit(
+      survival::Surv(as.numeric(sample_weeks), dead) ~ treatment,
+      data = cohort_sample_sheet
+    ),
+    xlab = "Weeks",
+    ylab = "Cohort survival",
+    main = "Effect of treatment on survival") +
+    ggplot2::labs(
+      fill = "Treatment",
+      color = "Treatment",
+      subtitle = glue::glue("Cohort: {cohort_regex}"))
 }

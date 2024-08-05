@@ -4,10 +4,10 @@ title: "Missing metadata"
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-    collapse = TRUE,
-    comment = "#>",
-    warning = FALSE,
-    message = FALSE
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
 )
 thematic::thematic_rmd(bg = "white", fg = "black", accent = "red")
 ```
@@ -21,42 +21,42 @@ metadata_mmu <- get_pin("metadata_mmu.csv")
 
 ```{r echo=FALSE, include=FALSE}
 sample_summary <- metadata_mmu |>
-    dplyr::select(strandedness, tissue, treatment) |>
-    gtsummary::tbl_summary(missing_text = "(Missing)")
+  dplyr::select(strandedness, tissue, treatment) |>
+  gtsummary::tbl_summary(missing_text = "(Missing)")
 
 mouse_summary <- metadata_mmu |>
-    dplyr::select(mouse_id, genotype, sex) |>
-    gtsummary::tbl_summary(missing_text = "(Missing)")
+  dplyr::select(mouse_id, genotype, sex) |>
+  gtsummary::tbl_summary(missing_text = "(Missing)")
 
 n_mice <- dplyr::n_distinct(metadata_mmu$mouse_id, na.rm = TRUE)
 
 sex_by_treatment <- metadata_mmu |>
-    gtsummary::tbl_cross(
-        row = sex,
-        col = treatment,
-        percent = "none"
-    )
+  gtsummary::tbl_cross(
+    row = sex,
+    col = treatment,
+    percent = "none"
+  )
 
 sex_by_genotype <- metadata_mmu |>
-    gtsummary::tbl_cross(
-        row = sex,
-        col = genotype,
-        percent = "none"
-    )
+  gtsummary::tbl_cross(
+    row = sex,
+    col = genotype,
+    percent = "none"
+  )
 ```
 
 # Mice 
 `Haemdata` includes `r dplyr::n_distinct(dplyr::select(metadata_mmu, -dplyr::starts_with("fastq")), na.rm = TRUE)` samples from `r dplyr::n_distinct(metadata_mmu$mouse_id, na.rm = TRUE)` mice (across `r nrow(metadata_mmu)` sequencing runs). Metadata
-are parsed by functions in [`import_metadata.R`](https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R) and collated by the `make_metadata_mmu()` function, sourced in the same document.
+are parsed by functions in [`import_metadata.R`](https://github.com/cohmathonc/haemdata/blob/main/scripts/import_metadata.R) and collated by the `make_metadata_mmu()` function, sourced in the same document.
 
 ## Missingness
 ```{r echo=FALSE, img.width=8, message=FALSE}
 naniar::gg_miss_fct(metadata_mmu, cohort) +
-    ggplot2::scale_fill_gradient(limits = c(0, 10), na.value = "#56B1F7")
+  ggplot2::scale_fill_gradient(limits = c(0, 10), na.value = "#56B1F7")
 ```
 
 Metadata have been parsed from many sources in various formats and undoubtedly require close inspection and correction. Please [report any
-issues](https://github.com/drejom/haemdata/issues).
+issues](https://github.com/cohmathonc/haemdata/issues).
 
 ### Sex by treatment 
 `r sex_by_treatment`

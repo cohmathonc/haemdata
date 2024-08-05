@@ -12,8 +12,8 @@ Description: Harmonised, preprocessed data from the COH PSON
     published resources; contact [Russell Rockne](mailto:rrockne@coh.org)
     to be added to the Sharepoint/Teams PSON group.
 License: file LICENSE
-URL: https://github.com/drejom/haemdata
-BugReports: https://github.com/drejom/haemdata/issues
+URL: https://github.com/cohmathonc/haemdata
+BugReports: https://github.com/cohmathonc/haemdata/issues
 Depends: 
     R (>= 4.1)
 Imports: 

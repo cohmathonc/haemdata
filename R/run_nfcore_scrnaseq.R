@@ -12,36 +12,36 @@
 #' @name run_nf_core_scrnaseq
 #' @param run_folder subfolder in which to run nextflow, keeps the pipeline
 #' from overwriting previous runs and enables the `-resume` feature of Nextflow.
-#' @param sample_sheet nf-core sample sheet with the columns `library_id, fastq_1, fastq_2, strandedness` (see [`R/import_metadata.R`](https://github.com/drejom/haemdata/blob/HEAD/R/import_metadata.R))
+#' @param sample_sheet nf-core sample sheet with the columns `library_id, fastq_1, fastq_2, strandedness` (see [`R/import_metadata.R`](https://github.com/cohmathonc/haemdata/blob/HEAD/R/import_metadata.R))
 #' @return a path to the run script, or the multiqc report if it exists.
 #' @author Denis O'Meally
 #' @export
 
 run_nfcore_scrnaseq <- function(run_folder, sample_sheet) {
-    ref_genome <- "GENCODEm28_HLT"
-    species <- "mmu"
-    run_path <- glue::glue("{nf_core_cache}/{run_folder}")
-    out_folder <- glue::glue("nfcore-scrnaseq-v{scrnaseq_release}-{species}")
+  ref_genome <- "GENCODEm28_HLT"
+  species <- "mmu"
+  run_path <- glue::glue("{nf_core_cache}/{run_folder}")
+  out_folder <- glue::glue("nfcore-scrnaseq-v{scrnaseq_release}-{species}")
 
-    if (!dir.exists(run_path)) {
-        dir.create(run_path, recursive = TRUE)
-    }
+  if (!dir.exists(run_path)) {
+    dir.create(run_path, recursive = TRUE)
+  }
 
-    # if a multiqc report exists, use that
-    if (file.exists(glue::glue("{run_path}/{out_folder}/multiqc/multiqc_report.html"))) {
-        print(glue::glue("Found existing multiqc report, skipping nf-core/scrnaseq run for {run_folder}..."))
-        return(glue::glue("{run_path}/{out_folder}/multiqc/multiqc_report.html"))
-    } else if (file.exists(glue::glue("{run_path}/{out_folder}/multiqc/star_salmon/multiqc_report.html"))) {
-        print(glue::glue("Found existing multiqc report, skipping nf-core/scrnaseq run for {run_folder}..."))
-        return(glue::glue("{run_path}/{out_folder}/multiqc/star_salmon/multiqc_report.html"))
-        # if theres no run script, make one and submit it to the cluster
-    } else if (!file.exists(glue::glue("{run_path}/run_{ref_genome}.sh"))) {
-        sample_sheet |>
-            dplyr::select(sample = library_id, fastq_1, fastq_2) |>
-            readr::write_csv(paste0(run_path, "/sample_sheet.csv"), quote = "all")
+  # if a multiqc report exists, use that
+  if (file.exists(glue::glue("{run_path}/{out_folder}/multiqc/multiqc_report.html"))) {
+    print(glue::glue("Found existing multiqc report, skipping nf-core/scrnaseq run for {run_folder}..."))
+    return(glue::glue("{run_path}/{out_folder}/multiqc/multiqc_report.html"))
+  } else if (file.exists(glue::glue("{run_path}/{out_folder}/multiqc/star_salmon/multiqc_report.html"))) {
+    print(glue::glue("Found existing multiqc report, skipping nf-core/scrnaseq run for {run_folder}..."))
+    return(glue::glue("{run_path}/{out_folder}/multiqc/star_salmon/multiqc_report.html"))
+    # if theres no run script, make one and submit it to the cluster
+  } else if (!file.exists(glue::glue("{run_path}/run_{ref_genome}.sh"))) {
+    sample_sheet |>
+      dplyr::select(sample = library_id, fastq_1, fastq_2) |>
+      readr::write_csv(paste0(run_path, "/sample_sheet.csv"), quote = "all")
 
-        # make a sbatch script
-        cat(glue::glue("#!/bin/bash
+    # make a sbatch script
+    cat(glue::glue("#!/bin/bash
 #SBATCH --job-name={run_folder}_{species}
 #SBATCH --time=96:00:00
 #SBATCH --cpus-per-task=2
@@ -68,20 +68,20 @@ nextflow run \\
     --outdir {out_folder} --save_reference Salmon \\
     --genome {ref_genome} --igenomes_base /ref_genome/igenomes \\
     --email domeally@coh.org --aligner cellranger --protocol 10XV3 \\
-    --cellranger_index /labs/rrockne/MHO/AML.scRNA.2022/cellranger/ref/GENCODEm28_human_genes 
+    --cellranger_index /labs/rrockne/MHO/AML.scRNA.2022/cellranger/ref/GENCODEm28_human_genes
 ", .trim = FALSE),
-            file = glue::glue("{run_path}/run_{ref_genome}.sh")
-        )
-        # submit to the cluster & return the path of the run script
-        system(glue::glue("sbatch {run_path}/run_{ref_genome}.sh"), wait = FALSE)
-        return(glue::glue("{run_path}/run_{ref_genome}.sh"))
-    } else {
-        # If there's no multiqc report but there's a run script, just return the run script path
-        # with a message about what to do next
-        print(glue::glue("The nextflow run for \"{run_folder}\" has already been submitted.
+      file = glue::glue("{run_path}/run_{ref_genome}.sh")
+    )
+    # submit to the cluster & return the path of the run script
+    system(glue::glue("sbatch {run_path}/run_{ref_genome}.sh"), wait = FALSE)
+    return(glue::glue("{run_path}/run_{ref_genome}.sh"))
+  } else {
+    # If there's no multiqc report but there's a run script, just return the run script path
+    # with a message about what to do next
+    print(glue::glue("The nextflow run for \"{run_folder}\" has already been submitted.
         Check the SLURM job queue or navigate to
         {run_path}
         and submit the `run_{ref_genome}.sh` script to resume the run."))
-        return(glue::glue("{run_path}/run_{ref_genome}.sh"))
-    }
+    return(glue::glue("{run_path}/run_{ref_genome}.sh"))
+  }
 }

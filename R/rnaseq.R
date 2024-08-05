@@ -14,7 +14,7 @@
 #' @name run_nf_core_rnaseq
 #' @param run_folder subfolder in which to run nextflow, keeps the pipeline
 #' from overwriting previous runs and enables the `-resume` feature of Nextflow.
-#' @param sample_sheet nf-core sample sheet with the columns `library_id, fastq_1, fastq_2, strandedness` (see [`R/import_metadata.R`](https://github.com/drejom/haemdata/blob/HEAD/R/import_metadata.R))
+#' @param sample_sheet nf-core sample sheet with the columns `library_id, fastq_1, fastq_2, strandedness` (see [`R/import_metadata.R`](https://github.com/cohmathonc/haemdata/blob/HEAD/R/import_metadata.R))
 #' @param ref_genome nf-core reference genome, see \href{../articles/genomes.html}{Reference Genomes} for supported references
 #' @param qc run the full QC pipeline with STAR_Salmon, or Salmon pseudoalignment only, skipping all QC steps (default: TRUE)
 #' @return a path to the run script, or the multiqc report if it exists.
@@ -22,45 +22,45 @@
 #' @export
 
 run_nf_core_rnaseq <- function(run_folder, sample_sheet, ref_genome, qc = TRUE) {
-    run_path <- glue::glue("{nf_core_cache}/{run_folder}")
-    out_folder <- glue::glue("nfcore-rnaseq-v{rnaseq_release}_{ref_genome}")
+  run_path <- glue::glue("{nf_core_cache}/{run_folder}")
+  out_folder <- glue::glue("nfcore-rnaseq-v{rnaseq_release}_{ref_genome}")
 
-    if (!dir.exists(run_path)) {
-        dir.create(run_path, recursive = TRUE)
-    }
-    if (qc == TRUE) {
-        run_mode <- "qc"
-        skip <- ""
-    } else {
-        run_mode <- "salmon"
-        skip <- "--skip_alignment --skip_fastqc"
-    }
-    if (stringr::str_detect(ref_genome, "GENCODE")) {
-        gencode <- "--gencode"
-    } else {
-        gencode <- ""
-    }
-    if (nrow(sample_sheet) > 20) {
-        deseq_transform <- "--deseq2_vst"
-    } else {
-        deseq_transform <- ""
-    }
+  if (!dir.exists(run_path)) {
+    dir.create(run_path, recursive = TRUE)
+  }
+  if (qc == TRUE) {
+    run_mode <- "qc"
+    skip <- ""
+  } else {
+    run_mode <- "salmon"
+    skip <- "--skip_alignment --skip_fastqc"
+  }
+  if (stringr::str_detect(ref_genome, "GENCODE")) {
+    gencode <- "--gencode"
+  } else {
+    gencode <- ""
+  }
+  if (nrow(sample_sheet) > 20) {
+    deseq_transform <- "--deseq2_vst"
+  } else {
+    deseq_transform <- ""
+  }
 
-    # if a multiqc report exists, use that
-    if (file.exists(glue::glue("{run_path}/{out_folder}/multiqc/multiqc_report.html"))) {
-        print(glue::glue("Found existing multiqc report, skipping nf-core/rnaseq run for {run_folder}..."))
-        return(glue::glue("{run_path}/{out_folder}/multiqc/multiqc_report.html"))
-    } else if (file.exists(glue::glue("{run_path}/{out_folder}/multiqc/star_salmon/multiqc_report.html"))) {
-        print(glue::glue("Found existing multiqc report, skipping nf-core/rnaseq run for {run_folder}..."))
-        return(glue::glue("{run_path}/{out_folder}/multiqc/star_salmon/multiqc_report.html"))
-        # if theres no run script, make one and submit it to the cluster
-    } else if (!file.exists(glue::glue("{run_path}/run_{run_mode}_{ref_genome}.sh"))) {
-        sample_sheet |>
-            dplyr::select(sample = library_id, fastq_1, fastq_2, strandedness) |>
-            readr::write_csv(paste0(run_path, "/sample_sheet.csv"))
+  # if a multiqc report exists, use that
+  if (file.exists(glue::glue("{run_path}/{out_folder}/multiqc/multiqc_report.html"))) {
+    print(glue::glue("Found existing multiqc report, skipping nf-core/rnaseq run for {run_folder}..."))
+    return(glue::glue("{run_path}/{out_folder}/multiqc/multiqc_report.html"))
+  } else if (file.exists(glue::glue("{run_path}/{out_folder}/multiqc/star_salmon/multiqc_report.html"))) {
+    print(glue::glue("Found existing multiqc report, skipping nf-core/rnaseq run for {run_folder}..."))
+    return(glue::glue("{run_path}/{out_folder}/multiqc/star_salmon/multiqc_report.html"))
+    # if theres no run script, make one and submit it to the cluster
+  } else if (!file.exists(glue::glue("{run_path}/run_{run_mode}_{ref_genome}.sh"))) {
+    sample_sheet |>
+      dplyr::select(sample = library_id, fastq_1, fastq_2, strandedness) |>
+      readr::write_csv(paste0(run_path, "/sample_sheet.csv"))
 
-        # make a sbatch script
-        cat(glue::glue("#!/bin/bash
+    # make a sbatch script
+    cat(glue::glue("#!/bin/bash
 #SBATCH --job-name={run_folder}_{run_mode}
 #SBATCH --time=96:00:00
 #SBATCH --cpus-per-task=2
@@ -88,18 +88,18 @@ nextflow run \\
     --genome {ref_genome} --igenomes_base /ref_genome/igenomes \\
     --email domeally@coh.org --pseudo_aligner salmon {gencode}
 ", .trim = FALSE),
-            file = glue::glue("{run_path}/run_{run_mode}_{ref_genome}.sh")
-        )
-        # submit to the cluster & return the path of the run script
-        system(glue::glue("sbatch {run_path}/run_{run_mode}_{ref_genome}.sh"), wait = FALSE)
-        return(glue::glue("{run_path}/run_{run_mode}_{ref_genome}.sh"))
-    } else {
-        # If there's no multiqc report but there's a run script, just return the run script path
-        # with a message about what to do next
-        print(glue::glue("The nextflow run for \"{run_folder}\" has already been submitted.
+      file = glue::glue("{run_path}/run_{run_mode}_{ref_genome}.sh")
+    )
+    # submit to the cluster & return the path of the run script
+    system(glue::glue("sbatch {run_path}/run_{run_mode}_{ref_genome}.sh"), wait = FALSE)
+    return(glue::glue("{run_path}/run_{run_mode}_{ref_genome}.sh"))
+  } else {
+    # If there's no multiqc report but there's a run script, just return the run script path
+    # with a message about what to do next
+    print(glue::glue("The nextflow run for \"{run_folder}\" has already been submitted.
         Check the SLURM job queue or navigate to
         {run_path}
         and submit the `run_{run_mode}_{ref_genome}.sh` script to resume the run."))
-        return(glue::glue("{run_path}/run_{run_mode}_{ref_genome}.sh"))
-    }
+    return(glue::glue("{run_path}/run_{run_mode}_{ref_genome}.sh"))
+  }
 }

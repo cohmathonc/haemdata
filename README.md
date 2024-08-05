@@ -1,9 +1,9 @@
 # haemdata <img src='man/figures/logo.png' align="right" height="139" />
-<!-- [![R-CMD-check](https://github.com/drejom/haemdata/workflows/R-CMD-check/badge.svg)](https://github.com/drejom/haemdata/actions)  -->
+<!-- [![R-CMD-check](https://github.com/cohmathonchonchonc/haemdata/workflows/R-CMD-check/badge.svg)](https://github.com/cohmathonc/haemdata/actions)  -->
 
 <!-- badges: start -->
 ![](https://img.shields.io/badge/code-unstable-red) <br>
-[![R-CMD-check](https://github.com/drejom/haemdata/workflows/R-CMD-check/badge.svg)](https://github.com/drejom/haemdata/actions)
+[![R-CMD-check](https://github.com/cohmathonc/haemdata/workflows/R-CMD-check/badge.svg)](https://github.com/cohmathonc/haemdata/actions)
 <!-- badges: end -->
 An R package for processing and accessing genomics data from the PSON AML State-transition project at COH.
 
@@ -27,7 +27,7 @@ You can install the default version of Haemdata from the package website (campus
 install.packages("haemdata", repos = "http://cgt.coh.org/MHO")
 ```
 
-Can't find something that was previously available? Check the [release history](https://github.com/drejom/haemdata/releases).
+Can't find something that was previously available? Check the [release history](https://github.com/cohmathonc/haemdata/releases).
 
 ### Windows users
 Windows users require the `Rtools` toolchain bundle installed to build libraries, including some dependencies used by Haemdata. Find the appropriate installer for your version of R [here](https://cran.r-project.org/bin/windows/Rtools/).
