@@ -22,7 +22,7 @@ Source: [preprocessing/\_targets.qmd](https://github.com/cohmathonc/haemdata/blo
 Haemdata is an R package in two-parts: a targets pipeline that preprocesses raw sequencing reads and functions to access processed data.
 
 ::: {.callout-note appearance="simple"}
-The [{`targets`}](https://books.ropensci.org/targets/) package streamlines data workflows and promotes reproducibility. It skips redundant tasks and abstracts files as R objects to ensure efficient, painless, and trustworthy results.
+The [{`targets`}](https://books.ropensci.org/targets/) package streamlines data workflows and promotes reproducibility. It skips redundant tasks and abstracts files as R objects to ensure efficient, painless, and trustworthy results. This pipeline is run as a Target Markdown document, where the pipeline is defined within this Quarto file. 
 :::
 
 ## Load libraries & options
@@ -37,10 +37,10 @@ library(crew.cluster)
 tar_unscript()
 
 knitr::opts_chunk$set(
-    collapse = TRUE,
-    warning = FALSE,
-    message = FALSE,
-    comment = "#>"
+  collapse = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  comment = "#>"
 )
 ```
 
@@ -860,13 +860,13 @@ Having defined the pipeline targets above, R scripts are run using `tar_make_fut
 
 ```{r, eval = FALSE}
 system(
-    glue::glue(
-        "srun -J run_haemdata --time 48:00 /opt/singularity/3.7.0/bin/singularity exec \\
+  glue::glue(
+    "srun -J run_haemdata --time 48:00 /opt/singularity/3.7.0/bin/singularity exec \\
         --env R_LIBS_SITE=/opt/singularity-images/rbioc/rlibs/bioc-3.16 \\
         -B /labs,/opt/singularity,/opt/singularity-images \\
         --pwd {getwd()} \\
         /opt/singularity-images/rbioc/vscode-rbioc_3.16.sif Rscript -e 'targets::tar_make_future\\(\\)'"
-    )
+  )
 )
 ```
 
