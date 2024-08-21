@@ -22,7 +22,7 @@ Source: [preprocessing/\_targets.qmd](https://github.com/cohmathonc/haemdata/blo
 Haemdata is an R package in two-parts: a targets pipeline that preprocesses raw sequencing reads and functions to access processed data.
 
 ::: {.callout-note appearance="simple"}
-The [{`targets`}](https://books.ropensci.org/targets/) package streamlines data workflows and promotes reproducibility. It skips redundant tasks and abstracts files as R objects to ensure efficient, painless, and trustworthy results. This pipeline is run as a Target Markdown document, where the pipeline is defined within this Quarto file. 
+The [{`targets`}](https://books.ropensci.org/targets/) package streamlines data workflows and promotes reproducibility. It skips redundant tasks and abstracts files as R objects to ensure efficient, painless, and trustworthy results. This pipeline is run as a [Target Markdown](https://books.ropensci.org/targets/markdown.html) document, where the pipeline is defined within this Quarto file. 
 :::
 
 ## Load libraries & options
