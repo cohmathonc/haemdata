@@ -32,8 +32,7 @@ Set options and load libraries required to run the pipeline.
 ```{r setup}
 library(targets)
 library(tarchetypes)
-library(crew)
-library(crew.cluster)
+library(hprcc)
 tar_unscript()
 
 knitr::opts_chunk$set(
@@ -58,21 +57,23 @@ nf_core_cache <- "/labs/rrockne/MHO/haemdata-nf-core-cache"
 tar_source(here::here("preprocessing/scripts"))
 
 tar_option_set(
-    packages = c("tidyverse", "SummarizedExperiment", "haemdata", "tarchetypes"),
+    packages = c("tidyverse", "SummarizedExperiment", "haemdata", "tarchetypes", "hprcc"),
     error = "abridge" # continue with running targets on error
 )
+# Options are set by {hprcc}
 #-----------------------------------------------------------------------------
-tar_option_set(
-    workspace_on_error = TRUE,
-    format = "qs",
-    storage = "worker",
-    retrieval = "worker",
-    controller = crew::crew_controller_group(local, small, medium, large, bigmem),
-    resources = tar_resources(
-    # Run jobs locally by default
-    crew = tar_resources_crew(controller = "local")
-    )
-)
+# tar_option_set(
+#     workspace_on_error = TRUE,
+#     format = "qs",
+#     storage = "worker",
+#     retrieval = "worker",
+#     controller = crew::crew_controller_group(local, small, medium, large, bigmem),
+#     resources = tar_resources(n
+#     # Run jobs locally by default
+#     crew = tar_resources_crew(controller = "local")
+#     )
+# )
+
 ```
 
 ### nf-core pipeline versions
@@ -183,10 +184,10 @@ Samples can be combined in a single sample sheet before a major release or nf-co
 
 ```{targets sample_sheet_2016_2022}
 list(
-    tar_target(sample_sheet_2016_2022, make_rnaseq_sample_sheet(all_mice)),
-    tar_target(sample_sheet_CML_3, make_rnaseq_sample_sheet("^CML.mRNA.2022_pt2$")),
-    tar_target(sample_sheet_mrna_mir142ko, make_rnaseq_sample_sheet("^CML.mRNA.mir142ko$")),
-    tar_target(sample_sheet_mrna_old, make_rnaseq_sample_sheet("^senescence.mRNA.2022$"))
+    tar_target(sample_sheet_2016_2022, make_rnaseq_sample_sheet(all_mice, metadata_mmu_prepub)),
+    tar_target(sample_sheet_CML_3, make_rnaseq_sample_sheet("^CML.mRNA.2022_pt2$", metadata_mmu_prepub)),
+    tar_target(sample_sheet_mrna_mir142ko, make_rnaseq_sample_sheet("^CML.mRNA.mir142ko$", metadata_mmu_prepub)),
+    tar_target(sample_sheet_mrna_old, make_rnaseq_sample_sheet("^senescence.mRNA.2022$", metadata_mmu_prepub))
 )        
 ```
 
@@ -411,14 +412,14 @@ Somewhere along the line, the original, unedited fastqs were lost from the Isilo
 #### Pre-trimmed
 
 ```{targets mirna-sample-sheets_pretrimmed}
-tar_target(miRNA_sample_sheet_pretrimmed, pretrimmed_sample_sheet())
+tar_target(miRNA_sample_sheet_pretrimmed, pretrimmed_sample_sheet(metadata_mmu_prepub))
 ```
 
 #### Untrimmed
 
 ```{targets mirna-sample-sheets_untrimmed}
 tar_target(
-    miRNA_sample_sheet_untrimmed, untrimmed_sample_sheet())
+    miRNA_sample_sheet_untrimmed, untrimmed_sample_sheet(metadata_mmu_prepub))
 ```
 
 For untrimmed libraries, we use a function that loads the Apollo `cutadapt` module and spawns a job for each fastq file on the cluster. The trimmed files are cached in {nf_core_cache} and a sample sheet for the nf-core/smrnaseq pipeline is returned using the cached, trimmed and compressed fastqs.
@@ -495,7 +496,7 @@ list(
         mutate(across(starts_with("COHP"), ~ replace_na(., 0)))
         ),
     tar_target(mmu_mirna_isomir, make_isomir(mmu_mirna_mirtop_isomir, metadata_mmu),
-        resources = apollo_medium
+        resources = hprcc::medium
     )
 )
 ```
@@ -537,7 +538,7 @@ The [`seurat_import_cellplex()`](http://cgt.coh.org/haemdata/reference/seurat_im
 tar_target(
     mmu_10x_aml2022_GENCODEm28_HLT,
     seurat_import_cellplex("^AML.scRNAseq.2022$"),
-    resources = apollo_medium
+    resources = hprcc::medium
     )
 ```
 
@@ -549,7 +550,7 @@ Begin by preparing a sample sheet for the nf-core/smrnaseq pipeline:
 
 ```{targets 10X_SS_sample_sheets, eval=TRUE}
 list(
-tar_target(sample_sheet_mir142ko_10x, make_scrnaseq_sample_sheet("^CML.10x.mir142ko$")),
+tar_target(sample_sheet_mir142ko_10x, make_scrnaseq_sample_sheet("^CML.10x.mir142ko$", metadata_mmu_prepub)),
 tar_target(sample_sheet_blastcrisis_10x, parse_10x_blastcrisis())
 )
 ```
@@ -585,12 +586,12 @@ list(
     tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT,
     seurat_import_cellranger(mmu_10x_mir142ko_GENCODEm28_HLT_multiqc),
-    resources = apollo_medium
+    resources = hprcc::medium
     ),
     tar_target(
     mmu_10x_blastcrisis_GENCODEm28_HLT,
     seurat_import_cellranger(mmu_10x_blastcrisis_GENCODEm28_HLT_multiqc),
-    resources = apollo_medium
+    resources = hprcc::medium
     )
 )
 ```
@@ -611,17 +612,17 @@ list(
     tar_target(
     mmu_10x_aml2022_GENCODEm28_HLT_qc, 
     seurat_perform_cell_qc(mmu_10x_aml2022_GENCODEm28_HLT),
-    resources = apollo_medium
+    resources = hprcc::medium
     ),
     tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_qc, 
     seurat_perform_cell_qc(mmu_10x_mir142ko_GENCODEm28_HLT),
-    resources = apollo_medium
+    resources = hprcc::medium
     ),
     tar_target(
     mmu_10x_blastcrisis_GENCODEm28_HLT_qc, 
     seurat_perform_cell_qc(mmu_10x_blastcrisis_GENCODEm28_HLT),
-    resources = apollo_medium
+    resources = hprcc::medium
     )
     )
 ```
@@ -635,17 +636,17 @@ list(
     tar_target(
         mmu_10x_aml2022_GENCODEm28_HLT_sct,
         seurat_sctransform(mmu_10x_aml2022_GENCODEm28_HLT_qc),
-        resources = apollo_medium
+        resources = hprcc::medium
     ),
     tar_target(
         mmu_10x_mir142ko_GENCODEm28_HLT_sct,
         seurat_sctransform(mmu_10x_mir142ko_GENCODEm28_HLT_qc),
-        resources = apollo_medium
+        resources = hprcc::medium
     ),
     tar_target(
         mmu_10x_blastcrisis_GENCODEm28_HLT_sct,
         seurat_sctransform(mmu_10x_blastcrisis_GENCODEm28_HLT_qc),
-        resources = apollo_medium
+        resources = hprcc::medium
     )
     )
 ```
@@ -659,15 +660,15 @@ list(
 tar_target(
     mmu_10x_aml2022_GENCODEm28_HLT_sct_clust,
     seurat_annotate_clusters_and_umap(mmu_10x_aml2022_GENCODEm28_HLT_sct),
-    resources = apollo_medium),
+    resources = hprcc::medium),
 tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust,
     seurat_annotate_clusters_and_umap(mmu_10x_mir142ko_GENCODEm28_HLT_sct),
-    resources = apollo_medium),
+    resources = hprcc::medium),
 tar_target(
     mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust,
     seurat_annotate_clusters_and_umap(mmu_10x_blastcrisis_GENCODEm28_HLT_sct),
-    resources = apollo_medium)
+    resources = hprcc::medium)
     )
 ```
 
@@ -680,17 +681,17 @@ list(
     tar_target(
     mmu_10x_aml2022_GENCODEm28_HLT_sct_clust_cc,
     seurat_annotate_cell_cycle(mmu_10x_aml2022_GENCODEm28_HLT_sct_clust),
-    resources = apollo_medium
+    resources = hprcc::medium
     ),
 tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc,
     seurat_annotate_cell_cycle(mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust),
-    resources = apollo_medium
+    resources = hprcc::medium
     ),
 tar_target(
     mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust_cc,
     seurat_annotate_cell_cycle(mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust),
-    resources = apollo_medium
+    resources = hprcc::medium
     )
 )
 ```
@@ -704,17 +705,17 @@ list(
 tar_target(
     mmu_10x_aml2022_GENCODEm28_HLT_sct_clust_cc_ct,
     seurat_annotate_cell_type(mmu_10x_aml2022_GENCODEm28_HLT_sct_clust_cc),
-    resources = apollo_medium
+    resources = hprcc::medium
     ),
 tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc_ct,
     seurat_annotate_cell_type(mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc),
-    resources = apollo_huge
+    resources = hprcc::medium
     ),
 tar_target(
     mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust_cc_ct,
     seurat_annotate_cell_type(mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust_cc),
-    resources = apollo_medium
+    resources = hprcc::medium
     )
 )
 ```
@@ -746,27 +747,27 @@ list(
 list(
     tar_target(
         mmu_mrna_all_mice_GENCODEm28_pins, publish_se(mmu_mrna_all_mice_qc_se),
-        resources = apollo_small
+        resources = hprcc::small
     ),
     tar_target(
         mmu_mrna_techrep_GENCODEm28_pins, publish_se(mmu_mrna_techrep_qc_se),
-        resources = apollo_small
+        resources = hprcc::small
     ),
     tar_target(
         hsa_mrna_flt3_GENCODEm28_pins, publish_se(hsa_mrna_flt3_qc_se_flt),
-        resources = apollo_small
+        resources = hprcc::small
     ),
     tar_target(
         hsa_mrna_mds_GENCODEm28_pins, publish_se(hsa_mrna_mds_qc_se_flt),
-        resources = apollo_small
+        resources = hprcc::small
     ),
     tar_target(
         hsa_mrna_kim_GENCODEm28_pins, publish_se(hsa_mrna_kim_qc_se_flt),
-        resources = apollo_small
+        resources = hprcc::small
     ),
     tar_target(
         hsa_mrna_non_aml_GENCODEm28_pins, publish_se(hsa_mrna_non_aml_qc_se_flt),
-        resources = apollo_small
+        resources = hprcc::small
     )
 )
 ```
@@ -778,17 +779,17 @@ list(
     tar_target(
         mmu_mirna_all_mice_miRBase22_mirtop_counts_pins,
         publish_mirtop_counts(mmu_mirna_all_mice_miRBase22_mirtop_counts),
-        resources = apollo_small
+        resources = hprcc::small
     ),
     tar_target(
         mmu_mirna_all_mice_miRBase22_bowtie_cpm_pins,
         publish_bowtie_cpm(mmu_mirna_all_mice_miRBase22_bowtie_cpm),
-        resources = apollo_small
+        resources = hprcc::small
     ),
     tar_target(
         mmu_mirna_all_mice_miRBase22_mirna_qc_pins,
         publish_mirna_qc(mmu_mirna_all_mice_miRBase22_mirna_qc),
-        resources = apollo_small
+        resources = hprcc::small
     )
 )
 ```
@@ -800,17 +801,17 @@ list(
 tar_target(
     mmu_10x_aml2022_GENCODEm28_HLT_pins,
     publish_seurat(mmu_10x_aml2022_GENCODEm28_HLT_sct_clust_cc_ct),
-        resources = apollo_small
+        resources = hprcc::small
     ),
 tar_target(
     mmu_10x_mir142ko_GENCODEm28_HLT_pins,
     publish_seurat(mmu_10x_mir142ko_GENCODEm28_HLT_sct_clust_cc_ct),
-        resources = apollo_small
+        resources = hprcc::small
     ),
 tar_target(
     mmu_10x_blastcrisis_GENCODEm28_HLT_pins,
     publish_seurat(mmu_10x_blastcrisis_GENCODEm28_HLT_sct_clust_cc_ct),
-        resources = apollo_medium
+        resources = hprcc::medium
     )
     ) 
 ```
@@ -851,7 +852,7 @@ tar_target(
 tar_target(
     built_package,
     build_package(latest_published_data),
-    resources = apollo_medium)
+    resources = hprcc::medium)
 ```
 
 # Targets pipeline
@@ -872,8 +873,8 @@ system(
 
 The dependency graph illustrates the steps of the pipeline. It's interactive and you can zoom/pan to explore the `targets`.
 
-```{r}
-tar_visnetwork(targets_only = TRUE, label = c("time"))
+```{r eval = FALSE}
+tar_visnetwork(targets_only = TRUE)
 ```
 
 At this point, you can go back and run `{targets}` chunks in interactive mode without interfering with the code or data of the non-interactive pipeline.
