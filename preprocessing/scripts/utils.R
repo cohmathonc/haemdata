@@ -171,8 +171,8 @@ assign_new_sample_ids <- function(sample_sheet) {
 #' @param cohort regex pattern to select the cohort of interest.
 #' @return A data frame containing the library ID and fastq file paths for each sample in the given cohort.
 #' @export
-make_scrnaseq_sample_sheet <- function(cohort) {
-    targets::tar_read(metadata_mmu_prepub) |>
+make_scrnaseq_sample_sheet <- function(cohort, metadata_mmu_prepub) {
+    metadata_mmu_prepub |>
     dplyr::filter(str_detect(cohort, {{ cohort }})) |>
     dplyr::select(library_id, fastq_1, fastq_2)
 }
@@ -182,21 +182,21 @@ make_scrnaseq_sample_sheet <- function(cohort) {
 #' @param cohort regex pattern to select the cohort of interest.
 #' @return A data frame containing the library ID, fastq file paths, and strandedness for each sample in the given cohort.
 #' @export
-make_rnaseq_sample_sheet <- function(cohort) {
-    targets::tar_read(metadata_mmu_prepub) |>
+make_rnaseq_sample_sheet <- function(cohort, metadata_mmu_prepub) {
+    metadata_mmu_prepub |>
     dplyr::filter(str_detect(cohort, {{ cohort }})) |>
     dplyr::select(library_id, fastq_1, fastq_2, strandedness)
 }
 
-pretrimmed_sample_sheet <- function() {
-    targets::tar_read(metadata_mmu_prepub) |>
+pretrimmed_sample_sheet <- function(metadata_mmu_prepub) {
+    metadata_mmu_prepub |>
     dplyr::filter(stringr::str_detect(assay, "miRNA")) |>
     dplyr::filter(stringr::str_detect(fastq_1, "cutadapt")) |>
     dplyr::select(sample_id, library_id, fastq_1)
 }
 
-untrimmed_sample_sheet <- function() {
-    targets::tar_read(metadata_mmu_prepub) |>
+untrimmed_sample_sheet <- function(metadata_mmu_prepub) {
+    metadata_mmu_prepub |>
     dplyr::filter(stringr::str_detect(assay, "miRNA")) |>
     dplyr::filter(stringr::str_detect(fastq_1, "cutadapt", negate = TRUE)) |>
     dplyr::select(sample_id, library_id, fastq_1)
