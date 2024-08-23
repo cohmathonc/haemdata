@@ -16,39 +16,39 @@
 #' @export
 seurat_annotate_cell_type <- function(seurat_object) {
 
-    # Setup parallel processing
-    ncores <- parallelly::availableCores()
-    BiocParallel::register(
-        BiocParallel::MulticoreParam(ncores, ncores * 2, progressbar = TRUE)
-    )
-    # Make it reproducible
-    set.seed(1448145)
+  # Setup parallel processing
+  ncores <- parallelly::availableCores()
+  BiocParallel::register(
+    BiocParallel::MulticoreParam(ncores, ncores * 2, progressbar = TRUE)
+  )
+  # Make it reproducible
+  set.seed(1448145)
 
-    Seurat::DefaultAssay(seurat_object) <- "RNA"
+  Seurat::DefaultAssay(seurat_object) <- "RNA"
 
-    mmu_ImmGenData <- celldex::ImmGenData()
+  mmu_ImmGenData <- celldex::ImmGenData()
 
-    mmu_ImmGenData_label_fine <- mmu_ImmGenData$label.fine
+  mmu_ImmGenData_label_fine <- mmu_ImmGenData$label.fine
 
-    cell_labels <- SingleR::SingleR(
-        Seurat::GetAssayData(seurat_object, assay = "RNA", slot = "data"),
-        mmu_ImmGenData,
-        mmu_ImmGenData_label_fine,
-        BPPARAM = BiocParallel::bpparam()
-    )
+  cell_labels <- SingleR::SingleR(
+    Seurat::GetAssayData(seurat_object, assay = "RNA", slot = "data"),
+    mmu_ImmGenData,
+    mmu_ImmGenData_label_fine,
+    BPPARAM = BiocParallel::bpparam()
+  )
 
-    cell_types <- cell_labels |>
-        as.data.frame() |>
-        dplyr::mutate(
-            cell_type_fine = pruned.labels,
-            cell_type = stringr::str_replace(pruned.labels, " \\s*\\([^\\)]+\\)", "")) |>
-        dplyr::select(
-            cell_type,
-            cell_type_fine)
+  cell_types <- cell_labels |>
+    as.data.frame() |>
+    dplyr::mutate(
+      cell_type_fine = pruned.labels,
+      cell_type = stringr::str_replace(pruned.labels, " \\s*\\([^\\)]+\\)", "")) |>
+    dplyr::select(
+      cell_type,
+      cell_type_fine)
 
-    seurat_object <- Seurat::AddMetaData(seurat_object, cell_types)
+  seurat_object <- Seurat::AddMetaData(seurat_object, cell_types)
 
-    return(seurat_object)
+  return(seurat_object)
 
 }
 
@@ -72,45 +72,45 @@ seurat_annotate_cell_type <- function(seurat_object) {
 #' @author Denis O'Meally
 #' @export
 find_elbow <- function(seurat_object, plot = FALSE) {
-    # Determine percent of variation associated with each PC
-    pct <- seurat_object[["pca"]]@stdev / sum(seurat_object[["pca"]]@stdev) * 100
+  # Determine percent of variation associated with each PC
+  pct <- seurat_object[["pca"]]@stdev / sum(seurat_object[["pca"]]@stdev) * 100
 
-    # Calculate cumulative percent variation for each PC
-    cumu <- cumsum(pct)
+  # Calculate cumulative percent variation for each PC
+  cumu <- cumsum(pct)
 
-    # Determine which PC exhibits cumulative variation greater than 90%,
-    # and % variation associated with the PC is less than 5%
-    co1 <- which(cumu > 90 & pct < 5)[1]
+  # Determine which PC exhibits cumulative variation greater than 90%,
+  # and % variation associated with the PC is less than 5%
+  co1 <- which(cumu > 90 & pct < 5)[1]
 
-    # Determine the difference between variation of PC and subsequent PC
-    # and get the last point where change of % of variation is more than 0.1%.
-    co2 <- sort(which((pct[1:length(pct) - 1] - pct[2:length(pct)]) > 0.1), decreasing = T)[1] + 1
+  # Determine the difference between variation of PC and subsequent PC
+  # and get the last point where change of % of variation is more than 0.1%.
+  co2 <- sort(which((pct[1:length(pct) - 1] - pct[2:length(pct)]) > 0.1), decreasing = T)[1] + 1
 
-    # Choose the minimum of the two
-    pcs <- min(co1, co2)
+  # Choose the minimum of the two
+  pcs <- min(co1, co2)
 
-    if (plot) {
-        # Create a data.frame with values to plot
-        plot_df <- data.frame(
-            pct = pct,
-            cumu = cumu,
-            rank = 1:length(pct)
-        )
-        # Elbow plot to visualize
-        elbow_plot <- ggplot2::ggplot(plot_df, ggplot2::aes(cumu, pct, label = rank, color = rank > pcs)) +
-            ggplot2::geom_point() +
-            ggplot2::geom_text(hjust = 1, vjust = -0.5) +
-            geom_vline(xintercept = 90, color = "grey") +
-            ggplot2::geom_hline(yintercept = min(pct[pct > 5]), color = "grey") +
-            ggplot2::theme_bw() +
-            ggplot2::labs(
-                title = paste0("Elbow Plot of Principal Components\nChoose the first ", pcs, " PCs to retain for clustering"),
-                x = "Cumulative variation explained (%)",
-                y = "Percent variation explained (%)"
-            )
-        return(elbow_plot)
-    }
-    return(pcs)
+  if (plot) {
+    # Create a data.frame with values to plot
+    plot_df <- data.frame(
+      pct = pct,
+      cumu = cumu,
+      rank = 1:length(pct)
+    )
+    # Elbow plot to visualize
+    elbow_plot <- ggplot2::ggplot(plot_df, ggplot2::aes(cumu, pct, label = rank, color = rank > pcs)) +
+      ggplot2::geom_point() +
+      ggplot2::geom_text(hjust = 1, vjust = -0.5) +
+      geom_vline(xintercept = 90, color = "grey") +
+      ggplot2::geom_hline(yintercept = min(pct[pct > 5]), color = "grey") +
+      ggplot2::theme_bw() +
+      ggplot2::labs(
+        title = paste0("Elbow Plot of Principal Components\nChoose the first ", pcs, " PCs to retain for clustering"),
+        x = "Cumulative variation explained (%)",
+        y = "Percent variation explained (%)"
+      )
+    return(elbow_plot)
+  }
+  return(pcs)
 }
 
 #' Rotate UMAP
@@ -127,145 +127,29 @@ find_elbow <- function(seurat_object, plot = FALSE) {
 #' @author Denis O'Meally
 #' @export
 rotate_umap <- function(seurat_object, x = FALSE, y = FALSE) {
-    umap_coord <- (Seurat::Embeddings(seurat_object[["umap"]]))
+  umap_coord <- (Seurat::Embeddings(seurat_object[["umap"]]))
 
-    # check X coords
-    if (umap_coord[1, 1] > 0) {
-        umap_coord[, 1] <- umap_coord[, 1] * -1
-    }
-    if (x) {
-        umap_coord[, 1] <- umap_coord[, 1] * -1
-    }
+  # check X coords
+  if (umap_coord[1, 1] > 0) {
+    umap_coord[, 1] <- umap_coord[, 1] * -1
+  }
+  if (x) {
+    umap_coord[, 1] <- umap_coord[, 1] * -1
+  }
 
-    # check Y coords
-    if (umap_coord[1, 2] > 0) {
-        umap_coord[, 2] <- umap_coord[, 2] * -1
-    }
-    if (y) {
-        umap_coord[, 2] <- umap_coord[, 2] * -1
-    }
+  # check Y coords
+  if (umap_coord[1, 2] > 0) {
+    umap_coord[, 2] <- umap_coord[, 2] * -1
+  }
+  if (y) {
+    umap_coord[, 2] <- umap_coord[, 2] * -1
+  }
 
-    seurat_object@reductions$umap <- Seurat::CreateDimReducObject(
-        embeddings = umap_coord,
-        assay = "RNA"
-    )
-    return(seurat_object)
-}
-
-#' @title Make a Seurat object from 10X Cellranger CellPlex data
-#' @name seurat_import_cellplex
-#' @description
-#' Loads 10X Cellranger CellPlex h5ad data, builds Seurat objects and adds the following metatdata columns:
-#' `percent_mt`, `percent_ribo`, `percent_hb`, `percent_platelet`, `percent_xist`, `chrY_counts`, `percent_myh11`.
-#'
-#' Data are read in from file paths recorded in the metadata_mmu table, column `hdf5`.
-#' the `cohort_regex` parameter is used to select the cohort from by filtering on the 
-#' `cohort` column of the metadata_mmu table.
-#' Sex chromosome genes are parsed from the GTF and cached in `inst/extdata`.
-#'
-#' TODO: Include eg for accessing Y genes from package
-#'
-#' @param cohort_regex string, optional, regex pattern to match in `cohort`. Use this to select different
-#' cohorts.
-#' @return a list of Seurat objects
-#' @author Denis O'Meally
-#' @export
-# Make Seurat objects
-seurat_import_cellplex <- function(cohort_regex) {
-    # get a list of ChrY genes from GTF file
-    # Parse GTF: https://www.biostars.org/p/140471/
-
-    if (file.exists("inst/extdata/mmu_chrY_genes.txt")) {
-        chrY_genes <- scan("inst/extdata/mmu_chrY_genes.txt", character())
-    } else {
-        gtf <- glue::glue("{cellranger_folder}/ref/GENCODEm28_human_genes.filtered.gtf")
-        gtf_genes <- rtracklayer::import(gtf) |>
-            as.data.frame() |>
-            unique()
-        chrY_genes <- gtf_genes$gene_name[grepl("^chrY|^Y", gtf_genes$seqnames)] |> unique()
-        chrX_genes <- gtf_genes$gene_name[grepl("^chrX|^X", gtf_genes$seqnames)] |> unique()
-        # Remove PAR genes
-        chrY_genes <- chrY_genes[!(chrY_genes %in% chrX_genes)]
-        write.table(chrY_genes, "inst/extdata/mmu_chrY_genes.txt",
-            sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE
-        )
-    }
-
-    h5_paths <- readRDS(here::here("data-raw/metadata_mmu.rds")) |>
-        dplyr::filter(stringr::str_detect(cohort, {{ cohort_regex }})) |>
-        dplyr::filter(stringr::str_detect(assay, "scRNA")) |>
-        dplyr::pull(hdf5)
-    message("loaded paths from pinboard")
-    if (length(h5_paths) == 0) {
-        stop("No matching samples have h5ad file paths in the metadata_mmu table; check the cohort_regex.")
-    }
-
-    # Load all the samples
-    seurat_object_list <- future.apply::future_lapply(X = h5_paths, FUN = function(x) {
-
-        # extract metadata
-        sample_name <- stringr::str_extract(x, "(?<=per_sample_outs\\/)(.*?)(?=\\/)")
-
-        ref_genome <- gsub("_lib.*", "", stringr::str_extract(x, "(?<=cellranger\\/)(.*?)(?=\\/)"))
-        tissue <- dplyr::case_when(
-            stringr::str_detect(x, "PB_ckit") ~ "PBMC_CKIT",
-            stringr::str_detect(x, "BM_ckit") ~ "BM_CKIT",
-            stringr::str_detect(x, "BM") ~ "BM",
-            stringr::str_detect(x, "PB") ~ "PBMC",
-            TRUE ~ NA_character_
-        )
-        ckit <- dplyr::case_when(
-            stringr::str_detect(x, "ckit") ~ TRUE,
-            TRUE ~ FALSE
-        )
-
-        message(glue::glue("Loading sample: {sample_name}"))
-
-        # assemble Seurat object
-        x <- Seurat::CreateSeuratObject(
-            counts = Seurat::Read10X_h5(x)$`Gene Expression`,
-            project = sample_name,
-            min.cells = 3,
-            min.features = 200
-        )
-
-        # add metadata
-        x <- Seurat::AddMetaData(x,
-            metadata = c(ref_genome, tissue, ckit),
-            col.name = c("ref_genome", "tissue", "ckit")
-        )
-
-        # add QC data
-        x <- Seurat::AddMetaData(x,
-            metadata = data.frame(
-                Seurat::PercentageFeatureSet(x, pattern = "^mt-"),
-                Seurat::PercentageFeatureSet(x, pattern = "^Rp[sl]"),
-                Seurat::PercentageFeatureSet(x, pattern = "^Hb[^(p)]"),
-                Seurat::PercentageFeatureSet(x, pattern = "^Pecam1|^Pf4"),
-                Seurat::PercentageFeatureSet(x, pattern = "^Xist"),
-                # some logic to manage the edge case where none or one Y gene(s) has counts resulting
-                # in a zero length character or a vector rather than a matrix, as required by Matrix::colSums
-                # colSums is required because PercentageFeatureSet() fails when supplied a full list of Y genes
-                # Maybe https://github.com/satijalab/seurat/issues/1665
-                ifelse(
-                    sum(rownames(x@assays$RNA@counts) %in% chrY_genes) > 2,
-                    (Matrix::colSums(x@assays$RNA@counts[rownames(x@assays$RNA@counts) %in% chrY_genes, ]) / Matrix::colSums(x@assays$RNA@counts)) %>% as.data.frame() * 100,
-                    ifelse(
-                        sum(rownames(x@assays$RNA@counts) %in% chrY_genes) == 1,
-                        Seurat::PercentageFeatureSet(x, pattern = chrY_genes[chrY_genes %in% rownames(x@assays$RNA@counts)]),
-                        Seurat::PercentageFeatureSet(x, pattern = "ZERO EXPRESSION")
-                    )
-                ),
-                Seurat::PercentageFeatureSet(x, pattern = "^HSA-MYH11-gene")
-            ),
-            col.name = c(
-                "percent_mt", "percent_ribo", "percent_hb", "percent_platelet",
-                "percent_xist", "chrY_counts", "percent_myh11"
-            )
-        )
-    })
-
-    return(seurat_object_list)
+  seurat_object@reductions$umap <- Seurat::CreateDimReducObject(
+    embeddings = umap_coord,
+    assay = "RNA"
+  )
+  return(seurat_object)
 }
 
 #' Basic single cell QC
@@ -285,38 +169,38 @@ seurat_import_cellplex <- function(cohort_regex) {
 #' @export
 seurat_perform_cell_qc <- function(raw_seurat_objects) {
 
-    # loop through objects in list
-    filtered_seurat_objects <- future.apply::future_lapply(
-        X = raw_seurat_objects, FUN = function(x) {
+  # loop through objects in list
+  filtered_seurat_objects <- future.apply::future_lapply(
+    X = raw_seurat_objects, FUN = function(x) {
 
-            # Detection-based filtering
-            # Genes expressed in at least 3 cells
-            x <- subset(x, features = rownames(x)[Matrix::rowSums(x) > 3])
+      # Detection-based filtering
+      # Genes expressed in at least 3 cells
+      x <- subset(x, features = rownames(x)[Matrix::rowSums(x) > 3])
 
-            # filter on mt and ribo reads, and cells with at least 200 genes ----------
-            x <- subset(x, subset = nFeature_RNA > 200 & percent_mt < 20 & percent_ribo > 5)
-        }, future.seed = TRUE
-    )
+      # filter on mt and ribo reads, and cells with at least 200 genes ----------
+      x <- subset(x, subset = nFeature_RNA > 200 & percent_mt < 20 & percent_ribo > 5)
+    }, future.seed = TRUE
+  )
 
-    seurat_object <- merge(
-        x = filtered_seurat_objects[[1]],
-        y = filtered_seurat_objects[2:length(filtered_seurat_objects)]
-    )
+  seurat_object <- merge(
+    x = filtered_seurat_objects[[1]],
+    y = filtered_seurat_objects[2:length(filtered_seurat_objects)]
+  )
 
-    # add Misc metadata to the seurat object
-    name <- gsub(
-        "(?<=GENCODEm28_HLT|GRCm38_HLT).*$",
-        "",
-        deparse(substitute(raw_seurat_objects)),
-        perl = TRUE
-    )
-    description <- glue::glue(
-        "A haemdata Seurat object created using the SCTransform v2 integration method. See {haemdata_env$package_url}/reference/{name}.html for more information."
-    )
-    Seurat::Misc(seurat_object, slot = "description") <- description
-    Seurat::Misc(seurat_object, slot = "name") <- name
+  # add Misc metadata to the seurat object
+  name <- gsub(
+    "(?<=GENCODEm28_HLT|GRCm38_HLT).*$",
+    "",
+    deparse(substitute(raw_seurat_objects)),
+    perl = TRUE
+  )
+  description <- glue::glue(
+    "A haemdata Seurat object created using the SCTransform v2 integration method. See {haemdata_env$package_url}/reference/{name}.html for more information."
+  )
+  Seurat::Misc(seurat_object, slot = "description") <- description
+  Seurat::Misc(seurat_object, slot = "name") <- name
 
-    return(seurat_object)
+  return(seurat_object)
 }
 
 #' Annotate mouse cell cycle
@@ -340,49 +224,49 @@ seurat_perform_cell_qc <- function(raw_seurat_objects) {
 #' @export
 seurat_annotate_cell_cycle <- function(seurat_object) {
 
-    # Previously used this with success:
-    # https://ucdavis-bioinformatics-training.github.io/2019-single-cell-RNA-sequencing-Workshop-UCD_UCSF/scrnaseq_analysis/scRNA_Workshop-PART1.html
-    # But its a bit hacky and overly complex.
+  # Previously used this with success:
+  # https://ucdavis-bioinformatics-training.github.io/2019-single-cell-RNA-sequencing-Workshop-UCD_UCSF/scrnaseq_analysis/scRNA_Workshop-PART1.html
+  # But its a bit hacky and overly complex.
 
-    # This is the recommended way to convert to mouse ids, but ensembl is down at time of testing
-    # Basic function to convert human to mouse gene names
-    # convert_human_gene_list <- function(x) {
-    #     # https://www.r-bloggers.com/2016/10/converting-mouse-to-human-gene-names-with-biomart-package/
+  # This is the recommended way to convert to mouse ids, but ensembl is down at time of testing
+  # Basic function to convert human to mouse gene names
+  # convert_human_gene_list <- function(x) {
+  #     # https://www.r-bloggers.com/2016/10/converting-mouse-to-human-gene-names-with-biomart-package/
 
-    #     human <- biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl")
-    #     mouse <- biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+  #     human <- biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+  #     mouse <- biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl")
 
-    #     genesV2 <- biomaRt::getLDS(
-    #         attributes = c("hgnc_symbol"),
-    #         filters = "hgnc_symbol",
-    #         values = x,
-    #         mart = human,
-    #         attributesL = c("mgi_symbol"),
-    #         martL = mouse,
-    #         uniqueRows = T
-    #     )
+  #     genesV2 <- biomaRt::getLDS(
+  #         attributes = c("hgnc_symbol"),
+  #         filters = "hgnc_symbol",
+  #         values = x,
+  #         mart = human,
+  #         attributesL = c("mgi_symbol"),
+  #         martL = mouse,
+  #         uniqueRows = T
+  #     )
 
-    #     humanx <- unique(genesV2[, 2])
+  #     humanx <- unique(genesV2[, 2])
 
-    #     # Print the first 6 genes found to the screen
-    #     print(head(humanx))
-    #     return(humanx)
-    # }
+  #     # Print the first 6 genes found to the screen
+  #     print(head(humanx))
+  #     return(humanx)
+  # }
 
-    # g2m.genes <- convert_human_gene_list(Seurat::cc.genes.updated.2019$g2m.genes)
-    # s.genes <- convert_human_gene_list(Seurat::cc.genes.updated.2019$s.genes)
+  # g2m.genes <- convert_human_gene_list(Seurat::cc.genes.updated.2019$g2m.genes)
+  # s.genes <- convert_human_gene_list(Seurat::cc.genes.updated.2019$s.genes)
 
-    # In the interim, just make them all look like mouse symbols
-    g2m_genes <- gsub("(?<=\\b)([a-z])", "\\U\\1", tolower(Seurat::cc.genes.updated.2019$g2m.genes), perl = TRUE)
-    s_genes <- gsub("(?<=\\b)([a-z])", "\\U\\1", tolower(Seurat::cc.genes.updated.2019$s.genes), perl = TRUE)
+  # In the interim, just make them all look like mouse symbols
+  g2m_genes <- gsub("(?<=\\b)([a-z])", "\\U\\1", tolower(Seurat::cc.genes.updated.2019$g2m.genes), perl = TRUE)
+  s_genes <- gsub("(?<=\\b)([a-z])", "\\U\\1", tolower(Seurat::cc.genes.updated.2019$s.genes), perl = TRUE)
 
-    seurat_object <- Seurat::CellCycleScoring(
-        object = seurat_object,
-        g2m.features = g2m_genes,
-        s.features = s_genes
-    )
+  seurat_object <- Seurat::CellCycleScoring(
+    object = seurat_object,
+    g2m.features = g2m_genes,
+    s.features = s_genes
+  )
 
-    return(seurat_object)
+  return(seurat_object)
 }
 
 #' scTransform integration for Seurat objects
@@ -398,14 +282,14 @@ seurat_annotate_cell_cycle <- function(seurat_object) {
 #' @author Denis O'Meally
 #' @export
 seurat_sctransform <- function(seurat_object) {
-    # scTransform
-    Seurat::SCTransform(
-        seurat_object,
-        # vars.to.regress = "percent.mt",
-        method = "glmGamPoi",
-        seed.use = 1448145,
-        verbose = TRUE
-    )
+  # scTransform
+  Seurat::SCTransform(
+    seurat_object,
+    # vars.to.regress = "percent.mt",
+    method = "glmGamPoi",
+    seed.use = 1448145,
+    verbose = TRUE
+  )
 }
 
 #' Annotate UMAP and knn clusters
@@ -426,29 +310,29 @@ seurat_sctransform <- function(seurat_object) {
 #' @export
 seurat_annotate_clusters_and_umap <- function(seurat_object) {
 
-    # TODO make a parameter to iterate over cluster resolution values, and one to set it explicitly
+  # TODO make a parameter to iterate over cluster resolution values, and one to set it explicitly
 
-    # Run the standard workflow for visualization and clustering -------------------
+  # Run the standard workflow for visualization and clustering -------------------
 
-    seurat_object <- seurat_object |>
-        Seurat::RunPCA() |>
-        Seurat::FindNeighbors() |>
-        Seurat::FindClusters(resolution = 0.4) |> # 22 clusters for GENCODEm28 integrated
-        Seurat::FindClusters(resolution = 0.6) |>
-        Seurat::FindClusters(resolution = 0.8) |> # 30 clusters
-        Seurat::FindClusters(resolution = 1.0) |>
-        Seurat::FindClusters(resolution = 1.2) |> # 45 clusters
-        Seurat::FindClusters(resolution = 0.2) |>
-        Seurat::RunUMAP(
-            reduction = "pca",
-            dims = 1:30,
-            seed.use = 1448145
-        ) |>
-        rotate_umap()
+  seurat_object <- seurat_object |>
+    Seurat::RunPCA() |>
+    Seurat::FindNeighbors() |>
+    Seurat::FindClusters(resolution = 0.4) |> # 22 clusters for GENCODEm28 integrated
+    Seurat::FindClusters(resolution = 0.6) |>
+    Seurat::FindClusters(resolution = 0.8) |> # 30 clusters
+    Seurat::FindClusters(resolution = 1.0) |>
+    Seurat::FindClusters(resolution = 1.2) |> # 45 clusters
+    Seurat::FindClusters(resolution = 0.2) |>
+    Seurat::RunUMAP(
+      reduction = "pca",
+      dims = 1:30,
+      seed.use = 1448145
+    ) |>
+    rotate_umap()
 
-    # Explicitly set the default assay & identity -------------------------
-    Seurat::DefaultAssay(seurat_object) <- "SCT"
-    Seurat::Idents(seurat_object) <- "seurat_clusters"
+  # Explicitly set the default assay & identity -------------------------
+  Seurat::DefaultAssay(seurat_object) <- "SCT"
+  Seurat::Idents(seurat_object) <- "seurat_clusters"
 
-    return(seurat_object)
+  return(seurat_object)
 }
