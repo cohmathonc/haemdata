@@ -123,7 +123,9 @@ seurat_import_cellplex <- function(cohort_regex, metadata_mmu_prepub) {
   if (file.exists("inst/extdata/mmu_chrY_genes.txt")) {
     chrY_genes <- scan("inst/extdata/mmu_chrY_genes.txt", character())
   } else {
-    gtf <- glue::glue("{cellranger_folder}/ref/GENCODEm28_human_genes.filtered.gtf")
+    gtf <- ifelse(hprcc::get_cluster() == "apollo",
+      "/ref_genome/igenomes/Mus_musculus/Cellranger/GENCODEm28_human_genes.filtered.gtf",
+      stop("reference not available on gemini"))
     gtf_genes <- rtracklayer::import(gtf) |>
       as.data.frame() |>
       unique()
