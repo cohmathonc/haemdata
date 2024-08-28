@@ -537,7 +537,7 @@ The [`seurat_import_cellplex()`](http://cgt.coh.org/haemdata/reference/seurat_im
 ```{targets seurat_import_objects_2022, eval=TRUE}
 tar_target(
     mmu_10x_aml2022_GENCODEm28_HLT,
-    seurat_import_cellplex("^AML.scRNAseq.2022$"),
+    seurat_import_cellplex("^AML.scRNAseq.2022$", metadata_mmu_prepub),
     resources = hprcc::medium
     )
 ```
