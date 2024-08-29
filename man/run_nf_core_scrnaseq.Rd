@@ -11,7 +11,7 @@ run_nfcore_scrnaseq(run_folder, sample_sheet)
 \item{run_folder}{subfolder in which to run nextflow, keeps the pipeline
 from overwriting previous runs and enables the \code{-resume} feature of Nextflow.}
 
-\item{sample_sheet}{nf-core sample sheet with the columns \verb{library_id, fastq_1, fastq_2, strandedness} (see \href{https://github.com/drejom/haemdata/blob/HEAD/R/import_metadata.R}{\code{R/import_metadata.R}})}
+\item{sample_sheet}{nf-core sample sheet with the columns \verb{library_id, fastq_1, fastq_2, strandedness} (see \href{https://github.com/cohmathonc/haemdata/blob/HEAD/R/import_metadata.R}{\code{R/import_metadata.R}})}
 }
 \value{
 a path to the run script, or the multiqc report if it exists.

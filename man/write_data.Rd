@@ -23,7 +23,7 @@ StackOverflow post. Uses 'xz' to compress the file.
 \examples{
 \dontrun{
 if (interactive()) {
-    write_rda("an_rda_file_named_that", an_object_named_this)
+  write_rda("an_rda_file_named_that", an_object_named_this)
 }
 }
 }

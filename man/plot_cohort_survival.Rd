@@ -5,7 +5,7 @@
 \title{Plot cohort survival}
 \usage{
 plot_cohort_survival(
-  sample_sheet = published_metadata_mmu,
+  sample_sheet = metadata_mmu_prepub,
   cohort_regex,
   assay_regex = "mRNA"
 )
@@ -34,5 +34,6 @@ different treatments.
 \dontrun{
 use_pinboard("devel")
 get_pin("metadata_mmu.csv") |>
-plot_cohort_survival(cohort_regex = "AML")}
+  plot_cohort_survival(cohort_regex = "AML")
+}
 }

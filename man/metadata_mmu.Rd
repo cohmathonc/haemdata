@@ -4,9 +4,6 @@
 \name{metadata_mmu}
 \alias{metadata_mmu}
 \title{Minimal metadata for mouse samples}
-\source{
-\href{https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24}{\code{update_metadata_mmu()}}
-}
 \description{
 \href{../metadata_mmu_template.xlsx}{Download} a template for new samples\tabular{ll}{
    Column \tab Description \cr
@@ -38,12 +35,12 @@
 }
 }
 \details{
-The \href{https://github.com/drejom/haemdata/blob/main/scripts/import_metadata.R#L24}{\code{update_metadata_mmu()}}
+The \href{https://github.com/cohmathonc/haemdata/blob/main/scripts/import_metadata.R#L24}{\code{update_metadata_mmu()}}
 function assembles the metadata for all RNAseq libraries from AML and CML mice, by consolidating
 data scraped from multiple sequencing run sheets, directly from sequencing folders, emails, and so forth.
 The code is complex and ugly and undoubtedly some errors will have made it through.
 
-Raise an \href{https://github.com/drejom/haemdata/issues}{issue on GitHub}
+Raise an \href{https://github.com/cohmathonc/haemdata/issues}{issue on GitHub}
 to report erroneous or missing records.
 }
 \author{

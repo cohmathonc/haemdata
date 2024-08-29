@@ -15,7 +15,7 @@ Package environment
 }
 \details{
 The \code{haemdata_env} package environment holds variables and objects used
-by the package, for example the \code{pin_board}. See see the \href{https://github.com/drejom/haemdata/blob/main/R/haemdata.R}{package source}
+by the package, for example the \code{pin_board}. See see the \href{https://github.com/cohmathonc/haemdata/blob/main/R/haemdata.R}{package source}
 for more context.
 }
 \keyword{datasets}

@@ -4,12 +4,8 @@
 \name{metadata_hsa}
 \alias{metadata_hsa}
 \title{Minimal metadata for human samples}
-\source{
-\href{https://github.com/drejom/haemdata/blob/cf03cf0a3eb420a8ee6276c7ec0a9186a55c0e2b/scripts/import_metadata.R#L3}{\code{make_metadata_hsa()}}
-}
 \description{
-The \href{https://github.com/drejom/haemdata/blob/cf03cf0a3eb420a8ee6276c7ec0a9186a55c0e2b/scripts/import_metadata.R#L3}{\code{make_metadata_hsa()}}
-function assembles the metadata for all RNAseq libraries
+The make_metadata_hsa() function assembles the metadata for all RNAseq libraries
 from patient samples. Minimal metadata fields include library_id, fastq_1, fastq_2, strandedness,
 sample_id, tissue, weeks, timepoint, batch, treatment, genotype, sex, dob, project.
 }
@@ -18,7 +14,7 @@ For human samples, metadata are sourced from the EGA and supplied excel sheets.
 
 #TODO Describe the studies: MDS & COH Biobank FLT3
 
-Raise an \href{https://github.com/drejom/haemdata/issues}{issue on GitHub}
+Raise an \href{https://github.com/cohmathonc/haemdata/issues}{issue on GitHub}
 to report erroneous or missing records.
 }
 \author{
