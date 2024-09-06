@@ -122,6 +122,7 @@ seurat_import_cellplex <- function(cohort_regex, metadata_mmu_prepub) {
   # get a list of ChrY genes from GTF file
   # Parse GTF: https://www.biostars.org/p/140471/
 
+# TODO This is failing Aug 20204 - need to fix with absolute paths or use here::here()
   if (file.exists("inst/extdata/mmu_chrY_genes.txt")) {
     chrY_genes <- scan("inst/extdata/mmu_chrY_genes.txt", character())
   } else {
