@@ -23,7 +23,7 @@ targets::tar_invalidate(matches("mmu_mrna.*_pins"))
 targets::tar_invalidate(matches("built_package"))
 
 # run the pipeline
-targets::tar_make_future()
+targets::tar_make()
 
 # function to test, build, install
 tbi <- function() {
