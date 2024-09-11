@@ -5,7 +5,7 @@ title: "How do I..."
 ## Plot *Kit* expression over time
 
 ```{r, message=FALSE, warning=FALSE}
-#| collapse = TRUE
+#| collapse: TRUE
 #| code-summary: "Show the code"
 library(haemdata)
 use_pinboard("onedrive")
@@ -32,7 +32,7 @@ SummarizedExperiment::assay(se, "abundance") |>
     ggplot2::geom_point(alpha = 0.3) +
     ggplot2::geom_smooth(ggplot2::aes(group = treatment), span = 0.4) +
     ggplot2::facet_wrap("gene_id") +
-    ggplot2::ggtitle(glue::glue("Abundance of {gene_of_interest}")) +
+    ggplot2::ggtitle(glue::glue("Abundance of KIT transcripts")) +
     ggplot2::ylab("log2(TPM)") +
     ggplot2::xlab("Weeks") +
     ggplot2::theme_minimal() +
@@ -47,7 +47,7 @@ SummarizedExperiment::assay(se, "abundance") |>
 Plot the proportion of cell types over time in the CML "blast crisis" single cell RNAseq dataset
 
 ```{r, message=FALSE, warning=FALSE}
-#| collapse = TRUE
+#| collapse: TRUE
 #| code-summary: "Show the code"
 library(haemdata)
 library(tidyverse)
@@ -57,12 +57,12 @@ library(plotly)
 use_pinboard("onedrive")
 
 start<-Sys.time()
-seurat_object <- get_pin("mmu_10x_blastcrisis_GENCODEm28_HLT.rds")
+seurat_object <- get_pin("mmu_10x_blastcrisis_GENCODEm28_HLT.rds", "20231002T230117Z-02ae7")
 end<-Sys.time()
 end-start
 # ~5 mins
 
-metadata_mmu <- get_pin("metadata_mmu.csv") |>
+metadata_mmu <- get_pin("metadata_mmu.csv", "20230907T012227Z-d3324") |>
     dplyr::filter(
         stringr::str_detect(cohort, "blastcrisis") &
         stringr::str_detect(assay, "scRNA")) |>
@@ -156,6 +156,6 @@ From time-to-time, the cache used by the {pins} package  can become corrupted. T
 
 From the Terminal in Rstudio, or any shell on your computer, delete one or all corrupted items:
 
-```{sh}
+```{sh eval=FALSE}
 rm -rf ~/.cache/pins/[name of the corrupted pin]
 ```
