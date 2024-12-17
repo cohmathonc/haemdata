@@ -1,0 +1,43 @@
+/*
+vim: syntax=groovy
+-*- mode: groovy;-*-
+ * --------------------------------------------------------------------------------
+ *  Nextflow config file for use with Singularity on APOLLO cluster at City of Hope
+ * --------------------------------------------------------------------------------
+ * Defines basic usage limits and singularity image id.
+ */
+
+workDir = '/labs/kmorris/Group/omeally/NXF_WORKDIR'
+
+singularity {
+    enabled = true
+    cacheDir = "/opt/singularity-images/nextflow"
+}
+
+process {
+    executor = 'slurm'
+//    queue = { task.time < 12.h ? 'scavenge.cancel' : 'all' }
+//    clusterOptions = '--account=jkaddis-sc'
+    queue = { task.time >= 6.h ? 'all' : task.memory >= 50.GB ? 'all' : task.cpu <= 2 ? 'fast' : 'all' }
+    errorStrategy = { task.exitStatus in [140, 131, 130, 9, 64, 143, 137, 104, 134, 139] ? 'retry' : 'finish' }
+}
+
+tower {
+    // drejom @ github
+    accessToken = 'b46e6d51b70416999db738d86dcde959ad65c016'
+    enabled = false
+}
+
+executor {
+    name = 'slurm'
+    queueSize = 250
+}
+
+params {
+  max_memory = 1500.GB
+  max_cpus = 72
+  max_time = 336.h
+  // reference file paths on Apollo
+  igenomes_base = "/ref_genome/igenomes"
+}
+

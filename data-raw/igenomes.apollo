@@ -1,0 +1,116 @@
+/*
+vim: syntax=groovy
+-*- mode: groovy;-*-
+ * -------------------------------------------------
+ *  Nextflow config file for iGenomes paths
+ * -------------------------------------------------
+ * Defines reference genomes, using iGenome paths
+ * Can be used by any config that customises the base
+ * path using $params.igenomes_base / --igenomes_base
+ */
+
+params {
+  // reference file paths on COH Apollo Cluster
+  genomes {
+    "GRCh37" {
+      bed12   = "${params.igenomes_base}/Homo_sapiens/Ensembl/GRCh37/Annotation/Genes/genes.bed"
+      fasta   = "${params.igenomes_base}/Homo_sapiens/Ensembl/GRCh37/Sequence/WholeGenomeFasta/genome.fa"
+      gtf     = "${params.igenomes_base}/Homo_sapiens/Ensembl/GRCh37/Annotation/Genes/genes.gtf"
+      star    = "${params.igenomes_base}/Homo_sapiens/Ensembl/GRCh37/Sequence/STARIndex"
+      bismark = "${params.igenomes_base}/Homo_sapiens/Ensembl/GRCh37/Sequence/BismarkIndex"
+      bwa     = "${params.igenomes_base}/Homo_sapiens/Ensembl/GRCh37/Sequence/BWAIndex"
+      mature  = "${params.igenomes_base}/Homo_sapiens/Ensembl/GRCh37/Annotation/SmallRNA/mature.fa"
+      hairpin = "${params.igenomes_base}/Homo_sapiens/Ensembl/GRCh37/Annotation/SmallRNA/hairpin.fa"
+      bowtie  = "${params.igenomes_base}/Homo_sapiens/Ensembl/GRCh37/Sequence/BowtieIndex/genome"
+      bowtie2 = "${params.igenomes_base}/Homo_sapiens/Ensembl/GRCh37/Sequence/Bowtie2Index/genome"
+    }
+    "hg38" {
+      bed12   = "${params.igenomes_base}/Homo_sapiens/UCSC/hg38/Annotation/Genes/genes.bed"
+      fasta   = "${params.igenomes_base}/Homo_sapiens/UCSC/hg38/Sequence/WholeGenomeFasta/genome.fa"
+      gtf     = "${params.igenomes_base}/Homo_sapiens/UCSC/hg38/Annotation/Genes/genes.gtf"
+      star    = "${params.igenomes_base}/Homo_sapiens/UCSC/hg38/Sequence/STARIndex"
+      bwa     = "${params.igenomes_base}/Homo_sapiens/UCSC/hg38/Sequence/BWAIndex"
+    }
+    "GRCm38" {
+      bed12   = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38/Annotation/Genes/genes.bed"
+      fasta   = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38/Sequence/WholeGenomeFasta/genome.fa"
+      gtf     = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38/Annotation/Genes/genes.gtf"
+      star    = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38/Sequence/STARIndex"
+      bismark = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38/Sequence/BismarkIndex"
+      bwa     = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38/Sequence/BWAIndex"
+      mature  = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38/Annotation/SmallRNA/mature.fa"
+      hairpin = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38/Annotation/SmallRNA/hairpin.fa"
+      bowtie  = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38/Sequence/BowtieIndex/genome"
+      bowtie2 = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38/Sequence/Bowtie2Index/genome"
+    }
+    "GRCm38_HLT" {
+      fasta   = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38_human_leukemic_transgenes/GRCm38_human_genes.fasta"
+      bed12   = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38_human_leukemic_transgenes/GRCm38_human_genes.bed"
+      gtf     = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38_human_leukemic_transgenes/GRCm38_human_genes.gtf"
+      star    = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38_human_leukemic_transgenes/index/star"
+      rsem    = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38_human_leukemic_transgenes/index/star"
+      salmon  = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38_human_leukemic_transgenes/index/salmon"
+    }
+    "GRCm38.ERCC" {
+      bed12   = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38/Annotation/Genes/genes.ERCC.bed"
+      fasta   = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38/Sequence/WholeGenomeFasta/genome.ERCC.fa"
+      gtf     = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38/Annotation/Genes/genes.ERCC.gtf"
+      star    = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38/Sequence/STARIndex.ERCC"
+      hisat2  = "${params.igenomes_base}/Mus_musculus/Ensembl/GRCm38/Sequence/HISAT2Index.ERCC"
+    }
+    "GENCODEr29" {
+      gencode = true
+      gtf     = "${params.igenomes_base}/Homo_sapiens/GENCODE/Release29/gencode.v29.annotation.gtf"
+      fasta   = "${params.igenomes_base}/Homo_sapiens/GENCODE/Release29/GRCh38.primary_assembly.genome.fa"
+    }
+    "GENCODEr33" {
+      bed12   = "${params.igenomes_base}/Homo_sapiens/GENCODE/Release33/gencode.v33.annotation.bed"
+      fasta   = "${params.igenomes_base}/Homo_sapiens/GENCODE/Release33/GRCh38.primary_assembly.genome.fa"
+      gtf     = "${params.igenomes_base}/Homo_sapiens/GENCODE/Release33/gencode.v33.annotation.gtf"
+      star    = "${params.igenomes_base}/Homo_sapiens/GENCODE/Release33/star"
+    }
+    "GENCODEr40" {
+      bed12   = "${params.igenomes_base}/Homo_sapiens/GENCODE/Release40/gencode.v40.annotation.bed"
+      fasta   = "${params.igenomes_base}/Homo_sapiens/GENCODE/Release40/GRCh38.primary_assembly.genome.fa"
+      gtf     = "${params.igenomes_base}/Homo_sapiens/GENCODE/Release40/gencode.v40.annotation.gtf"
+      star    = "${params.igenomes_base}/Homo_sapiens/GENCODE/Release40/star"
+      rsem    = "${params.igenomes_base}/Homo_sapiens/GENCODE/Release40/rsem"
+      salmon  = "${params.igenomes_base}/Homo_sapiens/GENCODE/Release40/salmon"
+      transcript_fasta    = "${params.igenomes_base}/Homo_sapiens/GENCODE/Release40/genome.transcripts.fa"
+    }
+    "GENCODEm28" {
+      bed12   = "${params.igenomes_base}/Mus_musculus/GENCODE/ReleaseM28/gencode.vM28.annotation.bed"
+      fasta   = "${params.igenomes_base}/Mus_musculus/GENCODE/ReleaseM28/GRCm39.primary_assembly.genome.fa"
+      gtf     = "${params.igenomes_base}/Mus_musculus/GENCODE/ReleaseM28/GRCm39.primary_assembly.genome_genes.gtf"
+      rsem    = "${params.igenomes_base}/Mus_musculus/GENCODE/ReleaseM28/index/rsem"
+      salmon  = "${params.igenomes_base}/Mus_musculus/GENCODE/ReleaseM28/index/salmon"
+      transcript_fasta  = "${params.igenomes_base}/Mus_musculus/GENCODE/ReleaseM28/genome.transcripts.fa"
+    }
+    "GENCODEm28_HLT" {
+      gencode = true
+      bed12   = "${params.igenomes_base}/Mus_musculus/GENCODE/ReleaseM28_HLT/GENCODEm28_human_genes.bed"
+      fasta   = "${params.igenomes_base}/Mus_musculus/GENCODE/ReleaseM28_HLT/GENCODEm28_human_genes.fasta"
+      gtf     = "${params.igenomes_base}/Mus_musculus/GENCODE/ReleaseM28_HLT/GENCODEm28_human_genes.gtf"
+      rsem    = "${params.igenomes_base}/Mus_musculus/GENCODE/ReleaseM28_HLT/rsem"
+      star    = "${params.igenomes_base}/Mus_musculus/GENCODE/ReleaseM28_HLT/star"
+      salmon  = "${params.igenomes_base}/Mus_musculus/GENCODE/ReleaseM28_HLT/salmon"
+      transcript_fasta  = "${params.igenomes_base}/Mus_musculus/GENCODE/ReleaseM28_HLT/genome.transcripts.fa"
+    }
+    "2024-A_HLT" {
+      gencode = true
+      fasta   = "${params.igenomes_base}/Mus_musculus/GENCODE/GENCODE_mmu_M33_primary_2024-A_HLT/fasta/genome.fa"
+      gtf     = "${params.igenomes_base}/Mus_musculus/GENCODE/GENCODE_mmu_M33_primary_2024-A_HLT/genes/genes.gtf.gz"
+      star    = "${params.igenomes_base}/Mus_musculus/GENCODE/GENCODE_mmu_M33_primary_2024-A_HLT/star"
+      cellranger_index  = "${params.igenomes_base}/Mus_musculus/GENCODE/GENCODE_mmu_M33_primary_2024-A_HLT"
+    }
+    "Rnor_6.0" {
+      fasta   = "${params.igenomes_base}/Rattus_norvegicus/Ensembl/Rnor_6.0/Sequence/WholeGenomeFasta/genome.fa"
+      gtf     = "${params.igenomes_base}/Rattus_norvegicus/Ensembl/Rnor_6.0/Annotation/Genes/genes.gtf"
+      star    = "${params.igenomes_base}/Rattus_norvegicus/Ensembl/Rnor_6.0/Sequence/STARIndex"
+      bwa     = "${params.igenomes_base}/Rattus_norvegicus/Ensembl/Rnor_6.0/Sequence/BWAIndex"
+      bowtie  = "${params.igenomes_base}/Rattus_norvegicus/Ensembl/Rnor_6.0/Sequence/BowtieIndex/genome"
+      bowtie2 = "${params.igenomes_base}/Rattus_norvegicus/Ensembl/Rnor_6.0/Sequence/Bowtie2Index/genome"
+
+    }
+  }
+}

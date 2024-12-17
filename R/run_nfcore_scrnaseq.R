@@ -18,7 +18,7 @@
 #' @export
 
 run_nfcore_scrnaseq <- function(run_folder, sample_sheet) {
-  ref_genome <- "GENCODEm28_HLT"
+  ref_genome <- "2024-A_HLT"
   species <- "mmu"
   run_path <- glue::glue("{nf_core_cache}/{run_folder}")
   out_folder <- glue::glue("nfcore-scrnaseq-v{scrnaseq_release}-{species}")
@@ -60,15 +60,14 @@ module load Java/13.0.2
 export NXF_ANSI_LOG=FALSE
 
 nextflow run \\
-    -c {nf_core_cache}/nextflow.apollo \\
-    -c {nf_core_cache}/igenomes.apollo \\
+    -c {workdir}/data-raw/nextflow.apollo \\
+    -c {workdir}/data-raw/igenomes.apollo \\
     nf-core/scrnaseq -r {scrnaseq_release} -resume \\
     --publish_dir_mode link \\
     --input {run_path}/sample_sheet.csv \\
     --outdir {out_folder} --save_reference Salmon \\
     --genome {ref_genome} --igenomes_base /ref_genome/igenomes \\
-    --email domeally@coh.org --aligner cellranger --protocol 10XV3 \\
-    --cellranger_index /labs/rrockne/MHO/AML.scRNA.2022/cellranger/ref/GENCODEm28_human_genes
+    --email domeally@coh.org --aligner cellranger --protocol 10XV3
 ", .trim = FALSE),
       file = glue::glue("{run_path}/run_{ref_genome}.sh")
     )
