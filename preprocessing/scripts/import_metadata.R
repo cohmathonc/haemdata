@@ -182,7 +182,7 @@ update_metadata_mmu <- function() {
 
 
   # # # add "old mice" mouse metadata
-  sample_sheet <- readxl::read_excel(here::here("data-raw/metadata_mmu_AmberZ_LisaU.xlsx")) |>
+  sample_sheet <- readxl::read_excel(here::here(work_dir, "data-raw/metadata_mmu_AmberZ_LisaU.xlsx")) |>
     mutate(
       mouse_id = as.character(mouse_id),
       sample_weeks = as.integer(stringr::str_remove(timepoint, "W")),
@@ -215,7 +215,7 @@ update_metadata_mmu <- function() {
 
   # # # Save a copy ----
   sample_sheet |>
-    rio::export(here::here("data-raw/metadata_mmu.rds"))
+    rio::export(here::here(work_dir, "data-raw/metadata_mmu.rds"))
 
   return(sample_sheet)
 }
@@ -267,7 +267,7 @@ parse_metadata_AML.mRNA.HSA_FLT3.2022 <- function() {
     )
   ) |> dplyr::mutate(library_id = stringr::str_extract(fastq_1, "COHP_\\d{5}"))
 
-  xls <- here::here("data-raw/flt3_sample_metadata.xlsx")
+  xls <- here::here(work_dir, "data-raw/flt3_sample_metadata.xlsx")
 
   sample_sheet <- readxl::read_excel(xls) |>
     dplyr::arrange(patient_id, sample_date) |>
@@ -293,7 +293,7 @@ parse_metadata_MDS.rnaseq.EGAD00001003891 <- function() {
     ega_run_accession_id = gsub("_.*$", "", basename(fastq_1)),
     sample_name = gsub("^.*?_|.1.fq.gz", "", basename(fastq_1))
   )
-  sex <- read.table(here::here("data-raw/EGAD00001003891/delimited_maps/Run_Sample_meta_info.map"), sep = "\t", header = FALSE) |>
+  sex <- read.table(here::here(work_dir, "data-raw/EGAD00001003891/delimited_maps/Run_Sample_meta_info.map"), sep = "\t", header = FALSE) |>
     dplyr::mutate(
       patient_id = stringr::str_extract(V1, "(?<=subject_id\\=)(.*?)(?=[;])"),
       sex = stringr::str_extract(V1, "(?<=gender\\=)(.*?)(?=[;])"),
@@ -301,12 +301,12 @@ parse_metadata_MDS.rnaseq.EGAD00001003891 <- function() {
     ) |>
     dplyr::select(patient_id, sex) |>
     dplyr::distinct()
-  files <- read.table(here::here("data-raw/EGAD00001003891/delimited_maps/Sample_File.map"),
+  files <- read.table(here::here(work_dir, "data-raw/EGAD00001003891/delimited_maps/Sample_File.map"),
     sep = "\t", header = FALSE,
     col.names = c("patient_id", "ega_sample_accession_id", "bam", "ega_file_unique_accession_id")
   ) |> dplyr::mutate(sample_name = gsub(".bam.cip", "", bam))
 
-  experiment <- read.csv(here::here("data-raw/EGAD00001003891/delimited_maps/Study_Experiment_Run_sample.map"),
+  experiment <- read.csv(here::here(work_dir, "data-raw/EGAD00001003891/delimited_maps/Study_Experiment_Run_sample.map"),
     sep = "\t", header = FALSE,
     col.names = c(
       "study_accession", "study_description", "existing_study_type", "platform",

@@ -36,12 +36,12 @@ make_logo <- function(url = NULL, text = NULL) {
             s_width = 10, s_height = 10,
             white_around_sticker = TRUE,
             h_color = "#FE2B3F",
-            filename = here::here("data-raw/haemdata_icon.png"),
+            filename = here::here(work_dir, "data-raw/haemdata_icon.png"),
             dpi = 600
         )
 
     # use the logo
-    usethis::use_logo(here::here("data-raw/haemdata_icon.png"), retina = TRUE)
+    usethis::use_logo(here::here(work_dir, "data-raw/haemdata_icon.png"), retina = TRUE)
 
     return(img)
 }
@@ -52,7 +52,7 @@ get_teams_file <- function(filename) {
     drive$download_file(filename)
     file.copy(
         from = basename(filename),
-        to = here::here("data-raw"),
+        to = here::here(work_dir, "data-raw"),
         overwrite = TRUE
     )
     file.remove(basename(filename))

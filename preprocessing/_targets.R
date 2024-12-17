@@ -1,11 +1,18 @@
 # Setup
+
+options(
+    hprcc.slurm_logs = TRUE,
+    hprcc.slurm_jobs = TRUE,
+    hprcc.r_libs_user = "/home/domeally/R/x86_64-pc-linux-gnu-library/4.3"
+)
+
 library(targets)
 library(tarchetypes)
 library(hprcc)
-#tar_unscript()
 
 # Location of the nf-core cache and other intermediate analysis files
 nf_core_cache <- "/labs/rrockne/MHO/haemdata-nf-core-cache"
+work_dir <- here::here()
 
 # Load the R scripts & functions:
 tar_source(here::here("preprocessing/scripts"))

@@ -16,14 +16,14 @@ parse_10x_mir142_ko <- function() {
         "/labs/gmarcucci/Seq/221109_IGC-BZ-20933_full_run Spleen LMPP scRNA-seq"
     )
 
-    if (file.exists("data-raw/mmu_mir142_ko_10Xfastqs.csv")) {
-        fastq_paths <- read.csv("data-raw/mmu_mir142_ko_10Xfastqs.csv")
+    if (file.exists(here::here(work_dir, "data-raw/mmu_mir142_ko_10Xfastqs.csv"))) {
+        fastq_paths <- read.csv(here::here(work_dir, "data-raw/mmu_mir142_ko_10Xfastqs.csv"))
     } else {
         fastq_paths <- data.frame(fastq = list.files(
             path = cml_mir142_ko_fastq_paths,
             pattern = "R[12]_001.fastq.gz$", full.names = TRUE, recursive = TRUE
         ))
-        rio::export(fastq_paths, "data-raw/mmu_mir142_ko_10Xfastqs.csv")
+        rio::export(fastq_paths, here::here(work_dir, "data-raw/mmu_mir142_ko_10Xfastqs.csv"))
     }
 
     sample_sheet <- fastq_paths |>
@@ -55,14 +55,14 @@ parse_10x_blastcrisis <- function() {
         "/labs/gmarcucci/Seq/230119_IGC-BZ-21029_test_run"
     )
 
-    if (file.exists("data-raw/mmu_blastcrisis_10Xfastqs.csv")) {
-        fastq_paths <- read.csv("data-raw/mmu_blastcrisis_10Xfastqs.csv")
+    if (file.exists(here::here(work_dir, "data-raw/mmu_blastcrisis_10Xfastqs.csv"))) {
+        fastq_paths <- read.csv(here::here(work_dir, "data-raw/mmu_blastcrisis_10Xfastqs.csv"))
     } else {
         fastq_paths <- data.frame(fastq = list.files(
             path = cml_blastcrisis_fastq_paths,
             pattern = "R[12]_001.fastq.gz$", full.names = TRUE, recursive = TRUE
         ))
-        rio::export(fastq_paths, "data-raw/mmu_blastcrisis_10Xfastqs.csv")
+        rio::export(fastq_paths, here::here(work_dir, "data-raw/mmu_blastcrisis_10Xfastqs.csv"))
     }
 
     sample_sheet <- fastq_paths |>
