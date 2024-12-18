@@ -262,7 +262,7 @@ tar_target(
 ),
 
 # Single sample libraries
-tar_target(sample_sheet_mir142ko_10x, make_scrnaseq_sample_sheet("^CML.10x.mir142ko$", metadata_mmu_prepub)),
+tar_target(sample_sheet_mir142ko_10x, make_scrnaseq_sample_sheet("^CML.scRNA.mir142ko$", metadata_mmu_prepub)),
 tar_target(sample_sheet_blastcrisis_10x, parse_10x_blastcrisis()),
 
 # Link fastqs
