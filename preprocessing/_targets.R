@@ -10,18 +10,6 @@ library(targets)
 library(tarchetypes)
 library(hprcc)
 
-# Location of the nf-core cache and other intermediate analysis files
-nf_core_cache <- "/labs/rrockne/MHO/haemdata-nf-core-cache"
-work_dir <- here::here()
-
-# Load the R scripts & functions:
-tar_source(here::here("preprocessing/scripts"))
-
-tar_option_set(
-    packages = c("tidyverse", "SummarizedExperiment", "haemdata", "tarchetypes", "hprcc"),
-    error = "abridge" # continue with running targets on error
-)
-
 # Pipeline globals
 # nf-core pipeline versions
 rnaseq_release <- "3.7"
@@ -30,6 +18,20 @@ scrnaseq_release <- "2.1.0"
 
 # Publish pins to onedrive or devel?
 publish_location <- "devel"
+# Location of the nf-core cache and other intermediate analysis files
+nf_core_cache <- "/labs/rrockne/MHO/haemdata-nf-core-cache"
+work_dir <- here::here()
+ref_genome <- "2024_A_HLT"
+
+
+# Load the R scripts & functions:
+tar_source()
+tar_source(here::here("preprocessing/scripts"))
+
+tar_option_set(
+    packages = "tidyverse",
+    error = "abridge" # continue with running targets on error
+)
 
 # Cohort aliases
 # Regex patterns to select cohorts using dplyr::filter() or similar functions.
@@ -252,7 +254,7 @@ tar_target(mmu_mirna_pretrimmed_qc, nfcore_smrna_qc(mmu_mirna_pretrimmed_multiqc
 tar_target(mmu_mirna_trimmed_qc, nfcore_smrna_qc(mmu_mirna_trimmed_multiqc)),
 tar_target(mmu_mirna_all_mice_miRBase22_mirna_qc, rbind(mmu_mirna_pretrimmed_qc, mmu_mirna_trimmed_qc)),
 
-# 10X
+# 10X scRNAseq ----
 # Load data
 # Multiplexed samples
 tar_target(
@@ -261,21 +263,22 @@ tar_target(
     resources = hprcc::medium
 ),
 
-# Single sample libraries
-tar_target(sample_sheet_mir142ko_10x, make_scrnaseq_sample_sheet("^CML.scRNA.mir142ko$", metadata_mmu_prepub)),
-tar_target(sample_sheet_blastcrisis_10x, parse_10x_blastcrisis()),
+# Single sample libraries parse_10x_mir142_ko
+#tar_target(sample_sheet_mir142ko_10x, make_scrnaseq_sample_sheet("^CML.scRNA.mir142ko$", metadata_mmu_prepub), deployment = "main"),
+tar_target(sample_sheet_mir142ko_10x, parse_10x_mir142_ko(), resources = tiny),
+tar_target(sample_sheet_blastcrisis_10x, parse_10x_blastcrisis(), resources = tiny),
 
 # Link fastqs
-tar_target(sample_sheet_mir142ko_10x_cache, symlink_10x_fastqs("mmu_10X_mir142_ko/fastq", sample_sheet_mir142ko_10x)),
-tar_target(sample_sheet_blastcrisis_10x_cache, symlink_10x_fastqs("mmu_10X_blastcrisis/fastq", sample_sheet_blastcrisis_10x)),
+tar_target(sample_sheet_mir142ko_10x_cache, symlink_10x_fastqs("mmu_10X_mir142_ko/fastq", sample_sheet_mir142ko_10x), resources = tiny),
+tar_target(sample_sheet_blastcrisis_10x_cache, symlink_10x_fastqs("mmu_10X_blastcrisis/fastq", sample_sheet_blastcrisis_10x), resources = tiny),
 
 # Run nf-core/scrnaseq pipeline
 tar_target(
-    mmu_10x_mir142ko_GENCODEm28_HLT_multiqc,
+    mmu_10x_mir142ko_2024_A_HLT_multiqc,
     run_nfcore_scrnaseq("mmu_10X_mir142_ko", sample_sheet_mir142ko_10x_cache)
 ),
 tar_target(
-    mmu_10x_blastcrisis_GENCODEm28_HLT_multiqc,
+    mmu_10x_blastcrisis_2024_A_HLT_multiqc,
     run_nfcore_scrnaseq("mmu_10X_blastcrisis", sample_sheet_blastcrisis_10x_cache)
 ),
 
