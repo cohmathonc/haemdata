@@ -96,12 +96,12 @@ params {
       salmon  = "${params.igenomes_base}/Mus_musculus/GENCODE/ReleaseM28_HLT/salmon"
       transcript_fasta  = "${params.igenomes_base}/Mus_musculus/GENCODE/ReleaseM28_HLT/genome.transcripts.fa"
     }
-    "2024-A_HLT" {
+    "2024_A_HLT" {
       gencode = true
       fasta   = "${params.igenomes_base}/Mus_musculus/GENCODE/GENCODE_mmu_M33_primary_2024-A_HLT/fasta/genome.fa"
-      gtf     = "${params.igenomes_base}/Mus_musculus/GENCODE/GENCODE_mmu_M33_primary_2024-A_HLT/genes/genes.gtf.gz"
+      gtf     = "${params.igenomes_base}/Mus_musculus/GENCODE/GENCODE_mmu_M33_primary_2024-A_HLT/genes/genes.gtf"
       star    = "${params.igenomes_base}/Mus_musculus/GENCODE/GENCODE_mmu_M33_primary_2024-A_HLT/star"
-      cellranger_index  = "${params.igenomes_base}/Mus_musculus/GENCODE/GENCODE_mmu_M33_primary_2024-A_HLT"
+      cellranger_index  = "${params.igenomes_base}/Mus_musculus/GENCODE/GENCODE_mmu_M33_primary_2024_A_HLT"
     }
     "Rnor_6.0" {
       fasta   = "${params.igenomes_base}/Rattus_norvegicus/Ensembl/Rnor_6.0/Sequence/WholeGenomeFasta/genome.fa"
