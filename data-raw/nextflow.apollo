@@ -34,9 +34,6 @@ executor {
 }
 
 params {
-  max_memory = 1500.GB
-  max_cpus = 72
-  max_time = 336.h
   // reference file paths on Apollo
   igenomes_base = "/ref_genome/igenomes"
 }
