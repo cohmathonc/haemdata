@@ -101,7 +101,7 @@ params {
       fasta   = "${params.igenomes_base}/Mus_musculus/GENCODE/GENCODE_mmu_M33_primary_2024-A_HLT/fasta/genome.fa"
       gtf     = "${params.igenomes_base}/Mus_musculus/GENCODE/GENCODE_mmu_M33_primary_2024-A_HLT/genes/genes.gtf"
       star    = "${params.igenomes_base}/Mus_musculus/GENCODE/GENCODE_mmu_M33_primary_2024-A_HLT/star"
-      cellranger_index  = "${params.igenomes_base}/Mus_musculus/GENCODE/GENCODE_mmu_M33_primary_2024_A_HLT"
+      cellranger  = "${params.igenomes_base}/Mus_musculus/GENCODE/GENCODE_mmu_M33_primary_2024_A_HLT"
     }
     "Rnor_6.0" {
       fasta   = "${params.igenomes_base}/Rattus_norvegicus/Ensembl/Rnor_6.0/Sequence/WholeGenomeFasta/genome.fa"
