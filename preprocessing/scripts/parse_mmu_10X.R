@@ -2,27 +2,38 @@
 
 # ├ cml_mir142_ko
 parse_10x_mir142_ko <- function() {
-
     cml_mir142_ko_fastq_paths <- c(
-        "/labs/gmarcucci/Seq/221122_IGC-BZ-21028_Test_RUN",
-        "/labs/gmarcucci/Seq/221216_IGC-BZ-21028_full_run",
-        "/labs/gmarcucci/Seq/221019_IGC-BZ-20945_full_run PBMC and BM-T from miR-142 KO vs WT",
-        "/labs/gmarcucci/Seq/221010_IGC-BZ-20945_test_run PBMC and BM-T from miR-142 KO vs WT",
-        "/labs/gmarcucci/Seq/221007_IGC-BZ-20895 Spleen-T from miR-142 KO vs WT",
+        # Full runs
+        "/labs/gmarcucci/Seq/221216_IGC-BZ-21028_full_run BM LMPP scRNA-seq",
+        "/labs/gmarcucci/Seq/221109_IGC-BZ-20933_full_run Spleen LMPP scRNA-seq",
+        "/labs/gmarcucci/Seq/221019_IGC-BZ-20945_full_run_PBMC_and_BM-T_from_miR-142_KO_vs_WT",
+        "/labs/gmarcucci/Seq/220919_IGC-BZ-20895",
         "/labs/gmarcucci/Seq/220610_IGC-BZ-20758 PBMC and BM-T scRNA-seq",
-        "/labs/gmarcucci/Seq/220610_IGC-BZ-20758-test_run KO vs WT CML BM-T scRNA-seq test run",
         "/labs/gmarcucci/Seq/220106_BinZhang Spleen-T scRNA-seq",
-        "/labs/gmarcucci/Seq/211210_BinZhang Spleen-T scRNA-seq test run",
-        "/labs/gmarcucci/Seq/221109_IGC-BZ-20933_full_run Spleen LMPP scRNA-seq"
-    )
+        # Test runs
+        "/labs/gmarcucci/Seq/221122_IGC-BZ-21028_Test_RUN",
+        "/labs/gmarcucci/Seq/221010_IGC-BZ-20933_test_run Spleen LMPP scRNA-seq",
+        "/labs/gmarcucci/Seq/221010_IGC-BZ-20945_test_run PBMC and BM-T from miR-142 KO vs WT",
+        "/labs/gmarcucci/Seq/220520_IGC-BZ-20758 KO vs WT CML PBMC scRNA-seq test run",
+        "/labs/gmarcucci/Seq/220610_IGC-BZ-20758-test_run KO vs WT CML BM-T scRNA-seq test run",
+        "/labs/gmarcucci/Seq/211210_BinZhang Spleen-T scRNA-seq test run")
 
     if (file.exists(here::here(work_dir, "data-raw/mmu_mir142_ko_10Xfastqs.csv"))) {
         fastq_paths <- read.csv(here::here(work_dir, "data-raw/mmu_mir142_ko_10Xfastqs.csv"))
     } else {
-        fastq_paths <- data.frame(fastq = list.files(
-            path = cml_mir142_ko_fastq_paths,
-            pattern = "R[12]_001.fastq.gz$", full.names = TRUE, recursive = TRUE
-        ))
+        ncpus <- as.integer(Sys.getenv("SLURM_CPUS_ON_NODE", 1))
+
+        tmp_paths <- tempfile()
+        writeLines(cml_mir142_ko_fastq_paths, tmp_paths)
+
+        cmd <- sprintf(
+            "cat %s | tr '\\n' '\\0' | xargs -0 -P %d -I{} find {} -type f -name '*R[12]_001.fastq.gz'",
+            tmp_paths, ncpus
+        )
+
+        fastq_paths <- data.frame(fastq = system(cmd, intern = TRUE))
+        unlink(tmp_paths)
+
         rio::export(fastq_paths, here::here(work_dir, "data-raw/mmu_mir142_ko_10Xfastqs.csv"))
     }
 
@@ -58,12 +69,22 @@ parse_10x_blastcrisis <- function() {
     if (file.exists(here::here(work_dir, "data-raw/mmu_blastcrisis_10Xfastqs.csv"))) {
         fastq_paths <- read.csv(here::here(work_dir, "data-raw/mmu_blastcrisis_10Xfastqs.csv"))
     } else {
-        fastq_paths <- data.frame(fastq = list.files(
-            path = cml_blastcrisis_fastq_paths,
-            pattern = "R[12]_001.fastq.gz$", full.names = TRUE, recursive = TRUE
-        ))
+        ncpus <- as.integer(Sys.getenv("SLURM_CPUS_ON_NODE", 1))
+
+        tmp_paths <- tempfile()
+        writeLines(cml_blastcrisis_fastq_paths, tmp_paths)
+
+        cmd <- sprintf(
+            "cat %s | tr '\\n' '\\0' | xargs -0 -P %d -I{} find {} -type f -name '*R[12]_001.fastq.gz'",
+            tmp_paths, ncpus
+        )
+
+        fastq_paths <- data.frame(fastq = system(cmd, intern = TRUE))
+        unlink(tmp_paths)
+
         rio::export(fastq_paths, here::here(work_dir, "data-raw/mmu_blastcrisis_10Xfastqs.csv"))
     }
+
 
     sample_sheet <- fastq_paths |>
         dplyr::filter(!grepl("counts|_WT_|_KO_", fastq)) |> ### Filter out analyses files from the IGC
