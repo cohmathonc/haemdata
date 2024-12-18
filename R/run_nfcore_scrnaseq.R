@@ -63,11 +63,10 @@ nextflow run \\
     -c {workdir}/data-raw/nextflow.apollo \\
     -c {workdir}/data-raw/igenomes.apollo \\
     nf-core/scrnaseq -r {scrnaseq_release} -resume \\
-    --publish_dir_mode link \\
     --input {run_path}/sample_sheet.csv \\
     --outdir {out_folder} --save_reference Salmon \\
     --genome {ref_genome} --igenomes_base /ref_genome/igenomes \\
-    --email domeally@coh.org --aligner cellranger --protocol 10XV3
+    --email {Sys.getenv('USER')}@coh.org --aligner cellranger --protocol 10XV3
 ", .trim = FALSE),
       file = glue::glue("{run_path}/run_{ref_genome}.sh")
     )
