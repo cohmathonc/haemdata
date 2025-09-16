@@ -46,7 +46,7 @@ sex_by_genotype <- metadata_mmu |>
 ```
 
 # Mice 
-`Haemdata` includes `r dplyr::n_distinct(dplyr::select(metadata_mmu, -dplyr::starts_with("fastq")), na.rm = TRUE)` samples from `r dplyr::n_distinct(metadata_mmu$mouse_id, na.rm = TRUE)` mice (across `r nrow(metadata_mmu)` sequencing runs). Metadata
+`Haemdata` includes `r dplyr::n_distinct(metadata_mmu$sample_id, na.rm = TRUE)` samples from `r dplyr::n_distinct(metadata_mmu$mouse_id, na.rm = TRUE)` mice (across `r nrow(metadata_mmu)` sequencing runs). Metadata
 are parsed by functions in [`import_metadata.R`](https://github.com/cohmathonc/haemdata/blob/main/scripts/import_metadata.R) and collated by the `make_metadata_mmu()` function, sourced in the same document.
 
 ## Missingness
