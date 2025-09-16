@@ -1,5 +1,5 @@
 main:
   inherits: store
-  store: /labs/rrockne/MHO/haemdata-nf-core-cache/_targets_newRefTest
+#  store: /labs/rrockne/MHO/haemdata-nf-core-cache/_targets_newRefTest
   workers: '350'
   script: ~/workspaces/haemdata/preprocessing/_targets.R
