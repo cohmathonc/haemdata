@@ -1,5 +1,4 @@
-URL: http://cgt.coh.org/haemdata/
-destination: /net/nfs-irwrsrchnas01/labs/rrockne/MHO/haemdata-www
+URL: https://cohmathonc.github.io/haemdata/
 package: haemdata
 template:
   bootstrap: 5
@@ -11,7 +10,7 @@ navbar:
   components:
     notebooks:
       icon: fa-notebook
-      href: http://cgt.coh.org/haemdata/notebooks
+      href: notebooks/
       aria-label: notebooks
       text: Notebooks
 
