@@ -19,3 +19,8 @@ notebooks/_freeze/*
 
 RCLONE_TEST
 preprocessing/_targets.yaml
+
+testing/
+
+
+_targets/logs/
