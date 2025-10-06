@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>http://cgt.coh.org/haemdata/notebooks/hsa_datasets.html</loc>
+    <lastmod>2024-09-10T22:07:32.219Z</lastmod>
+  </url>
+  <url>
+    <loc>http://cgt.coh.org/haemdata/notebooks/cml_datasets.html</loc>
+    <lastmod>2024-09-10T22:06:51.067Z</lastmod>
+  </url>
+  <url>
+    <loc>http://cgt.coh.org/haemdata/notebooks/aml_datasets.html</loc>
+    <lastmod>2024-09-10T22:06:41.417Z</lastmod>
+  </url>
+  <url>
+    <loc>http://cgt.coh.org/haemdata/notebooks/about.html</loc>
+    <lastmod>2024-09-10T22:06:21.413Z</lastmod>
+  </url>
+  <url>
+    <loc>http://cgt.coh.org/haemdata/notebooks/index.html</loc>
+    <lastmod>2024-09-10T22:06:43.739Z</lastmod>
+  </url>
+  <url>
+    <loc>http://cgt.coh.org/haemdata/notebooks/scRNAseq.html</loc>
+    <lastmod>2024-09-10T22:07:14.378Z</lastmod>
+  </url>
+</urlset>
