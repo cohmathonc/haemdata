@@ -91,7 +91,7 @@ Bioconductor</a> on the cluster.</p>
 dependencies will be installed automatically, which can take a
 while.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"haemdata"</span>, repos <span class="op">=</span> <span class="st">"http://cgt.coh.org/MHO"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"cohmathonc/haemdata"</span><span class="op">)</span></span></code></pre></div>
 <p>Next, load libraries and choose the <code>onedrive</code> pinboard.
 You can also access pins from <a href="https://www.rstudio.com/blog/pins-for-python/" class="external-link">Python</a>, or
 directly through <a href="https://cityofhope.sharepoint.com/:f:/r/sites/PSONAMLState-Transition/Shared%20Documents/haemdata?csf=1&amp;web=1&amp;e=VE7cQ2" class="external-link">Microsoft
@@ -101,7 +101,6 @@ or <a href="https://cityofhope.sharepoint.com/:f:/r/sites/PSONAMLState-Transitio
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/cohmathonc/haemdata" class="external-link">"haemdata"</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/use_pinboard.html">use_pinboard</a></span><span class="op">(</span><span class="st">"onedrive"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Loading Microsoft Graph login for default tenant</span></span></code></pre>
-<pre><code><span><span class="co">## Access token has expired or is no longer valid; refreshing</span></span></code></pre>
 <p>The first time you run the package, you’ll be prompted to
 authenticate with your COH credentials and a device token. Follow the
 instructions in the console to complete the authentication process.</p>
@@ -111,7 +110,7 @@ Waiting for device code in browser...
 Press Esc/Ctrl + C to abort
 Authentication complete.</code></pre>
 <p>Once you’ve logged in, see what pins are available:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_pin_list.html">get_pin_list</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "hsa_mrna_flt3_GENCODEr40_qc.rds"                 </span></span>
 <span><span class="co">## [2] "hsa_mrna_flt3_GENCODEr40_qc_1tpm_in_5samples.csv"</span></span>
@@ -121,31 +120,31 @@ Authentication complete.</code></pre>
 <span><span class="co">## [6] "hsa_mrna_mds_GENCODEr40_qc_1tpm_in_5samples.csv"</span></span></code></pre>
 <p>Load the mouse metadata and get some statistics on the
 collection:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_pin.html">get_pin</a></span><span class="op">(</span><span class="st">"metadata_mmu.csv"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning in get_pin("metadata_mmu.csv"): Using latest version of pin: 20230907T012227Z-d3324</span></span>
 <span><span class="co">## Include the version parameter to make your code reproducible and avoid future warnings. E.g.:</span></span>
 <span><span class="co">## get_pin("metadata_mmu.csv", version = "20230907T012227Z-d3324")</span></span></code></pre>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Number of mice in the collection</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">mouse_id</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 124</span></span></code></pre>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Number of tissue samples</span></span>
 <span><span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mouse_id"</span>, <span class="st">"tissue"</span>, <span class="st">"timepoint"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 949</span></span></code></pre>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Number of sequencing libraries</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">fastq_1</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 1763</span></span></code></pre>
-<p>See the <a href="http://cgt.coh.org/haemdata/articles/" class="external-link">Articles</a>
-menu above for more examples.</p>
+<p>See the <a href="https://cohmathonc.github.io/haemdata/articles/" class="external-link">Articles</a> menu
+above for more examples.</p>
   </main>
 </div>
 

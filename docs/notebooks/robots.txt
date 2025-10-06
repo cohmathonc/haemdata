@@ -1,1 +1,1 @@
-Sitemap: http://cgt.coh.org/haemdata/notebooks/sitemap.xml
+Sitemap: https://cohmathonc.github.io/haemdata/notebooks/sitemap.xml

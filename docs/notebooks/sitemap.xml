@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://cgt.coh.org/haemdata/notebooks/hsa_datasets.html</loc>
-    <lastmod>2024-09-10T22:07:32.219Z</lastmod>
+    <loc>https://cohmathonc.github.io/haemdata/notebooks/hsa_datasets.html</loc>
+    <lastmod>2023-10-03T16:38:16.000Z</lastmod>
   </url>
   <url>
-    <loc>http://cgt.coh.org/haemdata/notebooks/cml_datasets.html</loc>
-    <lastmod>2024-09-10T22:06:51.067Z</lastmod>
+    <loc>https://cohmathonc.github.io/haemdata/notebooks/cml_datasets.html</loc>
+    <lastmod>2023-10-26T15:43:42.000Z</lastmod>
   </url>
   <url>
-    <loc>http://cgt.coh.org/haemdata/notebooks/aml_datasets.html</loc>
-    <lastmod>2024-09-10T22:06:41.417Z</lastmod>
+    <loc>https://cohmathonc.github.io/haemdata/notebooks/aml_datasets.html</loc>
+    <lastmod>2023-10-26T15:43:42.000Z</lastmod>
   </url>
   <url>
-    <loc>http://cgt.coh.org/haemdata/notebooks/about.html</loc>
-    <lastmod>2024-09-10T22:06:21.413Z</lastmod>
+    <loc>https://cohmathonc.github.io/haemdata/notebooks/about.html</loc>
+    <lastmod>2023-04-26T19:08:16.000Z</lastmod>
   </url>
   <url>
-    <loc>http://cgt.coh.org/haemdata/notebooks/index.html</loc>
-    <lastmod>2024-09-10T22:06:43.739Z</lastmod>
+    <loc>https://cohmathonc.github.io/haemdata/notebooks/index.html</loc>
+    <lastmod>2023-04-26T19:08:28.000Z</lastmod>
   </url>
   <url>
-    <loc>http://cgt.coh.org/haemdata/notebooks/scRNAseq.html</loc>
-    <lastmod>2024-09-10T22:07:14.378Z</lastmod>
+    <loc>https://cohmathonc.github.io/haemdata/notebooks/scRNAseq.html</loc>
+    <lastmod>2023-10-26T15:43:42.000Z</lastmod>
   </url>
 </urlset>
