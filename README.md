@@ -19,12 +19,12 @@ Expression data and sample metadata are posted to the [Haemdatda Teams channel](
 See [Getting started](https://cohmathonc.github.io/haemdata/articles/haemdata.html) for usage with examples, including exporting CSV tables for analysis with Matlab, for instance. See the [articles](articles) for more comprehensive analyses. 
 
 ## Installation
-Installation is not *required* to use Haemdata, but installing the R package provides a number of useful helper functions that make working with these data more convenient within the R environment. 
+Installation is not *required* to use Haemdata, but installing the R package provides a number of useful helper functions that make working with these data more convenient within the R environment.
 
-You can install the default version of Haemdata from the package website (campus or VPN connection required):
+You can install the development version of Haemdata from GitHub:
 
 ``` r
-install.packages("haemdata", repos = "http://cgt.coh.org/MHO")
+remotes::install_github("cohmathonc/haemdata")
 ```
 
 Can't find something that was previously available? Check the [release history](https://github.com/cohmathonc/haemdata/releases).
