@@ -35,7 +35,7 @@ See ?use_pinboard() for more information."
 haemdata_env$pin_board <- NULL
 
 # Package URL
-haemdata_env$package_url <- "http://cgt.coh.org/haemdata"
+haemdata_env$package_url <- "https://cohmathonc.github.io/haemdata"
 
 
 #### Utility functions for the target pipeline ----
