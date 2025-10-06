@@ -1,5 +1,5 @@
 # haemdata <img src='man/figures/logo.png' align="right" height="139" />
-<!-- [![R-CMD-check](https://github.com/cohmathonchonchonc/haemdata/workflows/R-CMD-check/badge.svg)](https://github.com/cohmathonc/haemdata/actions)  -->
+<!-- [![R-CMD-check](https://github.com/cohmathonc/haemdata/workflows/R-CMD-check/badge.svg)](https://github.com/cohmathonc/haemdata/actions)  -->
 
 <!-- badges: start -->
 ![](https://img.shields.io/badge/code-unstable-red) <br>
@@ -13,7 +13,7 @@ The package provides harmonised, preprocessed genomic data (mRNA, 10X, miRNA) fr
 - diagnosis, remission and relapse AML patients from [Kim et al 2020](https://doi.org/10.1038/s41598-020-76933-2);
 - MDS patients & cell lines from [Shiozawa et al 2017](http://doi.org/10.1182/blood-2017-05-783050).
 
-Expression data and sample metadata are posted to the [Haemdatda Teams channel](https://cityofhope.sharepoint.com/:f:/r/sites/PSONAMLState-Transition/Shared%20Documents/haemdata?csf=1&web=1&e=Uh4VFb).
+Expression data and sample metadata are posted to the [Haemdata Teams channel](https://cityofhope.sharepoint.com/:f:/r/sites/PSONAMLState-Transition/Shared%20Documents/haemdata?csf=1&web=1&e=Uh4VFb).
 
 ## Documentation
 See [Getting started](https://cohmathonc.github.io/haemdata/articles/haemdata.html) for usage with examples, including exporting CSV tables for analysis with Matlab, for instance. See the [articles](articles) for more comprehensive analyses. 
