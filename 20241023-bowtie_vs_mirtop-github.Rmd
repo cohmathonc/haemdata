@@ -7,7 +7,7 @@ output: rmarkdown::github_document
 ## Aim
 This document aims to compare the difference/similarity of two type of miRNA expression estimation method (bowtie and mirtop). \
 bowtie: Its basically the 'quick & dirty' way to count, then the pipeline turns this into CPM for visualisation. In contrast, mirtop collapses counts across all iso-miRs for a gene, and reports counts per miR.\
-These were previously done in https://cgt.coh.org/haemdata/news/index.html#haemdata-0009010 (nf-core/smrnaseq v2.1.0)
+These were previously done in https://cohmathonc.github.io/haemdata/news/index.html#haemdata-0009010 (nf-core/smrnaseq v2.1.0)
 
 The comparison will be made at not only gene expression correlation but also the state-space. \
 

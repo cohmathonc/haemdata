@@ -75,6 +75,7 @@ get_rnaseq_se <- function(multiqc_path, gtf = TRUE) {
         reference_genome = reference_genome,
         rnaseq_release = rnaseq_release,
         workflow = workflow,
+        # Note: multiqc reports remain on internal NFS and are only accessible from COH network
         multiqc_url = sub("/net/nfs-irwrsrchnas01/labs/rrockne/", "http://cgt.coh.org/", multiqc_path),
         qc_removed = NA_character_
     )
