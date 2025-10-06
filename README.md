@@ -16,7 +16,7 @@ The package provides harmonised, preprocessed genomic data (mRNA, 10X, miRNA) fr
 Expression data and sample metadata are posted to the [Haemdatda Teams channel](https://cityofhope.sharepoint.com/:f:/r/sites/PSONAMLState-Transition/Shared%20Documents/haemdata?csf=1&web=1&e=Uh4VFb).
 
 ## Documentation
-See [Getting started](http://cgt.coh.org/haemdata/articles/haemdata.html) for usage with examples, including exporting CSV tables for analysis with Matlab, for instance. See the [articles](articles) for more comprehensive analyses. 
+See [Getting started](https://cohmathonc.github.io/haemdata/articles/haemdata.html) for usage with examples, including exporting CSV tables for analysis with Matlab, for instance. See the [articles](articles) for more comprehensive analyses. 
 
 ## Installation
 Installation is not *required* to use Haemdata, but installing the R package provides a number of useful helper functions that make working with these data more convenient within the R environment. 

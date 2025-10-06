@@ -9,7 +9,7 @@ If you have an account on the [HPRCC](http://hprcc.coh.org/), you can skip the h
 
 Otherwise, to use the Haemdata package, you need to install it. Some dependencies will be installed automatically, which can take a while.
 ```{r eval = FALSE}
-install.packages("haemdata", repos = "http://cgt.coh.org/MHO")
+install.packages("haemdata", repos = "https://cohmathonc.github.io/MHO")
 ```
 
 Next, load libraries and choose the `onedrive` pinboard. You can also access pins from [Python](https://www.rstudio.com/blog/pins-for-python/), or directly through [Microsoft Teams](https://cityofhope.sharepoint.com/:f:/r/sites/PSONAMLState-Transition/Shared%20Documents/haemdata?csf=1&web=1&e=VE7cQ2), [OneDrive](https://cityofhope.sharepoint.com/:f:/r/sites/PSONAMLState-Transition/Shared%20Documents/haemdata?csf=1&web=1&e=xjS3YH) or [Sharepoint](https://cityofhope.sharepoint.com/:f:/r/sites/PSONAMLState-Transition/Shared%20Documents/haemdata?csf=1&web=1&e=NR0BHT). 
@@ -50,4 +50,4 @@ x$fastq_1 |>
     length()
 ```
 
-See the [Articles](http://cgt.coh.org/haemdata/articles/) menu above for more examples.
+See the [Articles](https://cohmathonc.github.io/haemdata/articles/) menu above for more examples.

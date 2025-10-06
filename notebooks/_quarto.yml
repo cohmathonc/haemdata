@@ -13,17 +13,17 @@ website:
   repo-url: https://github.com/cohmathonc/haemdata/
   repo-subdir: notebooks
   repo-actions: [edit, issue]
-  site-url: "http://cgt.coh.org/haemdata/notebooks"
+  site-url: "https://cohmathonc.github.io/haemdata/notebooks"
   favicon: ../pkgdown/favicon/favicon.ico
 
   navbar:
     logo: ../man/figures/logo.png
-    search: true	
+    search: true
     left:
       - href: index.qmd
         text: Home
       - about.qmd
-      - href: http://cgt.coh.org/haemdata/
+      - href: https://cohmathonc.github.io/haemdata/
         text: Package website
   sidebar:
     contents: auto
